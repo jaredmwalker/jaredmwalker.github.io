@@ -134,10 +134,10 @@ dispersion measure under these conditions.
 </div>
 
 <h3>Year-over-Year Score</h3>
-<pre><code><em>((Current Claim − Prior Year's Claim) / Mean Absolute Deviation) * 0.0675</em></code></pre>
+<pre><code><em>(Current Claim − Prior Year's Claim) / Mean Absolute Deviation</em></code></pre>
 
 <h3>Mean Deviation Score</h3>
-<pre><code><em>((Current Claim − 12-month Mean) / Mean Absolute Deviation) * 0.0675</em></code></pre>
+<pre><code><em>(Current Claim − 12-month Mean) / Mean Absolute Deviation</em></code></pre>
 
 <h3>Time Window</h3>
 <ul>
@@ -276,11 +276,11 @@ ct_s$counts <- rowSums(!is.na(ct_s[, value_cols]))
 
 abs_dev_prior <- abs(ct_s[, value_cols] - prior_year)
 ct_s$mad_yoy <- rowSums(abs_dev_prior, na.rm = TRUE) / ct_s$counts
-ct_s$z_yoy <- 0.0675 * ((ct_s$current - ct_s$prior_year) / ct_s$mad_yoy)
+ct_s$z_yoy <- (ct_s$current - ct_s$prior_year) / ct_s$mad_yoy
 
 abs_dev_mean <- abs(ct_s[, value_cols] - ct_s$mean_claim)
 ct_s$mad_mean <- rowSums(abs_dev_mean, na.rm = TRUE) / ct_s$counts
-ct_s$z_mean <- 0.0675 * ((ct_s$current - ct_s$mean_claim) / ct_s$mad_mean)
+ct_s$z_mean <- (ct_s$current - ct_s$mean_claim) / ct_s$mad_mean
 
 ct_s <- ct_s %>%
   mutate(
@@ -352,11 +352,11 @@ ct$counts <- rowSums(!is.na(ct[, value_cols]))
 
 abs_dev_prior <- abs(ct[, value_cols] - prior_year)
 ct$mad_yoy <- rowSums(abs_dev_prior, na.rm = TRUE) / ct$counts
-ct$z_yoy <- 0.0675 *((current - prior_year) / ct$mad_yoy)
+ct$z_yoy <- (current - prior_year) / ct$mad_yoy
 
 abs_dev_mean <- abs(ct[, value_cols] - ct$mean_claim)
 ct$mad_mean <- rowSums(abs_dev_mean, na.rm = TRUE) / ct$counts
-ct$z_mean <- 0.0675 * ((current - ct$mean_claim) / ct$mad_mean)
+ct$z_mean <- (current - ct$mean_claim) / ct$mad_mean
 
 ct <- ct %>%
   mutate(
