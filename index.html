@@ -6,14 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+    <style>
+      /* This section only activates on mobile screens (less than 736px wide) */
+      @media screen and (max-width: 736px) {
+        
+        /* 1. Shrink the massive tagline so it fits on one screen */
+        .banner h2 {
+          font-size: 22px !important; 
+          line-height: 1.4 !important;
+        }
+
+        /* 2. Adjust the name 'Jared Walker' size for mobile */
+        .banner h2 font {
+          font-size: 32px !important;
+        }
+
+        /* 3. Fix the bio text size and alignment */
+        p.content.style2 {
+          font-size: 16px !important;
+          padding: 0 10px !important;
+          text-align: left !important;
+        }
+
+        /* 4. Remove negative margins that cause overlapping on phones */
+        h2[style*="margin-top:-50px"] {
+          margin-top: 0 !important;
+        }
+
+        /* 5. Make the gallery images responsive so they don't 'cut off' */
+        .gallery article img {
+          width: 100% !important;
+          height: auto !important;
+        }
+
+        /* 6. Fix padding on the top banner */
+        section.banner.style1\.5 {
+          padding-top: 30px !important;
+          padding-bottom: 30px !important;
+        }
+
+        /* 7. Center buttons on mobile for easier tapping */
+        .actions.stacked {
+          margin-top: 20px !important;
+        }
+      }
+    </style>
   </head>
 
   <body class="is-preload">
 
-    <!-- Wrapper -->
     <div id="wrapper" class="divided">
 
-      <!-- One -->
       <section class="banner style1.5" style="padding-top:50px; padding-bottom:60px;">
         <center>
           <h2 style="font-size:40px; margin-bottom:0;">
@@ -22,8 +66,6 @@
         </center>
       </section>
 
-      <!--            <font color="#505050">DATA COLLECTION  -  ANALYSIS  -  REPORTING</font>-->
-      <!-- Two -->
       <section class="banner style3 orient-left content-align-top onload-image-fade-in onload-content-fade-right"
                style="padding-bottom:20px;">
         <div class="content align-top">
@@ -44,12 +86,10 @@
             routine reports and
             maintain standard operating procedures to ensure compliance with state and federal
             law. I recently completed a master's in International Security at Utah State University. Examples of my work can be found in the gallery below.
-
           </p>
 
           <ul class="actions stacked" style="margin-top:5px;">
             <center>
-              <!--<a href="Jared Walker Resume 20240811.pdf" target="_blank" class="button smooth-scroll-middle">Résumé</a>-->
               <a href="Contact.html" class="button smooth-scroll-middle">Contact</a>
             </center>
           </ul>
@@ -58,13 +98,12 @@
 
         <img
           src="images/AI Power BI Sample.jpg"
-          alt=""
+          alt="Power BI Sample"
           height="325"
           width="525"
         />
       </section>
 
-      <!-- Gallery -->
       <section class="wrapper style1 align-top orient-top">
         <div class="outer">
           <center>
@@ -76,90 +115,71 @@
           <div class="gallery style2 medium lightbox content-align-center orient-left" id="first">
 
             <article>
-              <a href="TopCountries.html" class="image">
-                <img src="images/Top Countries (1).jpg" alt="" height="300" width="300" />
+              <a href="https://digitalcommons.usu.edu/cgi/viewcontent.cgi?article=1113&context=etd2023" class="image">
+                <img src="images/Thesis.jpg" alt="Thesis" height="300" width="500" />
               </a>
             </article>
-
-            
             
             <article>
               <a href="FNS (6).html" class="image">
-                <img src="images/FNS script.jpg" alt="" height="300" width="600" />
-              </a>
-            </article>
-
-             <article>
-              <a href="BreakfastMap.html" class="image">
-                <img src="images/Breakfast Map (1).jpg" alt="" height="300" width="500" />
+                <img src="images/FNS script.jpg" alt="FNS Script" height="300" width="600" />
               </a>
             </article>
 
             <article>
               <a href="SNP Claims Report.html" class="image">
-                <img src="images/SNP Outliers Report (2).jpg" alt="" height="300" width="500" />
+                <img src="images/SNP Outliers Report (2).jpg" alt="SNP Report" height="300" width="500" />
               </a>
             </article>
-
-            
 
             <article>
               <a href="https://usu-my.sharepoint.com/:x:/g/personal/a02190665_aggies_usu_edu/EdLVzaYDYbVEsgHnIt_pgfMBwy_dwLlMLPmpHItB7U8APA?e=jU1TdP" class="image">
-                <img src="images/Excel (Variance Report).jpg" alt="" height="300" width="500" />
+                <img src="images/Excel (Variance Report).jpg" alt="Variance Report" height="300" width="500" />
               </a>
             </article>
-
-            <!--<article>
-              <a href="Outliers.html" class="image">
-                <img src="images/Outliers.jpg" alt="" height="300" width="500" />
-              </a>
-            </article>-->
 
             <article>
-              <a href="https://digitalcommons.usu.edu/cgi/viewcontent.cgi?article=1113&context=etd2023" class="image">
-                <img src="images/Thesis.jpg" alt="" height="300" width="500" />
+              <a href="TopCountries.html" class="image">
+                <img src="images/Top Countries (1).jpg" alt="Top Countries" height="300" width="300" />
               </a>
             </article>
 
-            
+            <article>
+              <a href="BreakfastMap.html" class="image">
+                <img src="images/Breakfast Map (1).jpg" alt="Breakfast Map" height="300" width="500" />
+              </a>
+            </article>
+
             <article>
               <a href="kpi.html" class="image">
-                <img src="images/kpi.jpg" alt="" height="300" width="500" />
+                <img src="images/kpi.jpg" alt="KPI" height="300" width="500" />
               </a>
             </article>
-            
 
             <article>
               <a href="IncomeInequality.html" class="image">
-                <img src="images/Income Inequality in the Capitalist World-Economy (1).jpg" alt="" height="300" width="500" />
+                <img src="images/Income Inequality in the Capitalist World-Economy (1).jpg" alt="Income Inequality" height="300" width="500" />
               </a>
             </article>
-
-
-
-            
-
-            
 
             <article>
               <a href="CINC.html" class="image">
-                <img src="images/CINC (1).jpg" alt="" height="300" width="500" />
+                <img src="images/CINC (1).jpg" alt="CINC" height="300" width="500" />
               </a>
             </article>
 
-            <!--<article>
-              <a href="1816 Inequality.html" class="image">
-                <img src="images/1816.jpg" alt="" height="300" width="500" />
-              </a>
-            </article>-->
-
           </div>
         </div>
-      <section class="banner style1" style="padding-bottom:40px;">
+      </section>
+
+      <footer class="wrapper style1 align-center" style="padding: 40px 0;">
+        <div class="inner">
+            <p>&copy; Jared Walker. All rights reserved.</p>
+        </div>
+      </footer>
 
     </div>
 
-    <!-- Scripts -->
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/jquery.scrollex.min.js"></script>
     <script src="assets/js/jquery.scrolly.min.js"></script>
@@ -170,6 +190,3 @@
 
   </body>
 </html>
-
-
-
