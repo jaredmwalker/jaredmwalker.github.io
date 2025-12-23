@@ -3725,391 +3725,384 @@ attrition diagnostic</h3>
 <span id="cb14-52"><a href="#cb14-52" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) &quot;Statistical Inference about Markov Chains&quot;.</span></span>
 <span id="cb14-53"><a href="#cb14-53" tabindex="-1"></a><span class="do">############################################################</span></span>
 <span id="cb14-54"><a href="#cb14-54" tabindex="-1"></a></span>
-<span id="cb14-55"><a href="#cb14-55" tabindex="-1"></a></span>
-<span id="cb14-56"><a href="#cb14-56" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-57"><a href="#cb14-57" tabindex="-1"></a><span class="co"># Section 2: Pooled transition matrix &amp; stationary distribution</span></span>
-<span id="cb14-58"><a href="#cb14-58" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-59"><a href="#cb14-59" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-60"><a href="#cb14-60" tabindex="-1"></a><span class="co">#   Pool transitions across steps to estimate:</span></span>
-<span id="cb14-61"><a href="#cb14-61" tabindex="-1"></a><span class="co">#     - transition probabilities \hat{P} = (P_ij),</span></span>
-<span id="cb14-62"><a href="#cb14-62" tabindex="-1"></a><span class="co">#     - stationary distribution \hat{π}.</span></span>
-<span id="cb14-63"><a href="#cb14-63" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-64"><a href="#cb14-64" tabindex="-1"></a><span class="co"># Data:</span></span>
-<span id="cb14-65"><a href="#cb14-65" tabindex="-1"></a><span class="co">#   From all transitions (across steps), we construct a 2D table:</span></span>
-<span id="cb14-66"><a href="#cb14-66" tabindex="-1"></a><span class="co">#     N_{ij} = Σ_s N_{sij},</span></span>
-<span id="cb14-67"><a href="#cb14-67" tabindex="-1"></a><span class="co">#   where i = origin, j = destination.</span></span>
-<span id="cb14-68"><a href="#cb14-68" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-69"><a href="#cb14-69" tabindex="-1"></a><span class="co"># Estimation:</span></span>
-<span id="cb14-70"><a href="#cb14-70" tabindex="-1"></a><span class="co">#   Define:</span></span>
-<span id="cb14-71"><a href="#cb14-71" tabindex="-1"></a><span class="co">#     N_{ij}  = total transitions from i to j,</span></span>
-<span id="cb14-72"><a href="#cb14-72" tabindex="-1"></a><span class="co">#     N_{i+}  = Σ_j N_{ij} (row totals).</span></span>
-<span id="cb14-73"><a href="#cb14-73" tabindex="-1"></a><span class="co">#   Then MLE for one-step Markov transition probabilities is:</span></span>
-<span id="cb14-74"><a href="#cb14-74" tabindex="-1"></a><span class="co">#     \hat{P}_{ij} = N_{ij} / N_{i+}.                (Anderson &amp; Goodman 1957)</span></span>
-<span id="cb14-75"><a href="#cb14-75" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-76"><a href="#cb14-76" tabindex="-1"></a><span class="co"># Stationary distribution:</span></span>
-<span id="cb14-77"><a href="#cb14-77" tabindex="-1"></a><span class="co">#   The stationary distribution π satisfies:</span></span>
-<span id="cb14-78"><a href="#cb14-78" tabindex="-1"></a><span class="co">#     π \hat{P} = π,     Σ_i π_i = 1.</span></span>
-<span id="cb14-79"><a href="#cb14-79" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-80"><a href="#cb14-80" tabindex="-1"></a><span class="co">#   Numerically, we obtain π as the dominant left eigenvector of \hat{P}:</span></span>
-<span id="cb14-81"><a href="#cb14-81" tabindex="-1"></a><span class="co">#     Let v be a right eigenvector of \hat{P}^T:</span></span>
-<span id="cb14-82"><a href="#cb14-82" tabindex="-1"></a><span class="co">#       \hat{P}^T v = λ v.</span></span>
-<span id="cb14-83"><a href="#cb14-83" tabindex="-1"></a><span class="co">#     If λ = 1 is the largest eigenvalue (for an irreducible, aperiodic chain),</span></span>
-<span id="cb14-84"><a href="#cb14-84" tabindex="-1"></a><span class="co">#     then v (normalized to sum to 1) is the stationary distribution:</span></span>
-<span id="cb14-85"><a href="#cb14-85" tabindex="-1"></a><span class="co">#       π̂ = v / Σ_i v_i.</span></span>
-<span id="cb14-86"><a href="#cb14-86" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-87"><a href="#cb14-87" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-88"><a href="#cb14-88" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on ML estimation and asymptotic theory</span></span>
-<span id="cb14-89"><a href="#cb14-89" tabindex="-1"></a><span class="co">#   for discrete-state Markov chains.</span></span>
-<span id="cb14-90"><a href="#cb14-90" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) for applications of such matrices to</span></span>
-<span id="cb14-91"><a href="#cb14-91" tabindex="-1"></a><span class="co">#   regional/income convergence.</span></span>
-<span id="cb14-92"><a href="#cb14-92" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-93"><a href="#cb14-93" tabindex="-1"></a></span>
-<span id="cb14-94"><a href="#cb14-94" tabindex="-1"></a></span>
+<span id="cb14-55"><a href="#cb14-55" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-56"><a href="#cb14-56" tabindex="-1"></a><span class="co"># Section 2: Pooled transition matrix &amp; stationary distribution</span></span>
+<span id="cb14-57"><a href="#cb14-57" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-58"><a href="#cb14-58" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-59"><a href="#cb14-59" tabindex="-1"></a><span class="co">#   Pool transitions across steps to estimate:</span></span>
+<span id="cb14-60"><a href="#cb14-60" tabindex="-1"></a><span class="co">#     - transition probabilities \hat{P} = (P_ij),</span></span>
+<span id="cb14-61"><a href="#cb14-61" tabindex="-1"></a><span class="co">#     - stationary distribution \hat{π}.</span></span>
+<span id="cb14-62"><a href="#cb14-62" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-63"><a href="#cb14-63" tabindex="-1"></a><span class="co"># Data:</span></span>
+<span id="cb14-64"><a href="#cb14-64" tabindex="-1"></a><span class="co">#   From all transitions (across steps), we construct a 2D table:</span></span>
+<span id="cb14-65"><a href="#cb14-65" tabindex="-1"></a><span class="co">#     N_{ij} = Σ_s N_{sij},</span></span>
+<span id="cb14-66"><a href="#cb14-66" tabindex="-1"></a><span class="co">#   where i = origin, j = destination.</span></span>
+<span id="cb14-67"><a href="#cb14-67" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-68"><a href="#cb14-68" tabindex="-1"></a><span class="co"># Estimation:</span></span>
+<span id="cb14-69"><a href="#cb14-69" tabindex="-1"></a><span class="co">#   Define:</span></span>
+<span id="cb14-70"><a href="#cb14-70" tabindex="-1"></a><span class="co">#     N_{ij}  = total transitions from i to j,</span></span>
+<span id="cb14-71"><a href="#cb14-71" tabindex="-1"></a><span class="co">#     N_{i+}  = Σ_j N_{ij} (row totals).</span></span>
+<span id="cb14-72"><a href="#cb14-72" tabindex="-1"></a><span class="co">#   Then MLE for one-step Markov transition probabilities is:</span></span>
+<span id="cb14-73"><a href="#cb14-73" tabindex="-1"></a><span class="co">#     \hat{P}_{ij} = N_{ij} / N_{i+}.                (Anderson &amp; Goodman 1957)</span></span>
+<span id="cb14-74"><a href="#cb14-74" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-75"><a href="#cb14-75" tabindex="-1"></a><span class="co"># Stationary distribution:</span></span>
+<span id="cb14-76"><a href="#cb14-76" tabindex="-1"></a><span class="co">#   The stationary distribution π satisfies:</span></span>
+<span id="cb14-77"><a href="#cb14-77" tabindex="-1"></a><span class="co">#     π \hat{P} = π,     Σ_i π_i = 1.</span></span>
+<span id="cb14-78"><a href="#cb14-78" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-79"><a href="#cb14-79" tabindex="-1"></a><span class="co">#   Numerically, we obtain π as the dominant left eigenvector of \hat{P}:</span></span>
+<span id="cb14-80"><a href="#cb14-80" tabindex="-1"></a><span class="co">#     Let v be a right eigenvector of \hat{P}^T:</span></span>
+<span id="cb14-81"><a href="#cb14-81" tabindex="-1"></a><span class="co">#       \hat{P}^T v = λ v.</span></span>
+<span id="cb14-82"><a href="#cb14-82" tabindex="-1"></a><span class="co">#     If λ = 1 is the largest eigenvalue (for an irreducible, aperiodic chain),</span></span>
+<span id="cb14-83"><a href="#cb14-83" tabindex="-1"></a><span class="co">#     then v (normalized to sum to 1) is the stationary distribution:</span></span>
+<span id="cb14-84"><a href="#cb14-84" tabindex="-1"></a><span class="co">#       π̂ = v / Σ_i v_i.</span></span>
+<span id="cb14-85"><a href="#cb14-85" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-86"><a href="#cb14-86" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-87"><a href="#cb14-87" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on ML estimation and asymptotic theory</span></span>
+<span id="cb14-88"><a href="#cb14-88" tabindex="-1"></a><span class="co">#   for discrete-state Markov chains.</span></span>
+<span id="cb14-89"><a href="#cb14-89" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) for applications of such matrices to</span></span>
+<span id="cb14-90"><a href="#cb14-90" tabindex="-1"></a><span class="co">#   regional/income convergence.</span></span>
+<span id="cb14-91"><a href="#cb14-91" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-92"><a href="#cb14-92" tabindex="-1"></a></span>
+<span id="cb14-93"><a href="#cb14-93" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-94"><a href="#cb14-94" tabindex="-1"></a><span class="co"># Section 3: Markov homogeneity test (log-linear)</span></span>
 <span id="cb14-95"><a href="#cb14-95" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-96"><a href="#cb14-96" tabindex="-1"></a><span class="co"># Section 3: Markov homogeneity test (log-linear)</span></span>
-<span id="cb14-97"><a href="#cb14-97" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-98"><a href="#cb14-98" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-99"><a href="#cb14-99" tabindex="-1"></a><span class="co">#   Test whether transition probabilities P_ij are identical across</span></span>
-<span id="cb14-100"><a href="#cb14-100" tabindex="-1"></a><span class="co">#   snapshot steps s (time-homogeneous Markov chain within an era).</span></span>
-<span id="cb14-101"><a href="#cb14-101" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-102"><a href="#cb14-102" tabindex="-1"></a><span class="co">#   Data structure:</span></span>
-<span id="cb14-103"><a href="#cb14-103" tabindex="-1"></a><span class="co">#     - We construct a 3D contingency table N_{sij}:</span></span>
-<span id="cb14-104"><a href="#cb14-104" tabindex="-1"></a><span class="co">#         S = step (snapshot interval),</span></span>
-<span id="cb14-105"><a href="#cb14-105" tabindex="-1"></a><span class="co">#         O = origin class,</span></span>
-<span id="cb14-106"><a href="#cb14-106" tabindex="-1"></a><span class="co">#         D = destination class.</span></span>
-<span id="cb14-107"><a href="#cb14-107" tabindex="-1"></a><span class="co">#     - In log-linear form, this is a standard three-way table S × O × D</span></span>
-<span id="cb14-108"><a href="#cb14-108" tabindex="-1"></a><span class="co">#       (Bishop, Fienberg &amp; Holland 1975/2007; Goodman 1971).</span></span>
-<span id="cb14-109"><a href="#cb14-109" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-110"><a href="#cb14-110" tabindex="-1"></a><span class="co"># Model (log-linear representation):</span></span>
-<span id="cb14-111"><a href="#cb14-111" tabindex="-1"></a><span class="co">#   Let μ_{sij} = E[N_{sij}] denote expected counts under a given model.</span></span>
-<span id="cb14-112"><a href="#cb14-112" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-113"><a href="#cb14-113" tabindex="-1"></a><span class="co">#   H0: Homogeneous Markov model (OD association invariant in s)</span></span>
-<span id="cb14-114"><a href="#cb14-114" tabindex="-1"></a><span class="co">#     log μ_{sij} = λ + λ_s^(S) + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
-<span id="cb14-115"><a href="#cb14-115" tabindex="-1"></a><span class="co">#     → includes:</span></span>
-<span id="cb14-116"><a href="#cb14-116" tabindex="-1"></a><span class="co">#         - main effects for step, origin, destination,</span></span>
-<span id="cb14-117"><a href="#cb14-117" tabindex="-1"></a><span class="co">#         - origin–destination association λ_{ij}^{(OD)} *not* varying</span></span>
-<span id="cb14-118"><a href="#cb14-118" tabindex="-1"></a><span class="co">#           with s, corresponding to a time-homogeneous chain.</span></span>
-<span id="cb14-119"><a href="#cb14-119" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-120"><a href="#cb14-120" tabindex="-1"></a><span class="co">#   H1: Fully heterogeneous model</span></span>
-<span id="cb14-121"><a href="#cb14-121" tabindex="-1"></a><span class="co">#     log μ_{sij} = λ + all interactions among (S, O, D)</span></span>
-<span id="cb14-122"><a href="#cb14-122" tabindex="-1"></a><span class="co">#                 = λ + λ_s + λ_i + λ_j</span></span>
-<span id="cb14-123"><a href="#cb14-123" tabindex="-1"></a><span class="co">#                   + λ_{si} + λ_{sj} + λ_{ij} + λ_{sij}.</span></span>
-<span id="cb14-124"><a href="#cb14-124" tabindex="-1"></a><span class="co">#     → OD association allowed to differ by step via λ_{sij}.</span></span>
-<span id="cb14-125"><a href="#cb14-125" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-126"><a href="#cb14-126" tabindex="-1"></a><span class="co"># Test statistic:</span></span>
-<span id="cb14-127"><a href="#cb14-127" tabindex="-1"></a><span class="co">#   G^2 = deviance(H0) - deviance(H1),</span></span>
-<span id="cb14-128"><a href="#cb14-128" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
-<span id="cb14-129"><a href="#cb14-129" tabindex="-1"></a><span class="co">#   p-value from χ^2_df.</span></span>
-<span id="cb14-130"><a href="#cb14-130" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-131"><a href="#cb14-131" tabindex="-1"></a><span class="co">#   Here, deviance is the standard log-likelihood ratio statistic:</span></span>
-<span id="cb14-132"><a href="#cb14-132" tabindex="-1"></a><span class="co">#     G^2(model) = 2 Σ_{sij} n_{sij} log( n_{sij} / μ̂_{sij} ),</span></span>
-<span id="cb14-133"><a href="#cb14-133" tabindex="-1"></a><span class="co">#   which is 2×(sample size) times a Kullback–Leibler divergence between</span></span>
-<span id="cb14-134"><a href="#cb14-134" tabindex="-1"></a><span class="co">#   observed and fitted cell probabilities (Kullback &amp; Leibler 1951;</span></span>
-<span id="cb14-135"><a href="#cb14-135" tabindex="-1"></a><span class="co">#   Kullback, Kupperman &amp; Ku 1962). Under regularity conditions, G^2</span></span>
-<span id="cb14-136"><a href="#cb14-136" tabindex="-1"></a><span class="co">#   is asymptotically χ^2 (Anderson &amp; Goodman 1957; Bishop et al. 1975).</span></span>
-<span id="cb14-137"><a href="#cb14-137" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-138"><a href="#cb14-138" tabindex="-1"></a><span class="co"># Relation to Markov-chain diagnostics:</span></span>
-<span id="cb14-139"><a href="#cb14-139" tabindex="-1"></a><span class="co">#   - This is essentially the log-linear version of testing whether</span></span>
-<span id="cb14-140"><a href="#cb14-140" tabindex="-1"></a><span class="co">#     transition matrices differ across time slices, analogous to the</span></span>
-<span id="cb14-141"><a href="#cb14-141" tabindex="-1"></a><span class="co">#     homogeneity tests in Bickenbach &amp; Bode’s (2001) discussion of</span></span>
-<span id="cb14-142"><a href="#cb14-142" tabindex="-1"></a><span class="co">#     Markov chains for income distributions.</span></span>
+<span id="cb14-96"><a href="#cb14-96" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-97"><a href="#cb14-97" tabindex="-1"></a><span class="co">#   Test whether transition probabilities P_ij are identical across</span></span>
+<span id="cb14-98"><a href="#cb14-98" tabindex="-1"></a><span class="co">#   snapshot steps s (time-homogeneous Markov chain within an era).</span></span>
+<span id="cb14-99"><a href="#cb14-99" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-100"><a href="#cb14-100" tabindex="-1"></a><span class="co">#   Data structure:</span></span>
+<span id="cb14-101"><a href="#cb14-101" tabindex="-1"></a><span class="co">#     - We construct a 3D contingency table N_{sij}:</span></span>
+<span id="cb14-102"><a href="#cb14-102" tabindex="-1"></a><span class="co">#         S = step (snapshot interval),</span></span>
+<span id="cb14-103"><a href="#cb14-103" tabindex="-1"></a><span class="co">#         O = origin class,</span></span>
+<span id="cb14-104"><a href="#cb14-104" tabindex="-1"></a><span class="co">#         D = destination class.</span></span>
+<span id="cb14-105"><a href="#cb14-105" tabindex="-1"></a><span class="co">#     - In log-linear form, this is a standard three-way table S × O × D</span></span>
+<span id="cb14-106"><a href="#cb14-106" tabindex="-1"></a><span class="co">#       (Bishop, Fienberg &amp; Holland 1975/2007; Goodman 1971).</span></span>
+<span id="cb14-107"><a href="#cb14-107" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-108"><a href="#cb14-108" tabindex="-1"></a><span class="co"># Model (log-linear representation):</span></span>
+<span id="cb14-109"><a href="#cb14-109" tabindex="-1"></a><span class="co">#   Let μ_{sij} = E[N_{sij}] denote expected counts under a given model.</span></span>
+<span id="cb14-110"><a href="#cb14-110" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-111"><a href="#cb14-111" tabindex="-1"></a><span class="co">#   H0: Homogeneous Markov model (OD association invariant in s)</span></span>
+<span id="cb14-112"><a href="#cb14-112" tabindex="-1"></a><span class="co">#     log μ_{sij} = λ + λ_s^(S) + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
+<span id="cb14-113"><a href="#cb14-113" tabindex="-1"></a><span class="co">#     → includes:</span></span>
+<span id="cb14-114"><a href="#cb14-114" tabindex="-1"></a><span class="co">#         - main effects for step, origin, destination,</span></span>
+<span id="cb14-115"><a href="#cb14-115" tabindex="-1"></a><span class="co">#         - origin–destination association λ_{ij}^{(OD)} *not* varying</span></span>
+<span id="cb14-116"><a href="#cb14-116" tabindex="-1"></a><span class="co">#           with s, corresponding to a time-homogeneous chain.</span></span>
+<span id="cb14-117"><a href="#cb14-117" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-118"><a href="#cb14-118" tabindex="-1"></a><span class="co">#   H1: Fully heterogeneous model</span></span>
+<span id="cb14-119"><a href="#cb14-119" tabindex="-1"></a><span class="co">#     log μ_{sij} = λ + all interactions among (S, O, D)</span></span>
+<span id="cb14-120"><a href="#cb14-120" tabindex="-1"></a><span class="co">#                 = λ + λ_s + λ_i + λ_j</span></span>
+<span id="cb14-121"><a href="#cb14-121" tabindex="-1"></a><span class="co">#                   + λ_{si} + λ_{sj} + λ_{ij} + λ_{sij}.</span></span>
+<span id="cb14-122"><a href="#cb14-122" tabindex="-1"></a><span class="co">#     → OD association allowed to differ by step via λ_{sij}.</span></span>
+<span id="cb14-123"><a href="#cb14-123" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-124"><a href="#cb14-124" tabindex="-1"></a><span class="co"># Test statistic:</span></span>
+<span id="cb14-125"><a href="#cb14-125" tabindex="-1"></a><span class="co">#   G^2 = deviance(H0) - deviance(H1),</span></span>
+<span id="cb14-126"><a href="#cb14-126" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
+<span id="cb14-127"><a href="#cb14-127" tabindex="-1"></a><span class="co">#   p-value from χ^2_df.</span></span>
+<span id="cb14-128"><a href="#cb14-128" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-129"><a href="#cb14-129" tabindex="-1"></a><span class="co">#   Here, deviance is the standard log-likelihood ratio statistic:</span></span>
+<span id="cb14-130"><a href="#cb14-130" tabindex="-1"></a><span class="co">#     G^2(model) = 2 Σ_{sij} n_{sij} log( n_{sij} / μ̂_{sij} ),</span></span>
+<span id="cb14-131"><a href="#cb14-131" tabindex="-1"></a><span class="co">#   which is 2×(sample size) times a Kullback–Leibler divergence between</span></span>
+<span id="cb14-132"><a href="#cb14-132" tabindex="-1"></a><span class="co">#   observed and fitted cell probabilities (Kullback &amp; Leibler 1951;</span></span>
+<span id="cb14-133"><a href="#cb14-133" tabindex="-1"></a><span class="co">#   Kullback, Kupperman &amp; Ku 1962). Under regularity conditions, G^2</span></span>
+<span id="cb14-134"><a href="#cb14-134" tabindex="-1"></a><span class="co">#   is asymptotically χ^2 (Anderson &amp; Goodman 1957; Bishop et al. 1975).</span></span>
+<span id="cb14-135"><a href="#cb14-135" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-136"><a href="#cb14-136" tabindex="-1"></a><span class="co"># Relation to Markov-chain diagnostics:</span></span>
+<span id="cb14-137"><a href="#cb14-137" tabindex="-1"></a><span class="co">#   - This is essentially the log-linear version of testing whether</span></span>
+<span id="cb14-138"><a href="#cb14-138" tabindex="-1"></a><span class="co">#     transition matrices differ across time slices, analogous to the</span></span>
+<span id="cb14-139"><a href="#cb14-139" tabindex="-1"></a><span class="co">#     homogeneity tests in Bickenbach &amp; Bode’s (2001) discussion of</span></span>
+<span id="cb14-140"><a href="#cb14-140" tabindex="-1"></a><span class="co">#     Markov chains for income distributions.</span></span>
+<span id="cb14-141"><a href="#cb14-141" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-142"><a href="#cb14-142" tabindex="-1"></a></span>
 <span id="cb14-143"><a href="#cb14-143" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-144"><a href="#cb14-144" tabindex="-1"></a></span>
-<span id="cb14-145"><a href="#cb14-145" tabindex="-1"></a></span>
-<span id="cb14-146"><a href="#cb14-146" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-147"><a href="#cb14-147" tabindex="-1"></a><span class="co"># Section 4: Long-interval transition matrix &amp; test</span></span>
-<span id="cb14-148"><a href="#cb14-148" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-149"><a href="#cb14-149" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-150"><a href="#cb14-150" tabindex="-1"></a><span class="co">#   Build a *long-interval* transition matrix for each era and test</span></span>
-<span id="cb14-151"><a href="#cb14-151" tabindex="-1"></a><span class="co">#   whether it is consistent with a stationary/quasi-symmetric structure.</span></span>
-<span id="cb14-152"><a href="#cb14-152" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-153"><a href="#cb14-153" tabindex="-1"></a><span class="co">#   Here we treat the initial and final snapshots (start_year, end_year)</span></span>
-<span id="cb14-154"><a href="#cb14-154" tabindex="-1"></a><span class="co">#   as two “waves” in a square contingency table:</span></span>
-<span id="cb14-155"><a href="#cb14-155" tabindex="-1"></a><span class="co">#     rows = start-year classes,</span></span>
-<span id="cb14-156"><a href="#cb14-156" tabindex="-1"></a><span class="co">#     cols = end-year classes.</span></span>
-<span id="cb14-157"><a href="#cb14-157" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-158"><a href="#cb14-158" tabindex="-1"></a><span class="co"># Data construction:</span></span>
-<span id="cb14-159"><a href="#cb14-159" tabindex="-1"></a><span class="co">#   For each country u:</span></span>
-<span id="cb14-160"><a href="#cb14-160" tabindex="-1"></a><span class="co">#     class_start(u) = class in start_year,</span></span>
-<span id="cb14-161"><a href="#cb14-161" tabindex="-1"></a><span class="co">#     class_end(u)   = class in end_year.</span></span>
+<span id="cb14-144"><a href="#cb14-144" tabindex="-1"></a><span class="co"># Section 4: Long-interval transition matrix &amp; test</span></span>
+<span id="cb14-145"><a href="#cb14-145" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-146"><a href="#cb14-146" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-147"><a href="#cb14-147" tabindex="-1"></a><span class="co">#   Build a *long-interval* transition matrix for each era and test</span></span>
+<span id="cb14-148"><a href="#cb14-148" tabindex="-1"></a><span class="co">#   whether it is consistent with a stationary/quasi-symmetric structure.</span></span>
+<span id="cb14-149"><a href="#cb14-149" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-150"><a href="#cb14-150" tabindex="-1"></a><span class="co">#   Here we treat the initial and final snapshots (start_year, end_year)</span></span>
+<span id="cb14-151"><a href="#cb14-151" tabindex="-1"></a><span class="co">#   as two “waves” in a square contingency table:</span></span>
+<span id="cb14-152"><a href="#cb14-152" tabindex="-1"></a><span class="co">#     rows = start-year classes,</span></span>
+<span id="cb14-153"><a href="#cb14-153" tabindex="-1"></a><span class="co">#     cols = end-year classes.</span></span>
+<span id="cb14-154"><a href="#cb14-154" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-155"><a href="#cb14-155" tabindex="-1"></a><span class="co"># Data construction:</span></span>
+<span id="cb14-156"><a href="#cb14-156" tabindex="-1"></a><span class="co">#   For each country u:</span></span>
+<span id="cb14-157"><a href="#cb14-157" tabindex="-1"></a><span class="co">#     class_start(u) = class in start_year,</span></span>
+<span id="cb14-158"><a href="#cb14-158" tabindex="-1"></a><span class="co">#     class_end(u)   = class in end_year.</span></span>
+<span id="cb14-159"><a href="#cb14-159" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-160"><a href="#cb14-160" tabindex="-1"></a><span class="co">#   We then build the 2-way table:</span></span>
+<span id="cb14-161"><a href="#cb14-161" tabindex="-1"></a><span class="co">#     L_{ij} = # of countries with class_start = i and class_end = j.</span></span>
 <span id="cb14-162"><a href="#cb14-162" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-163"><a href="#cb14-163" tabindex="-1"></a><span class="co">#   We then build the 2-way table:</span></span>
-<span id="cb14-164"><a href="#cb14-164" tabindex="-1"></a><span class="co">#     L_{ij} = # of countries with class_start = i and class_end = j.</span></span>
-<span id="cb14-165"><a href="#cb14-165" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-166"><a href="#cb14-166" tabindex="-1"></a><span class="co"># Log-linear testing:</span></span>
-<span id="cb14-167"><a href="#cb14-167" tabindex="-1"></a><span class="co">#   We compare:</span></span>
-<span id="cb14-168"><a href="#cb14-168" tabindex="-1"></a><span class="co">#   - H0: structured (origin + dest) model:</span></span>
-<span id="cb14-169"><a href="#cb14-169" tabindex="-1"></a><span class="co">#       log ν_{ij} = α_i + β_j,</span></span>
-<span id="cb14-170"><a href="#cb14-170" tabindex="-1"></a><span class="co">#     which implies that rows and columns are independent up to</span></span>
-<span id="cb14-171"><a href="#cb14-171" tabindex="-1"></a><span class="co">#     row and column effects (a kind of “quasi-stationary” structure),</span></span>
-<span id="cb14-172"><a href="#cb14-172" tabindex="-1"></a><span class="co">#     closely related to mobility models and quasi-symmetry ideas.</span></span>
+<span id="cb14-163"><a href="#cb14-163" tabindex="-1"></a><span class="co"># Log-linear testing:</span></span>
+<span id="cb14-164"><a href="#cb14-164" tabindex="-1"></a><span class="co">#   We compare:</span></span>
+<span id="cb14-165"><a href="#cb14-165" tabindex="-1"></a><span class="co">#   - H0: structured (origin + dest) model:</span></span>
+<span id="cb14-166"><a href="#cb14-166" tabindex="-1"></a><span class="co">#       log ν_{ij} = α_i + β_j,</span></span>
+<span id="cb14-167"><a href="#cb14-167" tabindex="-1"></a><span class="co">#     which implies that rows and columns are independent up to</span></span>
+<span id="cb14-168"><a href="#cb14-168" tabindex="-1"></a><span class="co">#     row and column effects (a kind of “quasi-stationary” structure),</span></span>
+<span id="cb14-169"><a href="#cb14-169" tabindex="-1"></a><span class="co">#     closely related to mobility models and quasi-symmetry ideas.</span></span>
+<span id="cb14-170"><a href="#cb14-170" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-171"><a href="#cb14-171" tabindex="-1"></a><span class="co">#   - H1: saturated model:</span></span>
+<span id="cb14-172"><a href="#cb14-172" tabindex="-1"></a><span class="co">#       log ν_{ij} = γ_{ij},     (free mean for each cell).</span></span>
 <span id="cb14-173"><a href="#cb14-173" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-174"><a href="#cb14-174" tabindex="-1"></a><span class="co">#   - H1: saturated model:</span></span>
-<span id="cb14-175"><a href="#cb14-175" tabindex="-1"></a><span class="co">#       log ν_{ij} = γ_{ij},     (free mean for each cell).</span></span>
-<span id="cb14-176"><a href="#cb14-176" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-177"><a href="#cb14-177" tabindex="-1"></a><span class="co">#   LR test:</span></span>
-<span id="cb14-178"><a href="#cb14-178" tabindex="-1"></a><span class="co">#     G^2_long = dev(H0) - dev(H1),</span></span>
-<span id="cb14-179"><a href="#cb14-179" tabindex="-1"></a><span class="co">#     df_long  = df(H0) - df(H1),</span></span>
-<span id="cb14-180"><a href="#cb14-180" tabindex="-1"></a><span class="co">#     p-value from χ^2_{df_long}.</span></span>
-<span id="cb14-181"><a href="#cb14-181" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-182"><a href="#cb14-182" tabindex="-1"></a><span class="co"># Information-theoretic view:</span></span>
-<span id="cb14-183"><a href="#cb14-183" tabindex="-1"></a><span class="co">#   As in the homogeneity test, the deviance is 2×(sample size) times</span></span>
-<span id="cb14-184"><a href="#cb14-184" tabindex="-1"></a><span class="co">#   a Kullback–Leibler divergence between empirical L_{ij}/N and</span></span>
-<span id="cb14-185"><a href="#cb14-185" tabindex="-1"></a><span class="co">#   the fitted ν̂_{ij}/N (Kullback &amp; Leibler 1951; Kullback, Kupperman</span></span>
-<span id="cb14-186"><a href="#cb14-186" tabindex="-1"></a><span class="co">#   &amp; Ku 1962; Bishop et al. 1975).</span></span>
-<span id="cb14-187"><a href="#cb14-187" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-188"><a href="#cb14-188" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-189"><a href="#cb14-189" tabindex="-1"></a><span class="co">#   Kullback, Kupperman &amp; Ku (1962) &quot;Tests for Contingency Tables and</span></span>
-<span id="cb14-190"><a href="#cb14-190" tabindex="-1"></a><span class="co">#   Markov Chains&quot;, Technometrics.</span></span>
-<span id="cb14-191"><a href="#cb14-191" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) &quot;Discrete Multivariate Analysis&quot;.</span></span>
-<span id="cb14-192"><a href="#cb14-192" tabindex="-1"></a><span class="co">#   Goodman (1971, Technometrics) on log-linear models for multidimensional</span></span>
-<span id="cb14-193"><a href="#cb14-193" tabindex="-1"></a><span class="co">#   tables.</span></span>
-<span id="cb14-194"><a href="#cb14-194" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-195"><a href="#cb14-195" tabindex="-1"></a></span>
-<span id="cb14-196"><a href="#cb14-196" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-197"><a href="#cb14-197" tabindex="-1"></a><span class="co"># Section 5: Heatmap for transition matrix</span></span>
-<span id="cb14-198"><a href="#cb14-198" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-199"><a href="#cb14-199" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-200"><a href="#cb14-200" tabindex="-1"></a><span class="co">#   Produce a heatmap of the estimated transition matrix P, annotated</span></span>
-<span id="cb14-201"><a href="#cb14-201" tabindex="-1"></a><span class="co">#   with probabilities, to give a visual summary of:</span></span>
-<span id="cb14-202"><a href="#cb14-202" tabindex="-1"></a><span class="co">#     - self-reinforcement on the diagonal (persistence),</span></span>
-<span id="cb14-203"><a href="#cb14-203" tabindex="-1"></a><span class="co">#     - upward/downward mobility off the diagonal.</span></span>
-<span id="cb14-204"><a href="#cb14-204" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-205"><a href="#cb14-205" tabindex="-1"></a><span class="co">#   The visual interpretation connects back to world-system mobility</span></span>
-<span id="cb14-206"><a href="#cb14-206" tabindex="-1"></a><span class="co">#   analyses in Dezzani (2002) and Babones &amp; Dezzani (2008), where</span></span>
-<span id="cb14-207"><a href="#cb14-207" tabindex="-1"></a><span class="co">#   high diagonal probabilities indicate structural persistence of</span></span>
-<span id="cb14-208"><a href="#cb14-208" tabindex="-1"></a><span class="co">#   core/semiperiphery/periphery positions.</span></span>
-<span id="cb14-209"><a href="#cb14-209" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-210"><a href="#cb14-210" tabindex="-1"></a></span>
-<span id="cb14-211"><a href="#cb14-211" tabindex="-1"></a></span>
-<span id="cb14-212"><a href="#cb14-212" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-213"><a href="#cb14-213" tabindex="-1"></a><span class="co"># Section 6a: Build Markov pairs X_t, X_{t+1} (0 → 1 order)</span></span>
-<span id="cb14-214"><a href="#cb14-214" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-215"><a href="#cb14-215" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-216"><a href="#cb14-216" tabindex="-1"></a><span class="co">#   Construct ordered pairs (X_t, X_{t+1}) for estimating and testing</span></span>
-<span id="cb14-217"><a href="#cb14-217" tabindex="-1"></a><span class="co">#   *zero-order vs first-order* dependence in a discrete-state process.</span></span>
-<span id="cb14-218"><a href="#cb14-218" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-219"><a href="#cb14-219" tabindex="-1"></a><span class="co">#   Specifically, the pair table supports the hypothesis test:</span></span>
-<span id="cb14-220"><a href="#cb14-220" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-221"><a href="#cb14-221" tabindex="-1"></a><span class="co">#     H0 (0th order / independence):   X_{t+1} ⟂ X_t</span></span>
-<span id="cb14-222"><a href="#cb14-222" tabindex="-1"></a><span class="co">#     H1 (1st order / Markov):         X_{t+1} depends on X_t</span></span>
-<span id="cb14-223"><a href="#cb14-223" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-224"><a href="#cb14-224" tabindex="-1"></a><span class="co">#   In a Markov-chain setting, H1 corresponds to the standard</span></span>
-<span id="cb14-225"><a href="#cb14-225" tabindex="-1"></a><span class="co">#   first-order dependence assumption used to estimate a transition</span></span>
-<span id="cb14-226"><a href="#cb14-226" tabindex="-1"></a><span class="co">#   matrix P with entries P_ij = Pr(X_{t+1}=j | X_t=i), as developed in</span></span>
-<span id="cb14-227"><a href="#cb14-227" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957, Annals of Mathematical Statistics).</span></span>
+<span id="cb14-174"><a href="#cb14-174" tabindex="-1"></a><span class="co">#   LR test:</span></span>
+<span id="cb14-175"><a href="#cb14-175" tabindex="-1"></a><span class="co">#     G^2_long = dev(H0) - dev(H1),</span></span>
+<span id="cb14-176"><a href="#cb14-176" tabindex="-1"></a><span class="co">#     df_long  = df(H0) - df(H1),</span></span>
+<span id="cb14-177"><a href="#cb14-177" tabindex="-1"></a><span class="co">#     p-value from χ^2_{df_long}.</span></span>
+<span id="cb14-178"><a href="#cb14-178" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-179"><a href="#cb14-179" tabindex="-1"></a><span class="co"># Information-theoretic view:</span></span>
+<span id="cb14-180"><a href="#cb14-180" tabindex="-1"></a><span class="co">#   As in the homogeneity test, the deviance is 2×(sample size) times</span></span>
+<span id="cb14-181"><a href="#cb14-181" tabindex="-1"></a><span class="co">#   a Kullback–Leibler divergence between empirical L_{ij}/N and</span></span>
+<span id="cb14-182"><a href="#cb14-182" tabindex="-1"></a><span class="co">#   the fitted ν̂_{ij}/N (Kullback &amp; Leibler 1951; Kullback, Kupperman</span></span>
+<span id="cb14-183"><a href="#cb14-183" tabindex="-1"></a><span class="co">#   &amp; Ku 1962; Bishop et al. 1975).</span></span>
+<span id="cb14-184"><a href="#cb14-184" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-185"><a href="#cb14-185" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-186"><a href="#cb14-186" tabindex="-1"></a><span class="co">#   Kullback, Kupperman &amp; Ku (1962) &quot;Tests for Contingency Tables and</span></span>
+<span id="cb14-187"><a href="#cb14-187" tabindex="-1"></a><span class="co">#   Markov Chains&quot;, Technometrics.</span></span>
+<span id="cb14-188"><a href="#cb14-188" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) &quot;Discrete Multivariate Analysis&quot;.</span></span>
+<span id="cb14-189"><a href="#cb14-189" tabindex="-1"></a><span class="co">#   Goodman (1971, Technometrics) on log-linear models for multidimensional</span></span>
+<span id="cb14-190"><a href="#cb14-190" tabindex="-1"></a><span class="co">#   tables.</span></span>
+<span id="cb14-191"><a href="#cb14-191" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-192"><a href="#cb14-192" tabindex="-1"></a></span>
+<span id="cb14-193"><a href="#cb14-193" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-194"><a href="#cb14-194" tabindex="-1"></a><span class="co"># Section 5: Heatmap for transition matrix</span></span>
+<span id="cb14-195"><a href="#cb14-195" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-196"><a href="#cb14-196" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-197"><a href="#cb14-197" tabindex="-1"></a><span class="co">#   Produce a heatmap of the estimated transition matrix P, annotated</span></span>
+<span id="cb14-198"><a href="#cb14-198" tabindex="-1"></a><span class="co">#   with probabilities, to give a visual summary of:</span></span>
+<span id="cb14-199"><a href="#cb14-199" tabindex="-1"></a><span class="co">#     - self-reinforcement on the diagonal (persistence),</span></span>
+<span id="cb14-200"><a href="#cb14-200" tabindex="-1"></a><span class="co">#     - upward/downward mobility off the diagonal.</span></span>
+<span id="cb14-201"><a href="#cb14-201" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-202"><a href="#cb14-202" tabindex="-1"></a><span class="co">#   The visual interpretation connects back to world-system mobility</span></span>
+<span id="cb14-203"><a href="#cb14-203" tabindex="-1"></a><span class="co">#   analyses in Dezzani (2002) and Babones &amp; Dezzani (2008), where</span></span>
+<span id="cb14-204"><a href="#cb14-204" tabindex="-1"></a><span class="co">#   high diagonal probabilities indicate structural persistence of</span></span>
+<span id="cb14-205"><a href="#cb14-205" tabindex="-1"></a><span class="co">#   core/semiperiphery/periphery positions.</span></span>
+<span id="cb14-206"><a href="#cb14-206" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-207"><a href="#cb14-207" tabindex="-1"></a></span>
+<span id="cb14-208"><a href="#cb14-208" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-209"><a href="#cb14-209" tabindex="-1"></a><span class="co"># Section 6a: Build Markov pairs X_t, X_{t+1} (0 → 1 order)</span></span>
+<span id="cb14-210"><a href="#cb14-210" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-211"><a href="#cb14-211" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-212"><a href="#cb14-212" tabindex="-1"></a><span class="co">#   Construct ordered pairs (X_t, X_{t+1}) for estimating and testing</span></span>
+<span id="cb14-213"><a href="#cb14-213" tabindex="-1"></a><span class="co">#   *zero-order vs first-order* dependence in a discrete-state process.</span></span>
+<span id="cb14-214"><a href="#cb14-214" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-215"><a href="#cb14-215" tabindex="-1"></a><span class="co">#   Specifically, the pair table supports the hypothesis test:</span></span>
+<span id="cb14-216"><a href="#cb14-216" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-217"><a href="#cb14-217" tabindex="-1"></a><span class="co">#     H0 (0th order / independence):   X_{t+1} ⟂ X_t</span></span>
+<span id="cb14-218"><a href="#cb14-218" tabindex="-1"></a><span class="co">#     H1 (1st order / Markov):         X_{t+1} depends on X_t</span></span>
+<span id="cb14-219"><a href="#cb14-219" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-220"><a href="#cb14-220" tabindex="-1"></a><span class="co">#   In a Markov-chain setting, H1 corresponds to the standard</span></span>
+<span id="cb14-221"><a href="#cb14-221" tabindex="-1"></a><span class="co">#   first-order dependence assumption used to estimate a transition</span></span>
+<span id="cb14-222"><a href="#cb14-222" tabindex="-1"></a><span class="co">#   matrix P with entries P_ij = Pr(X_{t+1}=j | X_t=i), as developed in</span></span>
+<span id="cb14-223"><a href="#cb14-223" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957, Annals of Mathematical Statistics).</span></span>
+<span id="cb14-224"><a href="#cb14-224" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-225"><a href="#cb14-225" tabindex="-1"></a><span class="co">#   In contingency-table terms, we represent transitions as a 2-way table</span></span>
+<span id="cb14-226"><a href="#cb14-226" tabindex="-1"></a><span class="co">#   N_{ij} of origin (i = X_t) by destination (j = X_{t+1}) counts and fit</span></span>
+<span id="cb14-227"><a href="#cb14-227" tabindex="-1"></a><span class="co">#   hierarchical log-linear models:</span></span>
 <span id="cb14-228"><a href="#cb14-228" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-229"><a href="#cb14-229" tabindex="-1"></a><span class="co">#   In contingency-table terms, we represent transitions as a 2-way table</span></span>
-<span id="cb14-230"><a href="#cb14-230" tabindex="-1"></a><span class="co">#   N_{ij} of origin (i = X_t) by destination (j = X_{t+1}) counts and fit</span></span>
-<span id="cb14-231"><a href="#cb14-231" tabindex="-1"></a><span class="co">#   hierarchical log-linear models:</span></span>
+<span id="cb14-229"><a href="#cb14-229" tabindex="-1"></a><span class="co">#     - Independence (0th order):</span></span>
+<span id="cb14-230"><a href="#cb14-230" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D)</span></span>
+<span id="cb14-231"><a href="#cb14-231" tabindex="-1"></a><span class="co">#         (no origin–destination association)</span></span>
 <span id="cb14-232"><a href="#cb14-232" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-233"><a href="#cb14-233" tabindex="-1"></a><span class="co">#     - Independence (0th order):</span></span>
-<span id="cb14-234"><a href="#cb14-234" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D)</span></span>
-<span id="cb14-235"><a href="#cb14-235" tabindex="-1"></a><span class="co">#         (no origin–destination association)</span></span>
-<span id="cb14-236"><a href="#cb14-236" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-237"><a href="#cb14-237" tabindex="-1"></a><span class="co">#     - Association (1st order):</span></span>
-<span id="cb14-238"><a href="#cb14-238" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
+<span id="cb14-233"><a href="#cb14-233" tabindex="-1"></a><span class="co">#     - Association (1st order):</span></span>
+<span id="cb14-234"><a href="#cb14-234" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
+<span id="cb14-235"><a href="#cb14-235" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-236"><a href="#cb14-236" tabindex="-1"></a><span class="co">#   The likelihood-ratio deviance G^2 compares these models:</span></span>
+<span id="cb14-237"><a href="#cb14-237" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-238"><a href="#cb14-238" tabindex="-1"></a><span class="co">#     G^2 = 2 Σ_{ij} n_{ij} log(n_{ij} / μ̂_{ij})</span></span>
 <span id="cb14-239"><a href="#cb14-239" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-240"><a href="#cb14-240" tabindex="-1"></a><span class="co">#   The likelihood-ratio deviance G^2 compares these models:</span></span>
-<span id="cb14-241"><a href="#cb14-241" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-242"><a href="#cb14-242" tabindex="-1"></a><span class="co">#     G^2 = 2 Σ_{ij} n_{ij} log(n_{ij} / μ̂_{ij})</span></span>
-<span id="cb14-243"><a href="#cb14-243" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-244"><a href="#cb14-244" tabindex="-1"></a><span class="co">#   which is 2N times a Kullback–Leibler divergence between empirical</span></span>
-<span id="cb14-245"><a href="#cb14-245" tabindex="-1"></a><span class="co">#   and fitted cell probabilities (Kullback &amp; Leibler 1951; Kullback,</span></span>
-<span id="cb14-246"><a href="#cb14-246" tabindex="-1"></a><span class="co">#   Kupperman &amp; Ku 1962). Under standard regularity conditions, G^2</span></span>
-<span id="cb14-247"><a href="#cb14-247" tabindex="-1"></a><span class="co">#   is asymptotically χ² (Anderson &amp; Goodman 1957; Bishop, Fienberg &amp;</span></span>
-<span id="cb14-248"><a href="#cb14-248" tabindex="-1"></a><span class="co">#   Holland 1975/2007; Goodman 1971).</span></span>
-<span id="cb14-249"><a href="#cb14-249" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-250"><a href="#cb14-250" tabindex="-1"></a><span class="co"># Inputs:</span></span>
-<span id="cb14-251"><a href="#cb14-251" tabindex="-1"></a><span class="co">#   data          : data frame with columns stateabb, year, class.</span></span>
-<span id="cb14-252"><a href="#cb14-252" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years.</span></span>
-<span id="cb14-253"><a href="#cb14-253" tabindex="-1"></a><span class="co">#   step          : spacing constraint between consecutive snapshots</span></span>
-<span id="cb14-254"><a href="#cb14-254" tabindex="-1"></a><span class="co">#                   (e.g., 7; 8; or a vector like c(7,7,6)).</span></span>
-<span id="cb14-255"><a href="#cb14-255" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class (fixed state space S).</span></span>
-<span id="cb14-256"><a href="#cb14-256" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-257"><a href="#cb14-257" tabindex="-1"></a><span class="co"># Output:</span></span>
-<span id="cb14-258"><a href="#cb14-258" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
-<span id="cb14-259"><a href="#cb14-259" tabindex="-1"></a><span class="co">#     stateabb, year, class_prev, class_curr</span></span>
-<span id="cb14-260"><a href="#cb14-260" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
-<span id="cb14-261"><a href="#cb14-261" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-262"><a href="#cb14-262" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-263"><a href="#cb14-263" tabindex="-1"></a><span class="co">#   Anderson, T.W. &amp; Goodman, L.A. (1957). &quot;Statistical Inference about</span></span>
-<span id="cb14-264"><a href="#cb14-264" tabindex="-1"></a><span class="co">#     Markov Chains.&quot; Annals of Mathematical Statistics.</span></span>
-<span id="cb14-265"><a href="#cb14-265" tabindex="-1"></a><span class="co">#   Bishop, Y.M.M., Fienberg, S.E., &amp; Holland, P.W. (1975/2007).</span></span>
-<span id="cb14-266"><a href="#cb14-266" tabindex="-1"></a><span class="co">#     Discrete Multivariate Analysis. MIT Press.</span></span>
-<span id="cb14-267"><a href="#cb14-267" tabindex="-1"></a><span class="co">#   Goodman, L.A. (1971). &quot;The Analysis of Multidimensional Contingency</span></span>
-<span id="cb14-268"><a href="#cb14-268" tabindex="-1"></a><span class="co">#     Tables.&quot; Technometrics.</span></span>
-<span id="cb14-269"><a href="#cb14-269" tabindex="-1"></a><span class="co">#   Kullback, S. &amp; Leibler, R.A. (1951). &quot;On Information and Sufficiency.&quot;</span></span>
-<span id="cb14-270"><a href="#cb14-270" tabindex="-1"></a><span class="co">#     Annals of Mathematical Statistics.</span></span>
-<span id="cb14-271"><a href="#cb14-271" tabindex="-1"></a><span class="co">#   Kullback, S., Kupperman, M., &amp; Ku, H. (1962). &quot;Tests for Contingency</span></span>
-<span id="cb14-272"><a href="#cb14-272" tabindex="-1"></a><span class="co">#     Tables and Markov Chains.&quot; Technometrics.</span></span>
+<span id="cb14-240"><a href="#cb14-240" tabindex="-1"></a><span class="co">#   which is 2N times a Kullback–Leibler divergence between empirical</span></span>
+<span id="cb14-241"><a href="#cb14-241" tabindex="-1"></a><span class="co">#   and fitted cell probabilities (Kullback &amp; Leibler 1951; Kullback,</span></span>
+<span id="cb14-242"><a href="#cb14-242" tabindex="-1"></a><span class="co">#   Kupperman &amp; Ku 1962). Under standard regularity conditions, G^2</span></span>
+<span id="cb14-243"><a href="#cb14-243" tabindex="-1"></a><span class="co">#   is asymptotically χ² (Anderson &amp; Goodman 1957; Bishop, Fienberg &amp;</span></span>
+<span id="cb14-244"><a href="#cb14-244" tabindex="-1"></a><span class="co">#   Holland 1975/2007; Goodman 1971).</span></span>
+<span id="cb14-245"><a href="#cb14-245" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-246"><a href="#cb14-246" tabindex="-1"></a><span class="co"># Inputs:</span></span>
+<span id="cb14-247"><a href="#cb14-247" tabindex="-1"></a><span class="co">#   data          : data frame with columns stateabb, year, class.</span></span>
+<span id="cb14-248"><a href="#cb14-248" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years.</span></span>
+<span id="cb14-249"><a href="#cb14-249" tabindex="-1"></a><span class="co">#   step          : spacing constraint between consecutive snapshots</span></span>
+<span id="cb14-250"><a href="#cb14-250" tabindex="-1"></a><span class="co">#                   (e.g., 7; 8; or a vector like c(7,7,6)).</span></span>
+<span id="cb14-251"><a href="#cb14-251" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class (fixed state space S).</span></span>
+<span id="cb14-252"><a href="#cb14-252" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-253"><a href="#cb14-253" tabindex="-1"></a><span class="co"># Output:</span></span>
+<span id="cb14-254"><a href="#cb14-254" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
+<span id="cb14-255"><a href="#cb14-255" tabindex="-1"></a><span class="co">#     stateabb, year, class_prev, class_curr</span></span>
+<span id="cb14-256"><a href="#cb14-256" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
+<span id="cb14-257"><a href="#cb14-257" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-258"><a href="#cb14-258" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-259"><a href="#cb14-259" tabindex="-1"></a><span class="co">#   Anderson, T.W. &amp; Goodman, L.A. (1957). &quot;Statistical Inference about</span></span>
+<span id="cb14-260"><a href="#cb14-260" tabindex="-1"></a><span class="co">#     Markov Chains.&quot; Annals of Mathematical Statistics.</span></span>
+<span id="cb14-261"><a href="#cb14-261" tabindex="-1"></a><span class="co">#   Bishop, Y.M.M., Fienberg, S.E., &amp; Holland, P.W. (1975/2007).</span></span>
+<span id="cb14-262"><a href="#cb14-262" tabindex="-1"></a><span class="co">#     Discrete Multivariate Analysis. MIT Press.</span></span>
+<span id="cb14-263"><a href="#cb14-263" tabindex="-1"></a><span class="co">#   Goodman, L.A. (1971). &quot;The Analysis of Multidimensional Contingency</span></span>
+<span id="cb14-264"><a href="#cb14-264" tabindex="-1"></a><span class="co">#     Tables.&quot; Technometrics.</span></span>
+<span id="cb14-265"><a href="#cb14-265" tabindex="-1"></a><span class="co">#   Kullback, S. &amp; Leibler, R.A. (1951). &quot;On Information and Sufficiency.&quot;</span></span>
+<span id="cb14-266"><a href="#cb14-266" tabindex="-1"></a><span class="co">#     Annals of Mathematical Statistics.</span></span>
+<span id="cb14-267"><a href="#cb14-267" tabindex="-1"></a><span class="co">#   Kullback, S., Kupperman, M., &amp; Ku, H. (1962). &quot;Tests for Contingency</span></span>
+<span id="cb14-268"><a href="#cb14-268" tabindex="-1"></a><span class="co">#     Tables and Markov Chains.&quot; Technometrics.</span></span>
+<span id="cb14-269"><a href="#cb14-269" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-270"><a href="#cb14-270" tabindex="-1"></a></span>
+<span id="cb14-271"><a href="#cb14-271" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-272"><a href="#cb14-272" tabindex="-1"></a><span class="co"># Section 6b: Build Markov triples X_{t-1}, X_t, X_{t+1} (1 → 2 order)</span></span>
 <span id="cb14-273"><a href="#cb14-273" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-274"><a href="#cb14-274" tabindex="-1"></a></span>
-<span id="cb14-275"><a href="#cb14-275" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-276"><a href="#cb14-276" tabindex="-1"></a><span class="co"># Section 7b: Build Markov triples X_{t-1}, X_t, X_{t+1} (1 → 2 order)</span></span>
-<span id="cb14-277"><a href="#cb14-277" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-278"><a href="#cb14-278" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-279"><a href="#cb14-279" tabindex="-1"></a><span class="co">#   Construct triples (X_{t-1}, X_t, X_{t+1}) for testing the</span></span>
-<span id="cb14-280"><a href="#cb14-280" tabindex="-1"></a><span class="co">#   first-order Markov property:</span></span>
-<span id="cb14-281"><a href="#cb14-281" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-282"><a href="#cb14-282" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
-<span id="cb14-283"><a href="#cb14-283" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-284"><a href="#cb14-284" tabindex="-1"></a><span class="co">#   Following Anderson &amp; Goodman (1957, Annals of Mathematical</span></span>
-<span id="cb14-285"><a href="#cb14-285" tabindex="-1"></a><span class="co">#   Statistics) and the log-linear representation of Markov chains</span></span>
-<span id="cb14-286"><a href="#cb14-286" tabindex="-1"></a><span class="co">#   in Bishop, Fienberg &amp; Holland (1975/2007, Discrete Multivariate</span></span>
-<span id="cb14-287"><a href="#cb14-287" tabindex="-1"></a><span class="co">#   Analysis) and Goodman (1971, Technometrics).</span></span>
-<span id="cb14-288"><a href="#cb14-288" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-289"><a href="#cb14-289" tabindex="-1"></a><span class="co"># Inputs:</span></span>
-<span id="cb14-290"><a href="#cb14-290" tabindex="-1"></a><span class="co">#   data          : df with stateabb, year, class</span></span>
-<span id="cb14-291"><a href="#cb14-291" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years</span></span>
-<span id="cb14-292"><a href="#cb14-292" tabindex="-1"></a><span class="co">#   step          : spacing between snapshots (e.g., 7, 8)</span></span>
-<span id="cb14-293"><a href="#cb14-293" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class</span></span>
-<span id="cb14-294"><a href="#cb14-294" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-295"><a href="#cb14-295" tabindex="-1"></a><span class="co"># Output:</span></span>
-<span id="cb14-296"><a href="#cb14-296" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
-<span id="cb14-297"><a href="#cb14-297" tabindex="-1"></a><span class="co">#     stateabb, year, class_lag2, class_lag1, class_curr</span></span>
-<span id="cb14-298"><a href="#cb14-298" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
+<span id="cb14-274"><a href="#cb14-274" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-275"><a href="#cb14-275" tabindex="-1"></a><span class="co">#   Construct triples (X_{t-1}, X_t, X_{t+1}) for testing the</span></span>
+<span id="cb14-276"><a href="#cb14-276" tabindex="-1"></a><span class="co">#   first-order Markov property:</span></span>
+<span id="cb14-277"><a href="#cb14-277" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-278"><a href="#cb14-278" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
+<span id="cb14-279"><a href="#cb14-279" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-280"><a href="#cb14-280" tabindex="-1"></a><span class="co">#   Following Anderson &amp; Goodman (1957, Annals of Mathematical</span></span>
+<span id="cb14-281"><a href="#cb14-281" tabindex="-1"></a><span class="co">#   Statistics) and the log-linear representation of Markov chains</span></span>
+<span id="cb14-282"><a href="#cb14-282" tabindex="-1"></a><span class="co">#   in Bishop, Fienberg &amp; Holland (1975/2007, Discrete Multivariate</span></span>
+<span id="cb14-283"><a href="#cb14-283" tabindex="-1"></a><span class="co">#   Analysis) and Goodman (1971, Technometrics).</span></span>
+<span id="cb14-284"><a href="#cb14-284" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-285"><a href="#cb14-285" tabindex="-1"></a><span class="co"># Inputs:</span></span>
+<span id="cb14-286"><a href="#cb14-286" tabindex="-1"></a><span class="co">#   data          : df with stateabb, year, class</span></span>
+<span id="cb14-287"><a href="#cb14-287" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years</span></span>
+<span id="cb14-288"><a href="#cb14-288" tabindex="-1"></a><span class="co">#   step          : spacing between snapshots (e.g., 7, 8)</span></span>
+<span id="cb14-289"><a href="#cb14-289" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class</span></span>
+<span id="cb14-290"><a href="#cb14-290" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-291"><a href="#cb14-291" tabindex="-1"></a><span class="co"># Output:</span></span>
+<span id="cb14-292"><a href="#cb14-292" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
+<span id="cb14-293"><a href="#cb14-293" tabindex="-1"></a><span class="co">#     stateabb, year, class_lag2, class_lag1, class_curr</span></span>
+<span id="cb14-294"><a href="#cb14-294" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
+<span id="cb14-295"><a href="#cb14-295" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-296"><a href="#cb14-296" tabindex="-1"></a></span>
+<span id="cb14-297"><a href="#cb14-297" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-298"><a href="#cb14-298" tabindex="-1"></a><span class="co"># Section 7a: 0 vs 1 order (X_{t-1}, X_t)</span></span>
 <span id="cb14-299"><a href="#cb14-299" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-300"><a href="#cb14-300" tabindex="-1"></a></span>
-<span id="cb14-301"><a href="#cb14-301" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-302"><a href="#cb14-302" tabindex="-1"></a><span class="co"># Section 7: 0 vs 1 order (X_{t-1}, X_t)</span></span>
-<span id="cb14-303"><a href="#cb14-303" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-304"><a href="#cb14-304" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-305"><a href="#cb14-305" tabindex="-1"></a><span class="co">#   Test the first-order Markov property:</span></span>
-<span id="cb14-306"><a href="#cb14-306" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-307"><a href="#cb14-307" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
-<span id="cb14-308"><a href="#cb14-308" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-309"><a href="#cb14-309" tabindex="-1"></a><span class="co">#   using a three-way contingency table:</span></span>
-<span id="cb14-310"><a href="#cb14-310" tabindex="-1"></a><span class="co">#     L = X_{t-1}, M = X_t, N = X_{t+1}.</span></span>
+<span id="cb14-300"><a href="#cb14-300" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-301"><a href="#cb14-301" tabindex="-1"></a><span class="co">#   Test the first-order Markov property:</span></span>
+<span id="cb14-302"><a href="#cb14-302" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-303"><a href="#cb14-303" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
+<span id="cb14-304"><a href="#cb14-304" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-305"><a href="#cb14-305" tabindex="-1"></a><span class="co">#   using a three-way contingency table:</span></span>
+<span id="cb14-306"><a href="#cb14-306" tabindex="-1"></a><span class="co">#     L = X_{t-1}, M = X_t, N = X_{t+1}.</span></span>
+<span id="cb14-307"><a href="#cb14-307" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-308"><a href="#cb14-308" tabindex="-1"></a><span class="co"># Log-linear models:</span></span>
+<span id="cb14-309"><a href="#cb14-309" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-310"><a href="#cb14-310" tabindex="-1"></a><span class="co">#   Let μ_{ijk} = E[N_{ijk}] = expected counts for L=i, M=j, N=k.</span></span>
 <span id="cb14-311"><a href="#cb14-311" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-312"><a href="#cb14-312" tabindex="-1"></a><span class="co"># Log-linear models:</span></span>
-<span id="cb14-313"><a href="#cb14-313" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-314"><a href="#cb14-314" tabindex="-1"></a><span class="co">#   Let μ_{ijk} = E[N_{ijk}] = expected counts for L=i, M=j, N=k.</span></span>
-<span id="cb14-315"><a href="#cb14-315" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-316"><a href="#cb14-316" tabindex="-1"></a><span class="co">#   H0 (first-order Markov):</span></span>
-<span id="cb14-317"><a href="#cb14-317" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ</span></span>
-<span id="cb14-318"><a href="#cb14-318" tabindex="-1"></a><span class="co">#                 + λ_i^L + λ_j^M + λ_k^N</span></span>
-<span id="cb14-319"><a href="#cb14-319" tabindex="-1"></a><span class="co">#                 + λ_{ij}^{LM} + λ_{jk}^{MN}</span></span>
-<span id="cb14-320"><a href="#cb14-320" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-321"><a href="#cb14-321" tabindex="-1"></a><span class="co">#     → includes L–M and M–N interactions, but no L–N or L–M–N</span></span>
-<span id="cb14-322"><a href="#cb14-322" tabindex="-1"></a><span class="co">#       interactions, corresponding to X_{t+1} ⟂ X_{t-1} | X_t.</span></span>
+<span id="cb14-312"><a href="#cb14-312" tabindex="-1"></a><span class="co">#   H0 (first-order Markov):</span></span>
+<span id="cb14-313"><a href="#cb14-313" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ</span></span>
+<span id="cb14-314"><a href="#cb14-314" tabindex="-1"></a><span class="co">#                 + λ_i^L + λ_j^M + λ_k^N</span></span>
+<span id="cb14-315"><a href="#cb14-315" tabindex="-1"></a><span class="co">#                 + λ_{ij}^{LM} + λ_{jk}^{MN}</span></span>
+<span id="cb14-316"><a href="#cb14-316" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-317"><a href="#cb14-317" tabindex="-1"></a><span class="co">#     → includes L–M and M–N interactions, but no L–N or L–M–N</span></span>
+<span id="cb14-318"><a href="#cb14-318" tabindex="-1"></a><span class="co">#       interactions, corresponding to X_{t+1} ⟂ X_{t-1} | X_t.</span></span>
+<span id="cb14-319"><a href="#cb14-319" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-320"><a href="#cb14-320" tabindex="-1"></a><span class="co">#   H1 (saturated three-way):</span></span>
+<span id="cb14-321"><a href="#cb14-321" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ + all main effects + all interactions</span></span>
+<span id="cb14-322"><a href="#cb14-322" tabindex="-1"></a><span class="co">#                 = L * M * N in loglm() formula notation.</span></span>
 <span id="cb14-323"><a href="#cb14-323" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-324"><a href="#cb14-324" tabindex="-1"></a><span class="co">#   H1 (saturated three-way):</span></span>
-<span id="cb14-325"><a href="#cb14-325" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ + all main effects + all interactions</span></span>
-<span id="cb14-326"><a href="#cb14-326" tabindex="-1"></a><span class="co">#                 = L * M * N in loglm() formula notation.</span></span>
-<span id="cb14-327"><a href="#cb14-327" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-328"><a href="#cb14-328" tabindex="-1"></a><span class="co"># LR test:</span></span>
-<span id="cb14-329"><a href="#cb14-329" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
-<span id="cb14-330"><a href="#cb14-330" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
-<span id="cb14-331"><a href="#cb14-331" tabindex="-1"></a><span class="co">#   p   = 1 - F_χ²(G^2; df).</span></span>
-<span id="cb14-332"><a href="#cb14-332" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-333"><a href="#cb14-333" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-334"><a href="#cb14-334" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) &quot;Statistical Inference about Markov</span></span>
-<span id="cb14-335"><a href="#cb14-335" tabindex="-1"></a><span class="co">#   Chains&quot;, Annals of Mathematical Statistics.</span></span>
-<span id="cb14-336"><a href="#cb14-336" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) Discrete Multivariate</span></span>
-<span id="cb14-337"><a href="#cb14-337" tabindex="-1"></a><span class="co">#   Analysis, MIT Press.</span></span>
-<span id="cb14-338"><a href="#cb14-338" tabindex="-1"></a><span class="co">#   Goodman (1971) &quot;The Analysis of Multidimensional Contingency</span></span>
-<span id="cb14-339"><a href="#cb14-339" tabindex="-1"></a><span class="co">#   Tables&quot;, Technometrics.</span></span>
+<span id="cb14-324"><a href="#cb14-324" tabindex="-1"></a><span class="co"># LR test:</span></span>
+<span id="cb14-325"><a href="#cb14-325" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
+<span id="cb14-326"><a href="#cb14-326" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
+<span id="cb14-327"><a href="#cb14-327" tabindex="-1"></a><span class="co">#   p   = 1 - F_χ²(G^2; df).</span></span>
+<span id="cb14-328"><a href="#cb14-328" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-329"><a href="#cb14-329" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-330"><a href="#cb14-330" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) &quot;Statistical Inference about Markov</span></span>
+<span id="cb14-331"><a href="#cb14-331" tabindex="-1"></a><span class="co">#   Chains&quot;, Annals of Mathematical Statistics.</span></span>
+<span id="cb14-332"><a href="#cb14-332" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) Discrete Multivariate</span></span>
+<span id="cb14-333"><a href="#cb14-333" tabindex="-1"></a><span class="co">#   Analysis, MIT Press.</span></span>
+<span id="cb14-334"><a href="#cb14-334" tabindex="-1"></a><span class="co">#   Goodman (1971) &quot;The Analysis of Multidimensional Contingency</span></span>
+<span id="cb14-335"><a href="#cb14-335" tabindex="-1"></a><span class="co">#   Tables&quot;, Technometrics.</span></span>
+<span id="cb14-336"><a href="#cb14-336" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-337"><a href="#cb14-337" tabindex="-1"></a></span>
+<span id="cb14-338"><a href="#cb14-338" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-339"><a href="#cb14-339" tabindex="-1"></a><span class="co"># Section 7b: 1 vs 2 order (X_{t-2}, X_{t-1}, X_t)</span></span>
 <span id="cb14-340"><a href="#cb14-340" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-341"><a href="#cb14-341" tabindex="-1"></a></span>
-<span id="cb14-342"><a href="#cb14-342" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-343"><a href="#cb14-343" tabindex="-1"></a><span class="co"># Section 8: 1 vs 2 order (X_{t-2}, X_{t-1}, X_t)</span></span>
-<span id="cb14-344"><a href="#cb14-344" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-345"><a href="#cb14-345" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-346"><a href="#cb14-346" tabindex="-1"></a><span class="co">#   Test whether X_{t} depends on X_{t-2k} given X_{t-k}:</span></span>
-<span id="cb14-347"><a href="#cb14-347" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-348"><a href="#cb14-348" tabindex="-1"></a><span class="co">#       H0 (1st-order): N ⟂ L | M</span></span>
-<span id="cb14-349"><a href="#cb14-349" tabindex="-1"></a><span class="co">#       H1 (2nd-order): N depends on both M and L</span></span>
-<span id="cb14-350"><a href="#cb14-350" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-351"><a href="#cb14-351" tabindex="-1"></a><span class="co"># Models (log-linear):</span></span>
-<span id="cb14-352"><a href="#cb14-352" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-353"><a href="#cb14-353" tabindex="-1"></a><span class="co">#   H0: log μ_LMN = L + M + N + L:M + M:N</span></span>
-<span id="cb14-354"><a href="#cb14-354" tabindex="-1"></a><span class="co">#   H1: log μ_LMN = L * M * N</span></span>
+<span id="cb14-341"><a href="#cb14-341" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-342"><a href="#cb14-342" tabindex="-1"></a><span class="co">#   Test whether X_{t} depends on X_{t-2k} given X_{t-k}:</span></span>
+<span id="cb14-343"><a href="#cb14-343" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-344"><a href="#cb14-344" tabindex="-1"></a><span class="co">#       H0 (1st-order): N ⟂ L | M</span></span>
+<span id="cb14-345"><a href="#cb14-345" tabindex="-1"></a><span class="co">#       H1 (2nd-order): N depends on both M and L</span></span>
+<span id="cb14-346"><a href="#cb14-346" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-347"><a href="#cb14-347" tabindex="-1"></a><span class="co"># Models (log-linear):</span></span>
+<span id="cb14-348"><a href="#cb14-348" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-349"><a href="#cb14-349" tabindex="-1"></a><span class="co">#   H0: log μ_LMN = L + M + N + L:M + M:N</span></span>
+<span id="cb14-350"><a href="#cb14-350" tabindex="-1"></a><span class="co">#   H1: log μ_LMN = L * M * N</span></span>
+<span id="cb14-351"><a href="#cb14-351" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-352"><a href="#cb14-352" tabindex="-1"></a><span class="co"># LR statistic:</span></span>
+<span id="cb14-353"><a href="#cb14-353" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1)</span></span>
+<span id="cb14-354"><a href="#cb14-354" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1)</span></span>
 <span id="cb14-355"><a href="#cb14-355" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-356"><a href="#cb14-356" tabindex="-1"></a><span class="co"># LR statistic:</span></span>
-<span id="cb14-357"><a href="#cb14-357" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1)</span></span>
-<span id="cb14-358"><a href="#cb14-358" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1)</span></span>
-<span id="cb14-359"><a href="#cb14-359" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-360"><a href="#cb14-360" tabindex="-1"></a><span class="co"># Citations:</span></span>
-<span id="cb14-361"><a href="#cb14-361" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957)</span></span>
-<span id="cb14-362"><a href="#cb14-362" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007)</span></span>
-<span id="cb14-363"><a href="#cb14-363" tabindex="-1"></a><span class="co">#   Goodman (1971)</span></span>
+<span id="cb14-356"><a href="#cb14-356" tabindex="-1"></a><span class="co"># Citations:</span></span>
+<span id="cb14-357"><a href="#cb14-357" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957)</span></span>
+<span id="cb14-358"><a href="#cb14-358" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007)</span></span>
+<span id="cb14-359"><a href="#cb14-359" tabindex="-1"></a><span class="co">#   Goodman (1971)</span></span>
+<span id="cb14-360"><a href="#cb14-360" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-361"><a href="#cb14-361" tabindex="-1"></a></span>
+<span id="cb14-362"><a href="#cb14-362" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-363"><a href="#cb14-363" tabindex="-1"></a><span class="co"># Section 8: Ergodicity diagnostic (irreducibility &amp; aperiodicity)</span></span>
 <span id="cb14-364"><a href="#cb14-364" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-365"><a href="#cb14-365" tabindex="-1"></a></span>
-<span id="cb14-366"><a href="#cb14-366" tabindex="-1"></a></span>
-<span id="cb14-367"><a href="#cb14-367" tabindex="-1"></a></span>
-<span id="cb14-368"><a href="#cb14-368" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-369"><a href="#cb14-369" tabindex="-1"></a><span class="co"># Section 9: Ergodicity diagnostic (irreducibility &amp; aperiodicity)</span></span>
-<span id="cb14-370"><a href="#cb14-370" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-371"><a href="#cb14-371" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-372"><a href="#cb14-372" tabindex="-1"></a><span class="co">#   Provide diagnostics for:</span></span>
-<span id="cb14-373"><a href="#cb14-373" tabindex="-1"></a><span class="co">#     - irreducibility (all states communicate),</span></span>
-<span id="cb14-374"><a href="#cb14-374" tabindex="-1"></a><span class="co">#     - aperiodicity (no deterministic cycles),</span></span>
-<span id="cb14-375"><a href="#cb14-375" tabindex="-1"></a><span class="co">#   using powers of the transition matrix P.</span></span>
+<span id="cb14-365"><a href="#cb14-365" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-366"><a href="#cb14-366" tabindex="-1"></a><span class="co">#   Provide diagnostics for:</span></span>
+<span id="cb14-367"><a href="#cb14-367" tabindex="-1"></a><span class="co">#     - irreducibility (all states communicate),</span></span>
+<span id="cb14-368"><a href="#cb14-368" tabindex="-1"></a><span class="co">#     - aperiodicity (no deterministic cycles),</span></span>
+<span id="cb14-369"><a href="#cb14-369" tabindex="-1"></a><span class="co">#   using powers of the transition matrix P.</span></span>
+<span id="cb14-370"><a href="#cb14-370" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-371"><a href="#cb14-371" tabindex="-1"></a><span class="co"># Approach:</span></span>
+<span id="cb14-372"><a href="#cb14-372" tabindex="-1"></a><span class="co">#   - Construct adjacency matrix A with A_ij = 1 if P_ij &gt; 0.</span></span>
+<span id="cb14-373"><a href="#cb14-373" tabindex="-1"></a><span class="co">#   - Compute reachability via powers of A.</span></span>
+<span id="cb14-374"><a href="#cb14-374" tabindex="-1"></a><span class="co">#   - For aperiodicity, check whether some power of P has strictly</span></span>
+<span id="cb14-375"><a href="#cb14-375" tabindex="-1"></a><span class="co">#     positive diagonal entries for all states.</span></span>
 <span id="cb14-376"><a href="#cb14-376" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-377"><a href="#cb14-377" tabindex="-1"></a><span class="co"># Approach:</span></span>
-<span id="cb14-378"><a href="#cb14-378" tabindex="-1"></a><span class="co">#   - Construct adjacency matrix A with A_ij = 1 if P_ij &gt; 0.</span></span>
-<span id="cb14-379"><a href="#cb14-379" tabindex="-1"></a><span class="co">#   - Compute reachability via powers of A.</span></span>
-<span id="cb14-380"><a href="#cb14-380" tabindex="-1"></a><span class="co">#   - For aperiodicity, check whether some power of P has strictly</span></span>
-<span id="cb14-381"><a href="#cb14-381" tabindex="-1"></a><span class="co">#     positive diagonal entries for all states.</span></span>
-<span id="cb14-382"><a href="#cb14-382" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-383"><a href="#cb14-383" tabindex="-1"></a><span class="co"># Interpretation:</span></span>
-<span id="cb14-384"><a href="#cb14-384" tabindex="-1"></a><span class="co">#   If some k ≤ max_power has all entries of A^k &gt; 0, the chain</span></span>
-<span id="cb14-385"><a href="#cb14-385" tabindex="-1"></a><span class="co">#   is regular (thus irreducible and aperiodic).</span></span>
-<span id="cb14-386"><a href="#cb14-386" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-387"><a href="#cb14-387" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-388"><a href="#cb14-388" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on long-run properties of Markov chains.</span></span>
-<span id="cb14-389"><a href="#cb14-389" tabindex="-1"></a><span class="co">#   Standard Markov chain theory for ergodicity criteria.</span></span>
-<span id="cb14-390"><a href="#cb14-390" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-391"><a href="#cb14-391" tabindex="-1"></a></span>
-<span id="cb14-392"><a href="#cb14-392" tabindex="-1"></a></span>
-<span id="cb14-393"><a href="#cb14-393" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-394"><a href="#cb14-394" tabindex="-1"></a><span class="co"># Section 10: Equality of transition matrices between eras</span></span>
-<span id="cb14-395"><a href="#cb14-395" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-396"><a href="#cb14-396" tabindex="-1"></a></span>
-<span id="cb14-397"><a href="#cb14-397" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-398"><a href="#cb14-398" tabindex="-1"></a><span class="co">#   Compare transition structures between Era 1 and Era 2 on the</span></span>
-<span id="cb14-399"><a href="#cb14-399" tabindex="-1"></a><span class="co">#   shared class set (core, semiperiphery, periphery), using a</span></span>
-<span id="cb14-400"><a href="#cb14-400" tabindex="-1"></a><span class="co">#   4-way contingency table with factors:</span></span>
-<span id="cb14-401"><a href="#cb14-401" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-402"><a href="#cb14-402" tabindex="-1"></a><span class="co">#     Era (E), Origin (O), Destination (D)</span></span>
-<span id="cb14-403"><a href="#cb14-403" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-404"><a href="#cb14-404" tabindex="-1"></a><span class="co"># Log-linear setup:</span></span>
-<span id="cb14-405"><a href="#cb14-405" tabindex="-1"></a><span class="co">#   H0: common Markov structure across eras:</span></span>
-<span id="cb14-406"><a href="#cb14-406" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + λ_e^E + λ_i^O + λ_j^D + λ_{ij}^{OD}</span></span>
-<span id="cb14-407"><a href="#cb14-407" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-408"><a href="#cb14-408" tabindex="-1"></a><span class="co">#   H1: era-specific OD association:</span></span>
-<span id="cb14-409"><a href="#cb14-409" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + all main effects + all interactions</span></span>
-<span id="cb14-410"><a href="#cb14-410" tabindex="-1"></a><span class="co">#                   = E * O * D</span></span>
-<span id="cb14-411"><a href="#cb14-411" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-412"><a href="#cb14-412" tabindex="-1"></a><span class="co"># LR test:</span></span>
-<span id="cb14-413"><a href="#cb14-413" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
-<span id="cb14-414"><a href="#cb14-414" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1).</span></span>
-<span id="cb14-415"><a href="#cb14-415" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-416"><a href="#cb14-416" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb14-417"><a href="#cb14-417" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007), Goodman (1971),</span></span>
-<span id="cb14-418"><a href="#cb14-418" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) on comparing Markov structures</span></span>
-<span id="cb14-419"><a href="#cb14-419" tabindex="-1"></a><span class="co">#   across groups/periods.</span></span>
-<span id="cb14-420"><a href="#cb14-420" tabindex="-1"></a></span>
-<span id="cb14-421"><a href="#cb14-421" tabindex="-1"></a></span>
-<span id="cb14-422"><a href="#cb14-422" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-423"><a href="#cb14-423" tabindex="-1"></a><span class="co"># Section 11: Balanced-panel attrition diagnostic</span></span>
-<span id="cb14-424"><a href="#cb14-424" tabindex="-1"></a><span class="do">############################################################</span></span>
-<span id="cb14-425"><a href="#cb14-425" tabindex="-1"></a></span>
-<span id="cb14-426"><a href="#cb14-426" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb14-427"><a href="#cb14-427" tabindex="-1"></a><span class="co">#   Compare class distributions for:</span></span>
-<span id="cb14-428"><a href="#cb14-428" tabindex="-1"></a><span class="co">#     - all countries in a year vs</span></span>
-<span id="cb14-429"><a href="#cb14-429" tabindex="-1"></a><span class="co">#     - countries retained in the balanced panel for the era.</span></span>
-<span id="cb14-430"><a href="#cb14-430" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-431"><a href="#cb14-431" tabindex="-1"></a><span class="co">#   This checks whether panel restrictions introduce compositional</span></span>
-<span id="cb14-432"><a href="#cb14-432" tabindex="-1"></a><span class="co">#   bias in the Markov estimates (Dezzani 2002; Babones &amp; Dezzani</span></span>
-<span id="cb14-433"><a href="#cb14-433" tabindex="-1"></a><span class="co">#   2008).</span></span>
-<span id="cb14-434"><a href="#cb14-434" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb14-435"><a href="#cb14-435" tabindex="-1"></a><span class="co"># INTERPRETATION:</span></span>
-<span id="cb14-436"><a href="#cb14-436" tabindex="-1"></a><span class="co">#   A chi-square comparison of class distributions for all</span></span>
-<span id="cb14-437"><a href="#cb14-437" tabindex="-1"></a><span class="co">#   countries versus balanced-panel countries in the first</span></span>
-<span id="cb14-438"><a href="#cb14-438" tabindex="-1"></a><span class="co">#   snapshot year provides a diagnostic for potential attrition</span></span>
-<span id="cb14-439"><a href="#cb14-439" tabindex="-1"></a><span class="co">#   bias (Dezzani 2002; Babones &amp; Dezzani 2008).</span></span></code></pre></div>
+<span id="cb14-377"><a href="#cb14-377" tabindex="-1"></a><span class="co"># Interpretation:</span></span>
+<span id="cb14-378"><a href="#cb14-378" tabindex="-1"></a><span class="co">#   If some k ≤ max_power has all entries of A^k &gt; 0, the chain</span></span>
+<span id="cb14-379"><a href="#cb14-379" tabindex="-1"></a><span class="co">#   is regular (thus irreducible and aperiodic).</span></span>
+<span id="cb14-380"><a href="#cb14-380" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-381"><a href="#cb14-381" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-382"><a href="#cb14-382" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on long-run properties of Markov chains.</span></span>
+<span id="cb14-383"><a href="#cb14-383" tabindex="-1"></a><span class="co">#   Standard Markov chain theory for ergodicity criteria.</span></span>
+<span id="cb14-384"><a href="#cb14-384" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-385"><a href="#cb14-385" tabindex="-1"></a></span>
+<span id="cb14-386"><a href="#cb14-386" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-387"><a href="#cb14-387" tabindex="-1"></a><span class="co"># Section 9: Equality of transition matrices between eras</span></span>
+<span id="cb14-388"><a href="#cb14-388" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-389"><a href="#cb14-389" tabindex="-1"></a></span>
+<span id="cb14-390"><a href="#cb14-390" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-391"><a href="#cb14-391" tabindex="-1"></a><span class="co">#   Compare transition structures between Era 1 and Era 2 on the</span></span>
+<span id="cb14-392"><a href="#cb14-392" tabindex="-1"></a><span class="co">#   shared class set (core, semiperiphery, periphery), using a</span></span>
+<span id="cb14-393"><a href="#cb14-393" tabindex="-1"></a><span class="co">#   4-way contingency table with factors:</span></span>
+<span id="cb14-394"><a href="#cb14-394" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-395"><a href="#cb14-395" tabindex="-1"></a><span class="co">#     Era (E), Origin (O), Destination (D)</span></span>
+<span id="cb14-396"><a href="#cb14-396" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-397"><a href="#cb14-397" tabindex="-1"></a><span class="co"># Log-linear setup:</span></span>
+<span id="cb14-398"><a href="#cb14-398" tabindex="-1"></a><span class="co">#   H0: common Markov structure across eras:</span></span>
+<span id="cb14-399"><a href="#cb14-399" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + λ_e^E + λ_i^O + λ_j^D + λ_{ij}^{OD}</span></span>
+<span id="cb14-400"><a href="#cb14-400" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-401"><a href="#cb14-401" tabindex="-1"></a><span class="co">#   H1: era-specific OD association:</span></span>
+<span id="cb14-402"><a href="#cb14-402" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + all main effects + all interactions</span></span>
+<span id="cb14-403"><a href="#cb14-403" tabindex="-1"></a><span class="co">#                   = E * O * D</span></span>
+<span id="cb14-404"><a href="#cb14-404" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-405"><a href="#cb14-405" tabindex="-1"></a><span class="co"># LR test:</span></span>
+<span id="cb14-406"><a href="#cb14-406" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
+<span id="cb14-407"><a href="#cb14-407" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1).</span></span>
+<span id="cb14-408"><a href="#cb14-408" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-409"><a href="#cb14-409" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb14-410"><a href="#cb14-410" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007), Goodman (1971),</span></span>
+<span id="cb14-411"><a href="#cb14-411" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) on comparing Markov structures</span></span>
+<span id="cb14-412"><a href="#cb14-412" tabindex="-1"></a><span class="co">#   across groups/periods.</span></span>
+<span id="cb14-413"><a href="#cb14-413" tabindex="-1"></a></span>
+<span id="cb14-414"><a href="#cb14-414" tabindex="-1"></a></span>
+<span id="cb14-415"><a href="#cb14-415" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-416"><a href="#cb14-416" tabindex="-1"></a><span class="co"># Section 10: Balanced-panel attrition diagnostic</span></span>
+<span id="cb14-417"><a href="#cb14-417" tabindex="-1"></a><span class="do">############################################################</span></span>
+<span id="cb14-418"><a href="#cb14-418" tabindex="-1"></a></span>
+<span id="cb14-419"><a href="#cb14-419" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb14-420"><a href="#cb14-420" tabindex="-1"></a><span class="co">#   Compare class distributions for:</span></span>
+<span id="cb14-421"><a href="#cb14-421" tabindex="-1"></a><span class="co">#     - all countries in a year vs</span></span>
+<span id="cb14-422"><a href="#cb14-422" tabindex="-1"></a><span class="co">#     - countries retained in the balanced panel for the era.</span></span>
+<span id="cb14-423"><a href="#cb14-423" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-424"><a href="#cb14-424" tabindex="-1"></a><span class="co">#   This checks whether panel restrictions introduce compositional</span></span>
+<span id="cb14-425"><a href="#cb14-425" tabindex="-1"></a><span class="co">#   bias in the Markov estimates (Dezzani 2002; Babones &amp; Dezzani</span></span>
+<span id="cb14-426"><a href="#cb14-426" tabindex="-1"></a><span class="co">#   2008).</span></span>
+<span id="cb14-427"><a href="#cb14-427" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-428"><a href="#cb14-428" tabindex="-1"></a><span class="co"># INTERPRETATION:</span></span>
+<span id="cb14-429"><a href="#cb14-429" tabindex="-1"></a><span class="co">#   A chi-square comparison of class distributions for all</span></span>
+<span id="cb14-430"><a href="#cb14-430" tabindex="-1"></a><span class="co">#   countries versus balanced-panel countries in the first</span></span>
+<span id="cb14-431"><a href="#cb14-431" tabindex="-1"></a><span class="co">#   snapshot year provides a diagnostic for potential attrition</span></span>
+<span id="cb14-432"><a href="#cb14-432" tabindex="-1"></a><span class="co">#   bias (Dezzani 2002; Babones &amp; Dezzani 2008).</span></span></code></pre></div>
 </div>
 <div id="references" class="section level3" number="12">
 <h3><span class="header-section-number">12</span> References</h3>
