@@ -1913,14 +1913,11 @@ border-radius: 0px;
 </ul>
 </div>
 
-
-
 <h1 class="title toc-ignore">Google Scholar Webscrape</h1>
-<h3 class="subtitle">(A work in progress)</h3>
-<h4 class="author">Jared Walker</h4>
+<h3 class="subtitle"></h3>
+<h4 class="author">Jared Walker & ChatGPT</h4>
 
 </div>
-
 
 <style>
 body {
@@ -1956,7 +1953,7 @@ library(dplyr)
 library(tibble)</code></pre>
 </div>
 <div id="build-google-scholar-url" class="section level3">
-<h3>Build Google Scholar URL</h3>
+<h3>Construct URL Function</h3>
 <pre class="r"><code># Query: allintitle: disinformation
 # Years: 2000–2025
 # Pages: 50 (10 results per page)
@@ -2017,7 +2014,7 @@ build_scholar_url &lt;- function(start) {
 urls   &lt;- map_chr(starts, build_scholar_url)</code></pre>
 </div>
 <div id="run-function" class="section level3">
-<h3>Run Function</h3>
+<h3>Run Functions</h3>
 <pre class="r"><code># Note - Throttling is commented out for the purose of knitting.
 results &lt;- map_dfr(
   urls,
