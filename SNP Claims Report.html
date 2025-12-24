@@ -4,90 +4,103 @@
   <meta charset="UTF-8">
   <title>SNP Claims Outlier Report</title>
 
-  <style>
-    body {
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      margin: 40px auto;
-      max-width: 1100px;
-      line-height: 1.6;
-      color: #222;
-      background-color: #ffffff;
-    }
+<style>
+  /* Ensure predictable sizing */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-    h1, h2, h3, h4 {
-      color: #2c3e50;
-    }
+  body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 24px;                 /* ALWAYS creates margin */
+    background-color: #f0f2f5;     /* subtle frame contrast */
+    color: #222;
+  }
 
-    h1 {
-      border-bottom: 3px solid #2c3e50;
-      padding-bottom: 10px;
-      margin-bottom: 5px;
-    }
+  /* Fixed document frame */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #ffffff;
+    line-height: 1.6;
 
-    .subtitle {
-      font-size: 1.05em;
-      color: #555;
-      margin-bottom: 25px;
-    }
+    /* Visual boundary (choose one or both) */
+    border: 1px solid #ddd;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
 
-    h2 {
-      margin-top: 40px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 6px;
-    }
+  h1, h2, h3, h4 {
+    color: #2c3e50;
+  }
 
-    h3 { margin-top: 25px; }
-    h4 { margin-top: 22px; }
+  h1 {
+    border-bottom: 3px solid #2c3e50;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+  }
 
-    p { margin: 12px 0; }
+  .subtitle {
+    font-size: 1.05em;
+    color: #555;
+    margin-bottom: 25px;
+  }
 
-    ul { margin-left: 25px; }
+  h2 {
+    margin-top: 40px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+  }
 
-    .note {
-      background: #f4f6f8;
-      border-left: 6px solid #2c3e50;
-      padding: 12px 18px;
-      margin: 20px 0;
-    }
+  h3 { margin-top: 25px; }
+  h4 { margin-top: 22px; }
 
-    .rationale {
-      background: #f9fbfd;
-      border-left: 6px solid #4b77be;
-      padding: 12px 18px;
-      margin: 20px 0;
-    }
+  p { margin: 12px 0; }
 
-    pre {
-      background: #f6f8fa;
-      padding: 16px;
-      overflow-x: auto;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      font-size: 14px;
-      margin-top: 10px;
-    }
+  ul { margin-left: 25px; }
 
-    code {
-      font-family: Consolas, "Courier New", monospace;
-    }
+  .note {
+    background: #f4f6f8;
+    border-left: 6px solid #2c3e50;
+    padding: 12px 18px;
+    margin: 20px 0;
+  }
 
-    .chunk-note {
-      font-size: 0.95em;
-      color: #555;
-      margin: 6px 0 10px 0;
-    }
+  .rationale {
+    background: #f9fbfd;
+    border-left: 6px solid #4b77be;
+    padding: 12px 18px;
+    margin: 20px 0;
+  }
 
-    footer {
-      margin-top: 60px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-      font-size: 0.9em;
-      color: #666;
-    }
-  </style>
+  pre {
+    background: #f6f8fa;
+    padding: 16px;
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  code {
+    font-family: Consolas, "Courier New", monospace;
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+    font-size: 0.9em;
+    color: #666;
+  }
+</style>
+
 </head>
 
 <body>
+  <div class="page">
 
 <h1>SNP Claims Outlier Report</h1>
 
@@ -433,5 +446,6 @@ Prepared by Jared Walker, Child Nutrition Programs<br>
 For internal documentation and audit support.
 </footer>
 
+  </div>
 </body>
 </html>
