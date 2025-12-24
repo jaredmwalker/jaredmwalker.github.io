@@ -8,10 +8,11 @@
     <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 
     <style>
+      /* ---------- MOBILE TWEAKS ---------- */
       @media screen and (max-width: 736px) {
-        
+
         .banner h2 {
-          font-size: 22px !important; 
+          font-size: 22px !important;
           line-height: 1.4 !important;
         }
 
@@ -43,6 +44,20 @@
           margin-top: 20px !important;
         }
       }
+
+      /* ---------- FEATURED RECTANGULAR IMAGE ---------- */
+
+      .rect-image {
+        display: inline-block;
+      }
+
+      .rect-image img {
+        display: block;
+        width: 525px;
+        height: 325px;
+        object-fit: cover;
+        border-radius: 0;
+      }
     </style>
   </head>
 
@@ -60,6 +75,7 @@
 
       <section class="banner style3 orient-left content-align-top onload-image-fade-in onload-content-fade-right"
                style="padding-bottom:20px;">
+
         <div class="content align-top">
 
           <center>
@@ -69,39 +85,38 @@
           </center>
 
           <p class="content style2"
-             align="left"
              style="font-size:18px; margin-top:5px; margin-bottom:5px;">
             I specialize in data collection, analysis, reporting, and the
-            automation of data processes. In my role as Data Specialist for 
-            the Utah State Board of Education, I work extensively with my 
+            automation of data processes. In my role as Data Specialist for
+            the Utah State Board of Education, I work extensively with my
             colleagues to collect, clean, and organize data for the
-            administration of Child Nutrition Programs. I serve as 
+            administration of Child Nutrition Programs. I serve as
             primary point of contact on half a dozen routine reports and
-            maintain standard operating procedures to ensure compliance with 
-            state and federal law. I recently completed a Master of 
-            International Security at Utah State University. Examples of 
+            maintain standard operating procedures to ensure compliance with
+            state and federal law. I recently completed a Master of
+            International Security at Utah State University. Examples of
             my work can be found in the gallery below.
           </p>
 
           <ul class="actions stacked" style="margin-top:5px;">
-           
-                    <center>
-                      <a href="Contact.html" class="button smooth-scroll-middle">Contact</a>
-                      <a href= "Jared Walker Resume 20251224.pdf" target="_blank" class="button smooth-scroll-middle">Résumé</a>
-                    </center>
+            <center>
+              <a href="Contact.html" class="button smooth-scroll-middle">Contact</a>
+              <a href="Jared Walker Resume 20251224.pdf" target="_blank" class="button smooth-scroll-middle">Résumé</a>
+            </center>
           </ul>
         </div>
 
-        <img
-          src="images/AI Power BI Sample.jpg"
-          alt="Power BI Sample"
-          height="325"
-          width="525"
-        />
+        <article>
+          <a href="TopCountries.html" class="rect-image">
+            <img src="images/Top Countries (1).jpg" alt="Top Countries" />
+          </a>
+        </article>
+
       </section>
 
       <section class="wrapper style1 align-top orient-top">
         <div class="outer">
+
           <center>
             <h2 style="font-size:30px; padding-top:50px; padding-bottom:20px;">
               <font color="#505050">Scroll & Click →</font>
@@ -118,31 +133,13 @@
 
             <article>
               <a href="Markov-Model.html" class="image">
-                <img src="images/Markov.jpg" alt="Markov" height="300" width="600" />
+                <img src="images/Markov.jpg" alt="Markov" height="300" width="500" />
               </a>
             </article>
 
             <article>
-              <a href="TopCountries.html" class="image">
-                <img src="images/Top Countries (1).jpg" alt="Top Countries" height="300" width="300" />
-              </a>
-            </article>
-
-            <article>
-              <a href="SNP Claims Report.html" class="image">
-                <img src="images/SNP Outliers Report (2).jpg" alt="SNP Outliers Report Visualization" />
-              </a>
-            </article>
-
-            <article>
-              <a href="https://usu-my.sharepoint.com/:x:/g/personal/a02190665_aggies_usu_edu/EdLVzaYDYbVEsgHnIt_pgfMBwy_dwLlMLPmpHItB7U8APA?e=jU1TdP" class="image">
-                <img src="images/Excel (Variance Report).jpg" alt="Variance Report" height="300" width="500" />
-              </a>
-            </article>
-
-            <article>
-              <a href="FNS-905.html" class="image">
-                <img src="images/FNS script.jpg" alt="FNS Script" height="300" width="600" />
+              <a href="Disinformation-API-Based-Data-Retrieval.html" class="image">
+                <img src="images/API.jpg" alt="API" height="300" width="500" />
               </a>
             </article>
 
@@ -151,12 +148,32 @@
                 <img src="images/Breakfast Map (1).jpg" alt="Breakfast Map" height="300" width="500" />
               </a>
             </article>
-            
+
+            <!--<article>
+              <a href="TopCountries.html" class="image">
+                <img src="images/Top Countries (1).jpg" alt="Top Countries" height="300" width="300" />
+              </a>
+            </article>-->
+
             <article>
-              <a href="Disinformation-API-Based-Data-Retrieval.html" class="image">
-                <img src="images/API.jpg" alt="API" height="300" width="500" />
+              <a href="SNP Claims Report.html" class="image">
+                <img src="images/SNP Outliers Report (2).jpg" alt="SNP Outliers Report Visualization" />
               </a>
             </article>
+
+            <article>
+              <a href="https://usu-my.sharepoint.com/:x:/g/personal/a02190665_aggies_usu_edu/EdLVzaYDYbVEsgHnIt_pgfMBwy_dwLlMLPmpHItB7U8APA" class="image">
+                <img src="images/Excel (Variance Report).jpg" alt="Variance Report" height="300" width="500" />
+              </a>
+            </article>
+
+            <article>
+              <a href="FNS-905.html" class="image">
+                <img src="images/FNS script.jpg" alt="FNS Script" height="300" width="500" />
+              </a>
+            </article>
+
+
 
             <article>
               <a href="IncomeInequality.html" class="image">
@@ -164,26 +181,17 @@
               </a>
             </article>
 
-            <!--<article>
-              <a href="kpi.html" class="image">
-                <img src="images/kpi.jpg" alt="KPI" height="300" width="500" />
-              </a>
-            </article>
+            
 
-
-            <article>
-              <a href="CINC.html" class="image">
-                <img src="images/CINC (1).jpg" alt="CINC" height="300" width="500" />
-              </a>
-            </article>-->
+            
 
           </div>
         </div>
       </section>
 
-      <footer class="wrapper style1 align-center" style="padding: 0px 0;">
+      <footer class="wrapper style1 align-center" style="padding: 0;">
         <div class="inner">
-            <p>&copy; Jared Walker. All rights reserved.</p>
+          <p>&copy; Jared Walker. All rights reserved.</p>
         </div>
       </footer>
 
@@ -199,4 +207,3 @@
 
   </body>
 </html>
-
