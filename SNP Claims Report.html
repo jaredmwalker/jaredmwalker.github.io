@@ -5,102 +5,175 @@
   <title>SNP Claims Outlier Report</title>
 
 <style>
-  /* Ensure predictable sizing */
-  *, *::before, *::after {
-    box-sizing: border-box;
+
+/* ===== TOC ===== */
+.toc-container {
+  position: sticky;
+  top: 24px;
+  max-height: fit-content;
+
+  overflow-y: auto;
+
+  background: #f9fbfd;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 0.92em;
+}
+
+.toc-container h2 {
+  margin-top: 0;
+  font-size: 1.05em;
+  border-bottom: none;
+}
+
+.toc-container ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc-container li {
+  margin: 6px 0;
+}
+
+.toc-container a {
+  text-decoration: none;
+  color: #2c3e50;
+}
+
+.toc-container a:hover {
+  text-decoration: underline;
+}
+
+.toc-container a.active {
+  font-weight: 600;
+  color: #1f4bd8;
+}
+
+/* Layout: TOC + content */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+}
+
+/* Mobile fallback */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
   }
-
-  body {
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    margin: 0;
-    padding: 24px;                 /* ALWAYS creates margin */
-    background-color: #f0f2f5;     /* subtle frame contrast */
-    color: #222;
+  .toc-container {
+    position: relative;
+    max-height: none;
   }
+}
 
-  /* Fixed document frame */
-  .page {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px;
-    background-color: #ffffff;
-    line-height: 1.6;
+/* Ensure predictable sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-    /* Visual boundary (choose one or both) */
-    border: 1px solid #ddd;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  }
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 24px;
+  background-color: #f0f2f5;
+  color: #222;
+}
 
-  h1, h2, h3, h4 {
-    color: #2c3e50;
-  }
+/* Fixed document frame */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #ffffff;
+  line-height: 1.6;
+  border: 1px solid #ddd;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
 
-  h1 {
-    border-bottom: 3px solid #2c3e50;
-    padding-bottom: 10px;
-    margin-bottom: 5px;
-  }
+h1, h2, h3, h4 {
+  color: #2c3e50;
+}
 
-  .subtitle {
-    font-size: 1.05em;
-    color: #555;
-    margin-bottom: 25px;
-  }
+h1 {
+  border-bottom: 3px solid #2c3e50;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+}
 
-  h2 {
-    margin-top: 40px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 6px;
-  }
+.subtitle {
+  font-size: 1.05em;
+  color: #555;
+  margin-bottom: 25px;
+}
 
-  h3 { margin-top: 25px; }
-  h4 { margin-top: 22px; }
+h2 {
+  margin-top: 40px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 6px;
+}
 
-  p { margin: 12px 0; }
+h3 { margin-top: 25px; }
+h4 { margin-top: 22px; }
 
-  ul { margin-left: 25px; }
+p { margin: 12px 0; }
 
-  .note {
-    background: #f4f6f8;
-    border-left: 6px solid #2c3e50;
-    padding: 12px 18px;
-    margin: 20px 0;
-  }
+ul { margin-left: 25px; }
 
-  .rationale {
-    background: #f9fbfd;
-    border-left: 6px solid #4b77be;
-    padding: 12px 18px;
-    margin: 20px 0;
-  }
+.note {
+  background: #f4f6f8;
+  border-left: 6px solid #2c3e50;
+  padding: 12px 18px;
+  margin: 20px 0;
+}
 
-  pre {
-    background: #f6f8fa;
-    padding: 16px;
-    overflow-x: auto;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    margin-top: 10px;
-  }
+.rationale {
+  background: #f9fbfd;
+  border-left: 6px solid #4b77be;
+  padding: 12px 18px;
+  margin: 20px 0;
+}
 
-  code {
-    font-family: Consolas, "Courier New", monospace;
-  }
+pre {
+  background: #f6f8fa;
+  padding: 16px;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  margin-top: 10px;
+}
 
-  footer {
-    margin-top: 60px;
-    padding-top: 20px;
-    border-top: 1px solid #ccc;
-    font-size: 0.9em;
-    color: #666;
-  }
+code {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+footer {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+  font-size: 0.9em;
+  color: #666;
+}
+
 </style>
-
 </head>
 
 <body>
-  <div class="page">
+
+<div class="page">
+  <div class="layout">
+
+    <!-- TOC -->
+    <nav class="toc-container">
+      <h2>Contents</h2>
+      <ul id="toc"></ul>
+    </nav>
+
+    <!-- Main content -->
+    <main>
 
 <h1>SNP Claims Outlier Report</h1>
 
@@ -132,18 +205,18 @@ panel. Two complementary deviation metrics are computed:
   <li><strong>Year-over-year deviation</strong> — deviation from the prior year value.</li>
   <li><strong>Deviation from the mean</strong> — deviation from the 12-month mean.</li>
 </ul>
+
 <hr>
+
 <h2>2. Dispersion Measure: Modified Z-score</h2>
 
 <p>
-Modified z-scores are calculated using <em> mean absolute deviation</em> (from a reference value),
-a robust alternative to standard deviation.
+Modified z-scores are calculated using mean absolute deviation (from a reference value), a robust alternative to standard deviation.
 </p>
 
 <div class="rationale">
 <strong>Statistical Justification:</strong><br>
-Reimbursement data are highly skewed. Standard deviation–based z-scores are sensitive to outliers. Mean absolute deviation (MAD) provides a more stable
-dispersion measure under these conditions.
+Reimbursement data are highly skewed. Standard deviation–based z-scores are sensitive to outliers. Mean absolute deviation (MAD) provides a more stable dispersion measure under these conditions.
 </div>
 
 <h3>Year-over-Year Score</h3>
@@ -158,7 +231,12 @@ dispersion measure under these conditions.
 </ul>
 
 <hr>
-<h2>3. Output</h2>
+
+<h2>3. Expected Output</h2>
+
+
+
+<hr>
 
 <div class="rationale">
 <strong>Interpretation:</strong><br>
@@ -171,19 +249,16 @@ Large absolute values indicate unusual behavior.
 
 <hr>
 
-<h3>Ranking & Tables</h3>
+<h3>Tables</h3>
 
 <ul>
   <li>5 highest and 5 lowest scores per metric per entity are retained for review</li>
-  <li>Top Ten Sponsors — mean and year-over-year</li>
-  <li>Top Ten Sites — mean and year-over-year</li>
-  <li>Tableau visualization table</li>
-  <li>Full sponsor variance table</li>
-  <li>Full site variance table</li>
+  <li>Tableau table</li>
+  <li>Full site-level cross-table</li>
+  <li>Full sponsor-level cross-table</li>
   <li>Raw data retained for traceability</li>
 
 </ul>
-  
 
 <hr>
 
@@ -245,7 +320,7 @@ data1197_s <- read_csv(
   as.data.frame()
 </code></pre>
 
-<h3>4.4 – Site-Level Crosstable Construction</h3>
+<h3>4.4 – Site-Level Crosstable</h3>
 
 <pre><code>
 # Build a rolling 14-month crosstable of reimbursements
@@ -272,7 +347,7 @@ site_level <- data1197_s
 ct_s_ref <- ct_s
 </code></pre>
 
-<h3>4.5 – Outlier Calculations (Site Level)</h3>
+<h3>4.5 – Site-Level Calculations</h3>
 
 <pre><code>
 # Identify the rolling window of monthly columns
@@ -311,7 +386,7 @@ site_var <- ct_s
 site_var_ref <- site_var
 </code></pre>
 
-<h3>4.6 – Top Ten Site-Level Outliers</h3>
+<h3>4.6 – Top Ten Sites</h3>
 
 <pre><code>
 top_yoy_s <- bind_rows(
@@ -325,7 +400,7 @@ top_dm_s <- bind_rows(
 )
 </code></pre>
 
-<h3>4.7 – Sponsor-Level Aggregation & Cross Table Construction</h3>
+<h3>4.7 – Sponsor-Level Cross Table</h3>
 
 <pre><code>
 data1197 <- data1197_s %>%
@@ -349,7 +424,7 @@ ct <- data1197 %>%
   )
 </code></pre>
 
-<h3>4.8 – Outlier Calculations (Sponsor Level)</h3>
+<h3>4.8 – Sponsor-Level Calculations</h3>
 
 <pre><code>
 value_cols <- which(
@@ -387,7 +462,7 @@ spon_var <- ct
 spon_var_ref <- spon_var
 </code></pre>
 
-<h3>4.9 – Top Ten Sponsor-Level Outliers</h3>
+<h3>4.9 – Top Ten Sponsors</h3>
 
 <pre><code>
 top_yoy <- bind_rows(
@@ -401,7 +476,7 @@ top_dm <- bind_rows(
 )
 </code></pre>
 
-<h3>4.10 – Add Sheets & Save Workbook</h3>
+<h3>4.10 – Save Workbook</h3>
 
 <pre><code>
 wb <- createWorkbook()
@@ -447,5 +522,55 @@ For internal documentation and audit support.
 </footer>
 
   </div>
+</body>
+</html>
+
+
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  const toc = document.getElementById("toc");
+  const headings = document.querySelectorAll("main h2, main h3");
+
+  headings.forEach((h, i) => {
+    if (!h.id) {
+      h.id = h.textContent
+        .toLowerCase()
+        .replace(/[^\w]+/g, "-")
+        .replace(/^-+|-+$/g, "") + "-" + i;
+    }
+
+    const li = document.createElement("li");
+    if (h.tagName === "H3") li.style.marginLeft = "16px";
+
+    const a = document.createElement("a");
+    a.href = "#" + h.id;
+    a.textContent = h.textContent;
+
+    li.appendChild(a);
+    toc.appendChild(li);
+  });
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        const link = document.querySelector(`a[href="#${entry.target.id}"]`);
+        if (entry.isIntersecting) {
+          document.querySelectorAll(".toc-container a")
+            .forEach(a => a.classList.remove("active"));
+          if (link) link.classList.add("active");
+        }
+      });
+    },
+    { rootMargin: "-40% 0px -55% 0px" }
+  );
+
+  headings.forEach(h => observer.observe(h));
+})();
+</script>
+
 </body>
 </html>
