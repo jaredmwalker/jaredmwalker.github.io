@@ -12,7 +12,7 @@
 <meta name="author" content="Jared Walker &amp; ChatGPT" />
 
 
-<title>Disinformation</title>
+<title>Disinformation Scholarship</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -4406,8 +4406,8 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Disinformation</h1>
-<h3 class="subtitle">Semantic Scholar API</h3>
+<h1 class="title toc-ignore">Disinformation Scholarship</h1>
+<h3 class="subtitle">Semantic Scholar Retrieval</h3>
 <h4 class="author">Jared Walker &amp; ChatGPT</h4>
 
 </div>
@@ -4438,15 +4438,6 @@ color: #F0F0F0 !important;
 }
 </style>
 
-<pre class="r"><code>knitr::opts_chunk$set(
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  fig.align = &quot;center&quot;,
-  fig.width = 8, 
-  fig.height = 5,
-  dev = &quot;svg&quot; 
-)</code></pre>
 <div id="import" class="section level3">
 <h3>Import</h3>
 <pre class="r"><code>library(httr2)
@@ -4468,21 +4459,33 @@ force_ascii &lt;- function(x) {
   iconv(x, from = &quot;&quot;, to = &quot;ASCII//TRANSLIT&quot;, sub = &quot;&quot;)
 }</code></pre>
 </div>
-<div id="construct-api-function" class="section level3">
-<h3>Construct API function</h3>
-<pre class="r"><code>search_semantic_scholar &lt;- function(query,
-                                    offset = 0,
-                                    limit  = 100,
+<div id="api-search-function" class="section level3">
+<h3>API Search function</h3>
+<pre class="r"><code># Inputs:
+#   query     : Character string containing the search query
+#   offset    : Integer offset for pagination (default = 0)
+#   limit     : Maximum number of records to return per request (≤ 100)
+#   year_min  : Earliest publication year to include
+#   year_max  : Latest publication year to include
+
+search_semantic_scholar &lt;- function(query,
+                                    offset   = 0,
+                                    limit    = 100,
                                     year_min = 2000,
                                     year_max = 2025) {
 
+  # Construct API Request Function
+  # Wrap in tryCatch() to prevent hard failures during knitting
   resp &lt;- tryCatch(
     {
       request(&quot;https://api.semanticscholar.org/graph/v1/paper/search&quot;) |&gt;
+        # Attach query parameters to the request URL
         req_url_query(
           query  = query,
           offset = offset,
           limit  = limit,
+
+          # Explicitly request only required fields to reduce payload size
           fields = paste(
             c(
               &quot;title&quot;,
@@ -4493,22 +4496,33 @@ force_ascii &lt;- function(x) {
             ),
             collapse = &quot;,&quot;
           ),
+
+          # Restrict results to a specified publication years
           year = paste0(year_min, &quot;-&quot;, year_max)
         ) |&gt;
+        # Execute the HTTP request
         req_perform() |&gt;
+        # Parse JSON response body into an R list
         resp_body_json()
     },
+    # On any request or parsing error, return NULL
     error = function(e) return(NULL)
   )
 
+  # Return an empty tibble if no data are present
   if (is.null(resp) || length(resp$data) == 0) {
     return(tibble())
   }
-
+      
+  # Extract and normalize fields into a tidy tibble
   tibble(
+    
+    # Paper title (UTF-8 sanitized)
     title = sanitize_utf8(
       map_chr(resp$data, &quot;title&quot;, .default = NA_character_)
     ),
+
+    # Author names collapsed into a single comma-separated string
     authors = sanitize_utf8(
       map_chr(
         resp$data,
@@ -4516,15 +4530,22 @@ force_ascii &lt;- function(x) {
         .default = NA_character_
       )
     ),
+
+    # Publication year
     year = map_int(resp$data, &quot;year&quot;, .default = NA_integer_),
+
+    # Citation count as reported by Semantic Scholar
     citations = map_int(resp$data, &quot;citationCount&quot;, .default = NA_integer_),
+
+    # Semantic Scholar  URL
     link = map_chr(resp$data, &quot;url&quot;, .default = NA_character_)
   )
 }</code></pre>
 </div>
 <div id="pagination" class="section level3">
 <h3>Pagination</h3>
-<pre class="r"><code>offsets &lt;- seq(0, 500, by = 100)
+<pre class="r"><code># Paced to avoid 429 error
+offsets &lt;- seq(0, 500, by = 100)
 
 results_raw &lt;- map_dfr(
   offsets,
@@ -4541,7 +4562,8 @@ results_raw &lt;- map_dfr(
 </div>
 <div id="text-hardening" class="section level3">
 <h3>Text Hardening</h3>
-<pre class="r"><code>results_raw &lt;- results_raw |&gt;
+<pre class="r"><code># Prevents gsub crashes
+results_raw &lt;- results_raw |&gt;
   mutate(
     title = force_ascii(
       stringi::stri_replace_all_charclass(
@@ -4561,7 +4583,8 @@ results_raw &lt;- map_dfr(
 </div>
 <div id="allintitle-filtering" class="section level3">
 <h3>allintitle Filtering</h3>
-<pre class="r"><code>results &lt;- results_raw |&gt;
+<pre class="r"><code># Requires &#39;disinformation&#39; in the title 
+results &lt;- results_raw |&gt;
   filter(
     stringi::stri_detect_fixed(
       stringi::stri_trans_tolower(title),
@@ -4573,12 +4596,20 @@ results_raw &lt;- map_dfr(
 </div>
 <div id="output" class="section level3">
 <h3>Output</h3>
-<pre class="r"><code>results_display &lt;- results |&gt;
+<pre class="r"><code># Output:
+#   A tibble with one row per paper and columns:
+#     - title
+#     - authors (comma-separated string)
+#     - year
+#     - citation count
+#     - Semantic Scholar URL
+
+results_display &lt;- results |&gt;
   arrange(desc(citations)) |&gt;
   mutate(
     link = sprintf(&#39;&lt;a href=&quot;%s&quot; target=&quot;_blank&quot;&gt;link&lt;/a&gt;&#39;, link)
   )
-
+# Table construction
 DT::datatable(
   head(results_display, 10),
   escape = FALSE,
@@ -4591,11 +4622,11 @@ DT::datatable(
     )
   )
 )</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-287da8946d95f0edb958" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-287da8946d95f0edb958">{"x":{"style":"bootstrap5","filter":"none","vertical":false,"data":[["The disinformation order: Disruptive communication and the decline of democratic institutions","Social Media, Political Polarization, and Political Disinformation: A Review of the Scientific Literature","Network Propaganda: Manipulation, Disinformation, and Radicalization in American Politics","Deepfakes and Disinformation: Exploring the Impact of Synthetic Political Video on Deception, Uncertainty, and Trust in News","Fake news, disinformation and misinformation in social media: a review","MANAGING THE COVID-19 INFODEMIC: PROMOTING HEALTHY BEHAVIOURS AND MITIGATING THE HARM FROM MISINFORMATION AND DISINFORMATION","Disinformation as Political Communication","Resilience to Online Disinformation: A Framework for Cross-National Comparative Research","Partisanship, Propaganda, and Disinformation: Online Media and the 2016 U.S. Presidential Election","Journalism, 'fake news' and disinformation: handbook for journalism education and training"],["W. Bennett, S. Livingston, Lance Bennett, Lewis Carroll","Joshua A. Tucker, A. Guess, Pablo Barbera, Cristian Vaccari, Alexandra A. Siegel, Sergey Sanovich, D. Stukal, B. Nyhan","Y. Benkler, R. Farris, H. Roberts","Cristian Vaccari, A. Chadwick","Esma Aimeur, Sabrine Amri, Gilles Brassard","Anonymous","Deen Freelon, Chris Wells","Edda Humprecht, F. Esser, Peter van Aelst","Robert Faris, H. Roberts, Bruce Etling, N. Bourassa, Ethan Zuckerman, Y. Benkler","C. Ireton"],[2018,2018,2018,2020,2023,2020,2020,2020,2017,2018],[1081,939,852,625,471,405,402,317,312,240],["<a href=\"https://www.semanticscholar.org/paper/717e47b33601abd86c8abd0e2dd2f54c068dd108\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/6924de9691e8f1bb5477da3907e2f5372ad0e565\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/d597927f78001b267304045be953679c505a78c8\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/feeaefe8b4d6cc1a0f30c1fbd66c041399161558\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/075efdce76763d5e42f49adb7119af9589a67b6b\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/b1b5caa0b92264c1a816fe595e5c14897eab5e0c\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/d64754cc449091820285a6938660fa76aeb6ddb2\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/21e5b0bc1511e0892ad361689bd686d6bc53821e\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/ac3cff1ab621b0ea287b7df4d79548f0330a6422\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/48abcdbf8a838db564a2ffc250659992152cfac5\" target=\"_blank\">link<\/a>"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>title<\/th>\n      <th>authors<\/th>\n      <th>year<\/th>\n      <th>citations<\/th>\n      <th>link<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":false,"columnDefs":[{"width":"450px","targets":0},{"width":"80px","targets":4},{"className":"dt-right","targets":[2,3]},{"name":"title","targets":0},{"name":"authors","targets":1},{"name":"year","targets":2},{"name":"citations","targets":3},{"name":"link","targets":4}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1ff1b6a13511c04e91df" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1ff1b6a13511c04e91df">{"x":{"style":"bootstrap5","filter":"none","vertical":false,"data":[["The disinformation order: Disruptive communication and the decline of democratic institutions","Social Media, Political Polarization, and Political Disinformation: A Review of the Scientific Literature","Network Propaganda: Manipulation, Disinformation, and Radicalization in American Politics","Media Manipulation and Disinformation Online","Deepfakes and Disinformation: Exploring the Impact of Synthetic Political Video on Deception, Uncertainty, and Trust in News","Disinformation and Social Bot Operations in the Run Up to the 2017 French Presidential Election","Fake news, disinformation and misinformation in social media: a review","MANAGING THE COVID-19 INFODEMIC: PROMOTING HEALTHY BEHAVIOURS AND MITIGATING THE HARM FROM MISINFORMATION AND DISINFORMATION","Disinformation as Political Communication","What Is Disinformation?"],["W. Bennett, S. Livingston, Lance Bennett, Lewis Carroll","Joshua A. Tucker, A. Guess, Pablo Barbera, Cristian Vaccari, Alexandra A. Siegel, Sergey Sanovich, D. Stukal, B. Nyhan","Y. Benkler, R. Farris, H. Roberts","B. Lewis, Alice E. Marwick","Cristian Vaccari, A. Chadwick","Emilio Ferrara","Esma Aimeur, Sabrine Amri, Gilles Brassard","Anonymous","Deen Freelon, Chris Wells","D. Fallis"],[2018,2018,2018,2017,2020,2017,2023,2020,2020,2015],[1081,939,852,755,625,479,471,405,402,349],["<a href=\"https://www.semanticscholar.org/paper/717e47b33601abd86c8abd0e2dd2f54c068dd108\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/6924de9691e8f1bb5477da3907e2f5372ad0e565\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/d597927f78001b267304045be953679c505a78c8\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/be5faec84ea204984d4f23c265e2a500d6037f1d\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/feeaefe8b4d6cc1a0f30c1fbd66c041399161558\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/7a6823d16a1dc680c9bdfe03dc4caccbe2e944b6\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/075efdce76763d5e42f49adb7119af9589a67b6b\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/b1b5caa0b92264c1a816fe595e5c14897eab5e0c\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/d64754cc449091820285a6938660fa76aeb6ddb2\" target=\"_blank\">link<\/a>","<a href=\"https://www.semanticscholar.org/paper/ea6c66585c2083cfe8c71b351c161ab746cca69e\" target=\"_blank\">link<\/a>"]],"container":"<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th>title<\/th>\n      <th>authors<\/th>\n      <th>year<\/th>\n      <th>citations<\/th>\n      <th>link<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autoWidth":false,"columnDefs":[{"width":"450px","targets":0},{"width":"80px","targets":4},{"className":"dt-right","targets":[2,3]},{"name":"title","targets":0},{"name":"authors","targets":1},{"name":"year","targets":2},{"name":"citations","targets":3},{"name":"link","targets":4}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkRpc2luZm9ybWF0aW9uIg0Kc3VidGl0bGU6ICJTZW1hbnRpYyBTY2hvbGFyIEFQSSINCmF1dGhvcjogIkphcmVkIFdhbGtlciAmIENoYXRHUFQiDQpvdXRwdXQ6DQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdGhlbWU6DQogICAgICB2ZXJzaW9uOiA1DQogICAgICBib290c3dhdGNoOiBsdXgNCiAgICB0b2M6IHRydWUNCiAgICB0b2NfZmxvYXQ6IHRydWUNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOg0KICAgIGRmX3ByaW50OiB0aWJibGUNCi0tLQ0KDQpgYGB7PWh0bWx9DQo8c3R5bGU+DQpib2R5IHsNCiAgZm9udC1mYW1pbHk6ICJJbnRlciIsIHNhbnMtc2VyaWY7DQogIGJhY2tncm91bmQtY29sb3I6ICMxMjEyMTI7DQogIGNvbG9yOiAjRTZFNkU2Ow0KfQ0KDQpoMSwgaDIsIGgzIHsNCiAgY29sb3I6ICNGMEYwRjA7DQp9DQoNCnByZSwgY29kZSB7DQogIGJhY2tncm91bmQtY29sb3I6ICMxQzFDMUM7DQogIGNvbG9yOiAjRUFFQUVBOw0KICBib3JkZXItcmFkaXVzOiA2cHg7DQp9DQoNCmEgew0KICBjb2xvcjogIzhBQjRGODsNCn0NCg0KLyogTWF0Y2ggYXV0aG9yIGNvbG9yIHRvIHRpdGxlICovDQouYXV0aG9yLA0KLmJ5bGluZSwNCnAuYXV0aG9yIHsNCiAgY29sb3I6ICNGMEYwRjAgIWltcG9ydGFudDsNCn0NCjwvc3R5bGU+DQoNCmBgYA0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCm9wdGlvbnMoc2NpcGVuID0gOTk5LCBkaWdpdHMgPSA0KQ0KYGBgDQoNCmBgYHtyfQ0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KA0KICBlY2hvID0gVFJVRSwNCiAgbWVzc2FnZSA9IEZBTFNFLA0KICB3YXJuaW5nID0gRkFMU0UsDQogIGZpZy5hbGlnbiA9ICJjZW50ZXIiLA0KICBmaWcud2lkdGggPSA4LCANCiAgZmlnLmhlaWdodCA9IDUsDQogIGRldiA9ICJzdmciIA0KKQ0KDQpgYGANCg0KIyMjIEltcG9ydA0KYGBge3J9DQpsaWJyYXJ5KGh0dHIyKQ0KbGlicmFyeShwdXJycikNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KHRpYmJsZSkNCmxpYnJhcnkoc3RyaW5naSkNCmxpYnJhcnkoRFQpDQpgYGANCg0KIyMjIFByZXANCmBgYHtyfQ0KIyBVVEYtOCBzYW5pdGF0aW9uIChzYWZlIGZvciBzdHJpbmdpIHZlcnNpb25zKQ0Kc2FuaXRpemVfdXRmOCA8LSBmdW5jdGlvbih4KSB7DQogIHN0cmluZ2k6OnN0cmlfZW5jX3RvdXRmOCh4LCBpc191bmtub3duXzhiaXQgPSBUUlVFKQ0KfQ0KDQojIEFTQ0lJIHRyYW5zbGl0ZXJhdGlvbiAocHJpbnQgc2FmZSkNCmZvcmNlX2FzY2lpIDwtIGZ1bmN0aW9uKHgpIHsNCiAgaWNvbnYoeCwgZnJvbSA9ICIiLCB0byA9ICJBU0NJSS8vVFJBTlNMSVQiLCBzdWIgPSAiIikNCn0NCmBgYA0KDQojIyMgQ29uc3RydWN0IEFQSSBmdW5jdGlvbg0KYGBge3J9DQpzZWFyY2hfc2VtYW50aWNfc2Nob2xhciA8LSBmdW5jdGlvbihxdWVyeSwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9mZnNldCA9IDAsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW1pdCAgPSAxMDAsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5ZWFyX21pbiA9IDIwMDAsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5ZWFyX21heCA9IDIwMjUpIHsNCg0KICByZXNwIDwtIHRyeUNhdGNoKA0KICAgIHsNCiAgICAgIHJlcXVlc3QoImh0dHBzOi8vYXBpLnNlbWFudGljc2Nob2xhci5vcmcvZ3JhcGgvdjEvcGFwZXIvc2VhcmNoIikgfD4NCiAgICAgICAgcmVxX3VybF9xdWVyeSgNCiAgICAgICAgICBxdWVyeSAgPSBxdWVyeSwNCiAgICAgICAgICBvZmZzZXQgPSBvZmZzZXQsDQogICAgICAgICAgbGltaXQgID0gbGltaXQsDQogICAgICAgICAgZmllbGRzID0gcGFzdGUoDQogICAgICAgICAgICBjKA0KICAgICAgICAgICAgICAidGl0bGUiLA0KICAgICAgICAgICAgICAiYXV0aG9ycy5uYW1lIiwNCiAgICAgICAgICAgICAgInllYXIiLA0KICAgICAgICAgICAgICAiY2l0YXRpb25Db3VudCIsDQogICAgICAgICAgICAgICJ1cmwiDQogICAgICAgICAgICApLA0KICAgICAgICAgICAgY29sbGFwc2UgPSAiLCINCiAgICAgICAgICApLA0KICAgICAgICAgIHllYXIgPSBwYXN0ZTAoeWVhcl9taW4sICItIiwgeWVhcl9tYXgpDQogICAgICAgICkgfD4NCiAgICAgICAgcmVxX3BlcmZvcm0oKSB8Pg0KICAgICAgICByZXNwX2JvZHlfanNvbigpDQogICAgfSwNCiAgICBlcnJvciA9IGZ1bmN0aW9uKGUpIHJldHVybihOVUxMKQ0KICApDQoNCiAgaWYgKGlzLm51bGwocmVzcCkgfHwgbGVuZ3RoKHJlc3AkZGF0YSkgPT0gMCkgew0KICAgIHJldHVybih0aWJibGUoKSkNCiAgfQ0KDQogIHRpYmJsZSgNCiAgICB0aXRsZSA9IHNhbml0aXplX3V0ZjgoDQogICAgICBtYXBfY2hyKHJlc3AkZGF0YSwgInRpdGxlIiwgLmRlZmF1bHQgPSBOQV9jaGFyYWN0ZXJfKQ0KICAgICksDQogICAgYXV0aG9ycyA9IHNhbml0aXplX3V0ZjgoDQogICAgICBtYXBfY2hyKA0KICAgICAgICByZXNwJGRhdGEsDQogICAgICAgIH4gcGFzdGUobWFwX2NocigueCRhdXRob3JzLCAibmFtZSIpLCBjb2xsYXBzZSA9ICIsICIpLA0KICAgICAgICAuZGVmYXVsdCA9IE5BX2NoYXJhY3Rlcl8NCiAgICAgICkNCiAgICApLA0KICAgIHllYXIgPSBtYXBfaW50KHJlc3AkZGF0YSwgInllYXIiLCAuZGVmYXVsdCA9IE5BX2ludGVnZXJfKSwNCiAgICBjaXRhdGlvbnMgPSBtYXBfaW50KHJlc3AkZGF0YSwgImNpdGF0aW9uQ291bnQiLCAuZGVmYXVsdCA9IE5BX2ludGVnZXJfKSwNCiAgICBsaW5rID0gbWFwX2NocihyZXNwJGRhdGEsICJ1cmwiLCAuZGVmYXVsdCA9IE5BX2NoYXJhY3Rlcl8pDQogICkNCn0NCmBgYA0KDQojIyMgUGFnaW5hdGlvbg0KYGBge3J9DQpvZmZzZXRzIDwtIHNlcSgwLCA1MDAsIGJ5ID0gMTAwKQ0KDQpyZXN1bHRzX3JhdyA8LSBtYXBfZGZyKA0KICBvZmZzZXRzLA0KICBmdW5jdGlvbihvKSB7DQogICAgU3lzLnNsZWVwKHJ1bmlmKDEsIDEuNSwgMykpDQogICAgc2VhcmNoX3NlbWFudGljX3NjaG9sYXIoDQogICAgICBxdWVyeSA9ICJkaXNpbmZvcm1hdGlvbiIsDQogICAgICBvZmZzZXQgPSBvLA0KICAgICAgeWVhcl9taW4gPSAyMDAwLA0KICAgICAgeWVhcl9tYXggPSAyMDI1DQogICAgKQ0KICB9DQopDQpgYGANCg0KIyMjIFRleHQgSGFyZGVuaW5nDQpgYGB7cn0NCnJlc3VsdHNfcmF3IDwtIHJlc3VsdHNfcmF3IHw+DQogIG11dGF0ZSgNCiAgICB0aXRsZSA9IGZvcmNlX2FzY2lpKA0KICAgICAgc3RyaW5naTo6c3RyaV9yZXBsYWNlX2FsbF9jaGFyY2xhc3MoDQogICAgICAgIHRpdGxlLA0KICAgICAgICAiW15bOnByaW50Ol1dIiwNCiAgICAgICAgIiINCiAgICAgICkNCiAgICApLA0KICAgIGF1dGhvcnMgPSBmb3JjZV9hc2NpaSgNCiAgICAgIHN0cmluZ2k6OnN0cmlfcmVwbGFjZV9hbGxfY2hhcmNsYXNzKA0KICAgICAgICBhdXRob3JzLA0KICAgICAgICAiW15bOnByaW50Ol1dIiwNCiAgICAgICAgIiINCiAgICAgICkNCiAgICApDQogICkNCmBgYA0KDQojIyMgYWxsaW50aXRsZSBGaWx0ZXJpbmcNCmBgYHtyfQ0KcmVzdWx0cyA8LSByZXN1bHRzX3JhdyB8Pg0KICBmaWx0ZXIoDQogICAgc3RyaW5naTo6c3RyaV9kZXRlY3RfZml4ZWQoDQogICAgICBzdHJpbmdpOjpzdHJpX3RyYW5zX3RvbG93ZXIodGl0bGUpLA0KICAgICAgImRpc2luZm9ybWF0aW9uIg0KICAgICkNCiAgKSB8Pg0KICBkaXN0aW5jdCh0aXRsZSwgeWVhciwgLmtlZXBfYWxsID0gVFJVRSkgfD4NCiAgYXJyYW5nZShkZXNjKGNpdGF0aW9ucykpDQpgYGANCg0KIyMjIE91dHB1dA0KYGBge3IgcmVzdWx0cz0ibWFya3VwIn0NCg0KcmVzdWx0c19kaXNwbGF5IDwtIHJlc3VsdHMgfD4NCiAgYXJyYW5nZShkZXNjKGNpdGF0aW9ucykpIHw+DQogIG11dGF0ZSgNCiAgICBsaW5rID0gc3ByaW50ZignPGEgaHJlZj0iJXMiIHRhcmdldD0iX2JsYW5rIj5saW5rPC9hPicsIGxpbmspDQogICkNCg0KRFQ6OmRhdGF0YWJsZSgNCiAgaGVhZChyZXN1bHRzX2Rpc3BsYXksIDEwKSwNCiAgZXNjYXBlID0gRkFMU0UsDQogIHJvd25hbWVzID0gRkFMU0UsDQogIG9wdGlvbnMgPSBsaXN0KA0KICAgIGF1dG9XaWR0aCA9IEZBTFNFLA0KICAgIGNvbHVtbkRlZnMgPSBsaXN0KA0KICAgICAgbGlzdCh3aWR0aCA9ICI0NTBweCIsIHRhcmdldHMgPSAidGl0bGUiKSwNCiAgICAgIGxpc3Qod2lkdGggPSAiODBweCIsICB0YXJnZXRzID0gImxpbmsiKQ0KICAgICkNCiAgKQ0KKQ0KYGBgDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkRpc2luZm9ybWF0aW9uIFNjaG9sYXJzaGlwIg0Kc3VidGl0bGU6ICJTZW1hbnRpYyBTY2hvbGFyIFJldHJpZXZhbCINCmF1dGhvcjogIkphcmVkIFdhbGtlciAmIENoYXRHUFQiDQpvdXRwdXQ6DQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdGhlbWU6DQogICAgICB2ZXJzaW9uOiA1DQogICAgICBib290c3dhdGNoOiBsdXgNCiAgICB0b2M6IHRydWUNCiAgICB0b2NfZmxvYXQ6IHRydWUNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQogICAgY29kZV9mb2xkaW5nOg0KICAgIGRmX3ByaW50OiB0aWJibGUNCi0tLQ0KDQpgYGB7PWh0bWx9DQo8c3R5bGU+DQpib2R5IHsNCiAgZm9udC1mYW1pbHk6ICJJbnRlciIsIHNhbnMtc2VyaWY7DQogIGJhY2tncm91bmQtY29sb3I6ICMxMjEyMTI7DQogIGNvbG9yOiAjRTZFNkU2Ow0KfQ0KDQpoMSwgaDIsIGgzIHsNCiAgY29sb3I6ICNGMEYwRjA7DQp9DQoNCnByZSwgY29kZSB7DQogIGJhY2tncm91bmQtY29sb3I6ICMxQzFDMUM7DQogIGNvbG9yOiAjRUFFQUVBOw0KICBib3JkZXItcmFkaXVzOiA2cHg7DQp9DQoNCmEgew0KICBjb2xvcjogIzhBQjRGODsNCn0NCg0KLyogTWF0Y2ggYXV0aG9yIGNvbG9yIHRvIHRpdGxlICovDQouYXV0aG9yLA0KLmJ5bGluZSwNCnAuYXV0aG9yIHsNCiAgY29sb3I6ICNGMEYwRjAgIWltcG9ydGFudDsNCn0NCjwvc3R5bGU+DQoNCmBgYA0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCm9wdGlvbnMoc2NpcGVuID0gOTk5LCBkaWdpdHMgPSA0KQ0KDQprbml0cjo6b3B0c19jaHVuayRzZXQoDQogIGVjaG8gPSBUUlVFLA0KICBtZXNzYWdlID0gRkFMU0UsDQogIHdhcm5pbmcgPSBGQUxTRSwNCiAgZGV2ID0gInN2ZyIgDQopDQpgYGANCg0KIyMjIEltcG9ydA0KYGBge3J9DQpsaWJyYXJ5KGh0dHIyKQ0KbGlicmFyeShwdXJycikNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KHRpYmJsZSkNCmxpYnJhcnkoc3RyaW5naSkNCmxpYnJhcnkoRFQpDQpgYGANCg0KIyMjIFByZXANCmBgYHtyfQ0KIyBVVEYtOCBzYW5pdGF0aW9uIChzYWZlIGZvciBzdHJpbmdpIHZlcnNpb25zKQ0Kc2FuaXRpemVfdXRmOCA8LSBmdW5jdGlvbih4KSB7DQogIHN0cmluZ2k6OnN0cmlfZW5jX3RvdXRmOCh4LCBpc191bmtub3duXzhiaXQgPSBUUlVFKQ0KfQ0KDQojIEFTQ0lJIHRyYW5zbGl0ZXJhdGlvbiAocHJpbnQgc2FmZSkNCmZvcmNlX2FzY2lpIDwtIGZ1bmN0aW9uKHgpIHsNCiAgaWNvbnYoeCwgZnJvbSA9ICIiLCB0byA9ICJBU0NJSS8vVFJBTlNMSVQiLCBzdWIgPSAiIikNCn0NCmBgYA0KDQojIyMgQVBJIFNlYXJjaCBmdW5jdGlvbg0KYGBge3J9DQojIElucHV0czoNCiMgICBxdWVyeSAgICAgOiBDaGFyYWN0ZXIgc3RyaW5nIGNvbnRhaW5pbmcgdGhlIHNlYXJjaCBxdWVyeQ0KIyAgIG9mZnNldCAgICA6IEludGVnZXIgb2Zmc2V0IGZvciBwYWdpbmF0aW9uIChkZWZhdWx0ID0gMCkNCiMgICBsaW1pdCAgICAgOiBNYXhpbXVtIG51bWJlciBvZiByZWNvcmRzIHRvIHJldHVybiBwZXIgcmVxdWVzdCAo4omkIDEwMCkNCiMgICB5ZWFyX21pbiAgOiBFYXJsaWVzdCBwdWJsaWNhdGlvbiB5ZWFyIHRvIGluY2x1ZGUNCiMgICB5ZWFyX21heCAgOiBMYXRlc3QgcHVibGljYXRpb24geWVhciB0byBpbmNsdWRlDQoNCnNlYXJjaF9zZW1hbnRpY19zY2hvbGFyIDwtIGZ1bmN0aW9uKHF1ZXJ5LA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb2Zmc2V0ICAgPSAwLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbGltaXQgICAgPSAxMDAsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5ZWFyX21pbiA9IDIwMDAsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5ZWFyX21heCA9IDIwMjUpIHsNCg0KICAjIENvbnN0cnVjdCBBUEkgUmVxdWVzdCBGdW5jdGlvbg0KICAjIFdyYXAgaW4gdHJ5Q2F0Y2goKSB0byBwcmV2ZW50IGhhcmQgZmFpbHVyZXMgZHVyaW5nIGtuaXR0aW5nDQogIHJlc3AgPC0gdHJ5Q2F0Y2goDQogICAgew0KICAgICAgcmVxdWVzdCgiaHR0cHM6Ly9hcGkuc2VtYW50aWNzY2hvbGFyLm9yZy9ncmFwaC92MS9wYXBlci9zZWFyY2giKSB8Pg0KICAgICAgICAjIEF0dGFjaCBxdWVyeSBwYXJhbWV0ZXJzIHRvIHRoZSByZXF1ZXN0IFVSTA0KICAgICAgICByZXFfdXJsX3F1ZXJ5KA0KICAgICAgICAgIHF1ZXJ5ICA9IHF1ZXJ5LA0KICAgICAgICAgIG9mZnNldCA9IG9mZnNldCwNCiAgICAgICAgICBsaW1pdCAgPSBsaW1pdCwNCg0KICAgICAgICAgICMgRXhwbGljaXRseSByZXF1ZXN0IG9ubHkgcmVxdWlyZWQgZmllbGRzIHRvIHJlZHVjZSBwYXlsb2FkIHNpemUNCiAgICAgICAgICBmaWVsZHMgPSBwYXN0ZSgNCiAgICAgICAgICAgIGMoDQogICAgICAgICAgICAgICJ0aXRsZSIsDQogICAgICAgICAgICAgICJhdXRob3JzLm5hbWUiLA0KICAgICAgICAgICAgICAieWVhciIsDQogICAgICAgICAgICAgICJjaXRhdGlvbkNvdW50IiwNCiAgICAgICAgICAgICAgInVybCINCiAgICAgICAgICAgICksDQogICAgICAgICAgICBjb2xsYXBzZSA9ICIsIg0KICAgICAgICAgICksDQoNCiAgICAgICAgICAjIFJlc3RyaWN0IHJlc3VsdHMgdG8gYSBzcGVjaWZpZWQgcHVibGljYXRpb24geWVhcnMNCiAgICAgICAgICB5ZWFyID0gcGFzdGUwKHllYXJfbWluLCAiLSIsIHllYXJfbWF4KQ0KICAgICAgICApIHw+DQogICAgICAgICMgRXhlY3V0ZSB0aGUgSFRUUCByZXF1ZXN0DQogICAgICAgIHJlcV9wZXJmb3JtKCkgfD4NCiAgICAgICAgIyBQYXJzZSBKU09OIHJlc3BvbnNlIGJvZHkgaW50byBhbiBSIGxpc3QNCiAgICAgICAgcmVzcF9ib2R5X2pzb24oKQ0KICAgIH0sDQogICAgIyBPbiBhbnkgcmVxdWVzdCBvciBwYXJzaW5nIGVycm9yLCByZXR1cm4gTlVMTA0KICAgIGVycm9yID0gZnVuY3Rpb24oZSkgcmV0dXJuKE5VTEwpDQogICkNCg0KICAjIFJldHVybiBhbiBlbXB0eSB0aWJibGUgaWYgbm8gZGF0YSBhcmUgcHJlc2VudA0KICBpZiAoaXMubnVsbChyZXNwKSB8fCBsZW5ndGgocmVzcCRkYXRhKSA9PSAwKSB7DQogICAgcmV0dXJuKHRpYmJsZSgpKQ0KICB9DQogICAgICANCiAgIyBFeHRyYWN0IGFuZCBub3JtYWxpemUgZmllbGRzIGludG8gYSB0aWR5IHRpYmJsZQ0KICB0aWJibGUoDQogICAgDQogICAgIyBQYXBlciB0aXRsZSAoVVRGLTggc2FuaXRpemVkKQ0KICAgIHRpdGxlID0gc2FuaXRpemVfdXRmOCgNCiAgICAgIG1hcF9jaHIocmVzcCRkYXRhLCAidGl0bGUiLCAuZGVmYXVsdCA9IE5BX2NoYXJhY3Rlcl8pDQogICAgKSwNCg0KICAgICMgQXV0aG9yIG5hbWVzIGNvbGxhcHNlZCBpbnRvIGEgc2luZ2xlIGNvbW1hLXNlcGFyYXRlZCBzdHJpbmcNCiAgICBhdXRob3JzID0gc2FuaXRpemVfdXRmOCgNCiAgICAgIG1hcF9jaHIoDQogICAgICAgIHJlc3AkZGF0YSwNCiAgICAgICAgfiBwYXN0ZShtYXBfY2hyKC54JGF1dGhvcnMsICJuYW1lIiksIGNvbGxhcHNlID0gIiwgIiksDQogICAgICAgIC5kZWZhdWx0ID0gTkFfY2hhcmFjdGVyXw0KICAgICAgKQ0KICAgICksDQoNCiAgICAjIFB1YmxpY2F0aW9uIHllYXINCiAgICB5ZWFyID0gbWFwX2ludChyZXNwJGRhdGEsICJ5ZWFyIiwgLmRlZmF1bHQgPSBOQV9pbnRlZ2VyXyksDQoNCiAgICAjIENpdGF0aW9uIGNvdW50IGFzIHJlcG9ydGVkIGJ5IFNlbWFudGljIFNjaG9sYXINCiAgICBjaXRhdGlvbnMgPSBtYXBfaW50KHJlc3AkZGF0YSwgImNpdGF0aW9uQ291bnQiLCAuZGVmYXVsdCA9IE5BX2ludGVnZXJfKSwNCg0KICAgICMgU2VtYW50aWMgU2Nob2xhciAgVVJMDQogICAgbGluayA9IG1hcF9jaHIocmVzcCRkYXRhLCAidXJsIiwgLmRlZmF1bHQgPSBOQV9jaGFyYWN0ZXJfKQ0KICApDQp9DQpgYGANCg0KIyMjIFBhZ2luYXRpb24NCmBgYHtyfQ0KIyBQYWNlZCB0byBhdm9pZCA0MjkgZXJyb3INCm9mZnNldHMgPC0gc2VxKDAsIDUwMCwgYnkgPSAxMDApDQoNCnJlc3VsdHNfcmF3IDwtIG1hcF9kZnIoDQogIG9mZnNldHMsDQogIGZ1bmN0aW9uKG8pIHsNCiAgICBTeXMuc2xlZXAocnVuaWYoMSwgMS41LCAzKSkNCiAgICBzZWFyY2hfc2VtYW50aWNfc2Nob2xhcigNCiAgICAgIHF1ZXJ5ID0gImRpc2luZm9ybWF0aW9uIiwNCiAgICAgIG9mZnNldCA9IG8sDQogICAgICB5ZWFyX21pbiA9IDIwMDAsDQogICAgICB5ZWFyX21heCA9IDIwMjUNCiAgICApDQogIH0NCikNCmBgYA0KDQojIyMgVGV4dCBIYXJkZW5pbmcNCmBgYHtyfQ0KIyBQcmV2ZW50cyBnc3ViIGNyYXNoZXMNCnJlc3VsdHNfcmF3IDwtIHJlc3VsdHNfcmF3IHw+DQogIG11dGF0ZSgNCiAgICB0aXRsZSA9IGZvcmNlX2FzY2lpKA0KICAgICAgc3RyaW5naTo6c3RyaV9yZXBsYWNlX2FsbF9jaGFyY2xhc3MoDQogICAgICAgIHRpdGxlLA0KICAgICAgICAiW15bOnByaW50Ol1dIiwNCiAgICAgICAgIiINCiAgICAgICkNCiAgICApLA0KICAgIGF1dGhvcnMgPSBmb3JjZV9hc2NpaSgNCiAgICAgIHN0cmluZ2k6OnN0cmlfcmVwbGFjZV9hbGxfY2hhcmNsYXNzKA0KICAgICAgICBhdXRob3JzLA0KICAgICAgICAiW15bOnByaW50Ol1dIiwNCiAgICAgICAgIiINCiAgICAgICkNCiAgICApDQogICkNCmBgYA0KDQojIyMgYWxsaW50aXRsZSBGaWx0ZXJpbmcNCmBgYHtyfQ0KIyBSZXF1aXJlcyAnZGlzaW5mb3JtYXRpb24nIGluIHRoZSB0aXRsZSANCnJlc3VsdHMgPC0gcmVzdWx0c19yYXcgfD4NCiAgZmlsdGVyKA0KICAgIHN0cmluZ2k6OnN0cmlfZGV0ZWN0X2ZpeGVkKA0KICAgICAgc3RyaW5naTo6c3RyaV90cmFuc190b2xvd2VyKHRpdGxlKSwNCiAgICAgICJkaXNpbmZvcm1hdGlvbiINCiAgICApDQogICkgfD4NCiAgZGlzdGluY3QodGl0bGUsIHllYXIsIC5rZWVwX2FsbCA9IFRSVUUpIHw+DQogIGFycmFuZ2UoZGVzYyhjaXRhdGlvbnMpKQ0KYGBgDQoNCiMjIyBPdXRwdXQNCmBgYHtyIHJlc3VsdHM9Im1hcmt1cCJ9DQojIE91dHB1dDoNCiMgICBBIHRpYmJsZSB3aXRoIG9uZSByb3cgcGVyIHBhcGVyIGFuZCBjb2x1bW5zOg0KIyAgICAgLSB0aXRsZQ0KIyAgICAgLSBhdXRob3JzIChjb21tYS1zZXBhcmF0ZWQgc3RyaW5nKQ0KIyAgICAgLSB5ZWFyDQojICAgICAtIGNpdGF0aW9uIGNvdW50DQojICAgICAtIFNlbWFudGljIFNjaG9sYXIgVVJMDQoNCnJlc3VsdHNfZGlzcGxheSA8LSByZXN1bHRzIHw+DQogIGFycmFuZ2UoZGVzYyhjaXRhdGlvbnMpKSB8Pg0KICBtdXRhdGUoDQogICAgbGluayA9IHNwcmludGYoJzxhIGhyZWY9IiVzIiB0YXJnZXQ9Il9ibGFuayI+bGluazwvYT4nLCBsaW5rKQ0KICApDQojIFRhYmxlIGNvbnN0cnVjdGlvbg0KRFQ6OmRhdGF0YWJsZSgNCiAgaGVhZChyZXN1bHRzX2Rpc3BsYXksIDEwKSwNCiAgZXNjYXBlID0gRkFMU0UsDQogIHJvd25hbWVzID0gRkFMU0UsDQogIG9wdGlvbnMgPSBsaXN0KA0KICAgIGF1dG9XaWR0aCA9IEZBTFNFLA0KICAgIGNvbHVtbkRlZnMgPSBsaXN0KA0KICAgICAgbGlzdCh3aWR0aCA9ICI0NTBweCIsIHRhcmdldHMgPSAidGl0bGUiKSwNCiAgICAgIGxpc3Qod2lkdGggPSAiODBweCIsICB0YXJnZXRzID0gImxpbmsiKQ0KICAgICkNCiAgKQ0KKQ0KYGBgDQoNCg0K</div>
 
 
 </div>
