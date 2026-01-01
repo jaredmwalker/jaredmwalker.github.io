@@ -3019,12 +3019,16 @@ overflow: hidden;
 text-overflow: ellipsis;
 }
 
+
 @media (min-width: 768px) {
+
 .col-md-3 {
-width: 340px !important;
+width: 350px !important; 
 }
+
 .col-md-9 {
-width: calc(100% - 340px) !important;
+width: calc(100% - 350px) !important;
+padding-left: 50px !important; 
 }
 }
 
@@ -3084,6 +3088,7 @@ font-weight: 600;
 margin-bottom: 6px;
 }
 </style>
+
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Preferences</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>,</span>
