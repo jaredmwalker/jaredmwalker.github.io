@@ -2976,29 +2976,33 @@ to operationalizing class structure was unreliable.</p>
 examined with a balanced panel of countries composed of five-year
 snapshots between 1860 and 1916. The findings indicate a persistent
 class structure with <em>upper class</em> being an absorbing state in
-both eras. Class structure was stationary over the short term and
-non-stationary over the long term. An evaluation of Markovian memory
-shows first order dependence, indicating path dependence in economic
-development. The Markov test of the second order failed to reject the
-null, not because path dependence was weak, but because the high degree
-of persistence rendered the test uninformative. The greatest change was
-seen in the second era, in transitions from <em>lower class 1</em> to
-<em>lower class 2</em>, or from the non-industrial lower class to the
-industrializing lower class, and in transitions from <em>middle
-class</em> to <em>lower class 2</em>, with <em>lower class 2</em> being
-an absorbing state (over the long interval). Thus while there was
-structural change in the second era, it consisted of both upward and
-downward movement in the economic hierarchy. The Markov chain failed the
-test of approximate ergodicity. That is to say the long term
-distribution of countries in the upper, middle, and lower classes was
-not random. A country’s starting position had a lasting effect for the
-period of examination.</p>
+both eras. Structural change was greater in the second era, which is to
+be expected in moments of hegemonic transition. This can be seen in
+transitions from <em>lower class 1</em> to <em>lower class 2</em> (the
+non-industrial lower class to the industrializing lower class), and in
+transitions from <em>middle class</em> to <em>lower class 2</em>, with
+<em>lower class 2</em> being an absorbing state. Thus, structural change
+in the second era consisted of both upward and downward movement in the
+economic hierarchy.</p>
+<p>An evaluation of Markovian memory rejected independence in favor of
+first-order dependence, indicating strong state dependence–a country’s
+position at one time point strongly predicts its position at the next.
+The second order test failed to reject first order sufficiency, not
+because higher order dependence was absent, but because the high degree
+of persistence rendered the test uninformative. Over the long interval,
+Pearson and likelihood-ratio chi-square tests strongly rejected
+independence, implying substantial long-run persistence in countries’
+hierarchical positions. The Markov chain failed the test of approximate
+ergodicity. That is to say, the long-term distribution of countries in
+the upper, middle, and lower classes was not random. A country’s
+starting position had a lasting effect for the period of
+examination.</p>
 <p>These findings support the contention that economic development,
 while reducing poverty and improving living conditions, does not change
 the relative differences of countries in the global economic hierarchy.
-In this sense, the findings undermine the central claim of economic
+In this sense, findings undermine the central claim of economic
 convergence, namely that poor countries are catching up to rich
-countries.</p>
+countries. </p>
 <style>
 
 h1.title {
@@ -3539,68 +3543,92 @@ Transition Matrices</h3>
 <div id="year-step-time-homogeneity-tests" class="section level3" number="1.0.4">
 <h3><span class="header-section-number">1.0.4</span> 5-Year Step Time
 Homogeneity Tests</h3>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>markov_homogeneity_test <span class="ot">&lt;-</span> <span class="cf">function</span>(transitions_df) {</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  counts <span class="ot">&lt;-</span> transitions_df <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(step_id, class_prev, class, <span class="at">name =</span> <span class="st">&quot;n&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">complete</span>(step_id, class_prev, class, <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="dv">0</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  df_counts <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(counts)</span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">colnames</span>(df_counts) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;step&quot;</span>, <span class="st">&quot;origin&quot;</span>, <span class="st">&quot;dest&quot;</span>, <span class="st">&quot;n&quot;</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  fit_homog <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(</span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    n <span class="sc">~</span> origin <span class="sc">+</span> dest <span class="sc">+</span> step <span class="sc">+</span> origin<span class="sc">:</span>dest,</span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>    <span class="at">data =</span> df_counts)</span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  fit_full <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(</span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>    n <span class="sc">~</span> origin <span class="sc">*</span> dest <span class="sc">*</span> step,</span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>    <span class="at">data =</span> df_counts)</span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>  G2      <span class="ot">&lt;-</span> fit_homog<span class="sc">$</span>deviance <span class="sc">-</span> fit_full<span class="sc">$</span>deviance</span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>  df_diff <span class="ot">&lt;-</span> fit_homog<span class="sc">$</span>df <span class="sc">-</span> fit_full<span class="sc">$</span>df</span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>  p_val   <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(G2, df_diff)</span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>    <span class="at">counts    =</span> df_counts,</span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>    <span class="at">G2        =</span> G2,</span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>    <span class="at">df        =</span> df_diff,</span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>    <span class="at">p_value   =</span> p_val,</span>
-<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>    <span class="at">fit_homog =</span> fit_homog,</span>
-<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a>    <span class="at">fit_full  =</span> fit_full)</span>
-<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>}</span>
-<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a></span>
-<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>interpret_homogeneity <span class="ot">&lt;-</span> <span class="cf">function</span>(p, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
-<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> alpha) {</span>
-<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Reject homogeneity (p &lt; &quot;</span>, alpha, <span class="st">&quot;). Evidence of structural change.&quot;</span>)</span>
-<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Fail to reject homogeneity (p ≥ &quot;</span>, alpha, <span class="st">&quot;). No evidence of structural change.&quot;</span>)</span>
-<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>  }</span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>markov_stationarity_test_dezzani <span class="ot">&lt;-</span> <span class="cf">function</span>(transitions_df) {</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="co"># Build C×C×T counts: step × origin × dest</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  counts <span class="ot">&lt;-</span> transitions_df <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">count</span>(step_id, class_prev, class, <span class="at">name =</span> <span class="st">&quot;n&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">complete</span>(step_id, class_prev, class, <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">n =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>      <span class="at">step_id    =</span> <span class="fu">factor</span>(step_id),</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>      <span class="at">class_prev =</span> <span class="fu">factor</span>(class_prev),</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>      <span class="at">class      =</span> <span class="fu">factor</span>(class)</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>    )</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>  df_counts <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(counts)</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>  <span class="fu">colnames</span>(df_counts) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;step&quot;</span>, <span class="st">&quot;origin&quot;</span>, <span class="st">&quot;dest&quot;</span>, <span class="st">&quot;n&quot;</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>  <span class="co"># Dezzani-style stationarity / time-homogeneity null:</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>  <span class="co"># dest ⟂ step | origin  &lt;=&gt;  n ~ origin*dest + origin*step</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>  fit_H0 <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(</span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>    n <span class="sc">~</span> origin<span class="sc">*</span>dest <span class="sc">+</span> origin<span class="sc">*</span>step,</span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>    <span class="at">data =</span> df_counts</span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>  )</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>  <span class="co"># Saturated model (allows transition matrix to vary by step):</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>  fit_H1 <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(</span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>    n <span class="sc">~</span> origin<span class="sc">*</span>dest<span class="sc">*</span>step,</span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>    <span class="at">data =</span> df_counts</span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>  )</span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>  <span class="co"># Likelihood-ratio test</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>  G2      <span class="ot">&lt;-</span> fit_H0<span class="sc">$</span>deviance <span class="sc">-</span> fit_H1<span class="sc">$</span>deviance</span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>  df_diff <span class="ot">&lt;-</span> fit_H0<span class="sc">$</span>df <span class="sc">-</span> fit_H1<span class="sc">$</span>df</span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a>  p_val   <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(G2, df_diff)</span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a>    <span class="at">counts =</span> df_counts,</span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a>    <span class="at">G2 =</span> G2,</span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a>    <span class="at">df =</span> df_diff,</span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a>    <span class="at">p_value =</span> p_val,</span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a>    <span class="at">fit_H0 =</span> fit_H0,</span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a>    <span class="at">fit_H1 =</span> fit_H1</span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a>  )</span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a>}</span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a></span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a>interpret_stationarity_dezzani <span class="ot">&lt;-</span> <span class="cf">function</span>(p, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(p)) {</span>
+<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a>    <span class="fu">return</span>(<span class="st">&quot;p-value is NA (often due to sparse/degenerate cells); Stationarity cannot be assessed reliably with this table.&quot;</span>)</span>
+<span id="cb14-47"><a href="#cb14-47" tabindex="-1"></a>  }</span>
+<span id="cb14-48"><a href="#cb14-48" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> alpha) {</span>
+<span id="cb14-49"><a href="#cb14-49" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Reject stationarity/time-homogeneity (p &lt; &quot;</span>, alpha,</span>
+<span id="cb14-50"><a href="#cb14-50" tabindex="-1"></a>           <span class="st">&quot;): The 5-year transition probabilities vary across steps.&quot;</span>)</span>
+<span id="cb14-51"><a href="#cb14-51" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb14-52"><a href="#cb14-52" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Fail to reject stationarity/time-homogeneity (p ≥ &quot;</span>, alpha,</span>
+<span id="cb14-53"><a href="#cb14-53" tabindex="-1"></a>           <span class="st">&quot;): No evidence that the 5-year transition probabilities vary across steps.&quot;</span>)</span>
+<span id="cb14-54"><a href="#cb14-54" tabindex="-1"></a>  }</span>
+<span id="cb14-55"><a href="#cb14-55" tabindex="-1"></a>}</span></code></pre></div>
 <div id="era-1-1860-1880-2" class="section level4" number="1.0.4.1">
 <h4><span class="header-section-number">1.0.4.1</span> ERA 1
 1860-1880</h4>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># ERA 1: 1860-1880 ---- Homogeneity test</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>test1_homog <span class="ot">&lt;-</span> <span class="fu">markov_homogeneity_test</span>(trans1)</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 1 Homogeneity test:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test1_homog<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test1_homog<span class="sc">$</span>df,</span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test1_homog<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="fu">interpret_homogeneity</span>(test1_homog<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>test1_homog <span class="ot">&lt;-</span> <span class="fu">markov_stationarity_test_dezzani</span>(trans1)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 1 Stationarity / Time-Homogeneity (Dezzani-style)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test1_homog<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test1_homog<span class="sc">$</span>df,</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test1_homog<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>, <span class="fu">interpret_stationarity_dezzani</span>(test1_homog<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>
-ERA 1 Homogeneity test:
-G^2 = 8.5  df = 24  p = 1 
-Interpretation: Fail to reject homogeneity (p ≥ 0.05). No evidence of structural change. </code></pre>
+ERA 1 Stationarity / Time-Homogeneity (Dezzani-style)
+G^2 = 8.4  df = 18  p = 0.97 
+Interpretation: Fail to reject stationarity/time-homogeneity (p ≥ 0.05): No evidence that the 5-year transition probabilities vary across steps. </code></pre>
 </div>
 <div id="era-2-1881-1916-2" class="section level4" number="1.0.4.2">
 <h4><span class="header-section-number">1.0.4.2</span> ERA 2
 1881-1916</h4>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># ERA 2: 1881-1916 ---- Homogeneity test</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>test2_homog <span class="ot">&lt;-</span> <span class="fu">markov_homogeneity_test</span>(trans2)</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 2 Homogeneity test:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test2_homog<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test2_homog<span class="sc">$</span>df,</span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test2_homog<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>,</span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>  <span class="fu">interpret_homogeneity</span>(test2_homog<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>test1_homog <span class="ot">&lt;-</span> <span class="fu">markov_stationarity_test_dezzani</span>(trans1)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 1 Stationarity / Time-Homogeneity (Dezzani-style)</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test1_homog<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test1_homog<span class="sc">$</span>df,</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test1_homog<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>, <span class="fu">interpret_stationarity_dezzani</span>(test1_homog<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <pre><code>
-ERA 2 Homogeneity test:
-G^2 = 63  df = 90  p = 0.99 
-Interpretation: Fail to reject homogeneity (p ≥ 0.05). No evidence of structural change. </code></pre>
+ERA 1 Stationarity / Time-Homogeneity (Dezzani-style)
+G^2 = 8.4  df = 18  p = 0.97 
+Interpretation: Fail to reject stationarity/time-homogeneity (p ≥ 0.05): No evidence that the 5-year transition probabilities vary across steps. </code></pre>
 </div>
 </div>
 <div id="long-interval-transition-matrices" class="section level3" number="1.0.5">
@@ -3769,101 +3797,132 @@ Transition Matrices</h3>
 </table>
 </div>
 </div>
-<div id="long-interval-time-homogeneity-tests" class="section level3" number="1.0.6">
-<h3><span class="header-section-number">1.0.6</span> Long-Interval Time
-Homogeneity Tests</h3>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>build_long_interval <span class="ot">&lt;-</span> <span class="cf">function</span>(data,</span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>                                start_year,</span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>                                end_year,</span>
-<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>                                full_levels) {</span>
-<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>  df_start <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
-<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">==</span> start_year) <span class="sc">%&gt;%</span></span>
-<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(stateabb, <span class="at">class_start =</span> class)</span>
-<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>  df_end <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
-<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">==</span> end_year) <span class="sc">%&gt;%</span></span>
-<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(stateabb, <span class="at">class_end =</span> class)</span>
-<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>  df_long <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">inner_join</span>(df_start, df_end, <span class="at">by =</span> <span class="st">&quot;stateabb&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a>      <span class="at">class_start =</span> <span class="fu">factor</span>(class_start, <span class="at">levels =</span> full_levels),</span>
-<span id="cb24-14"><a href="#cb24-14" tabindex="-1"></a>      <span class="at">class_end   =</span> <span class="fu">factor</span>(class_end,   <span class="at">levels =</span> full_levels)</span>
-<span id="cb24-15"><a href="#cb24-15" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb24-16"><a href="#cb24-16" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(class_start), <span class="sc">!</span><span class="fu">is.na</span>(class_end))</span>
-<span id="cb24-17"><a href="#cb24-17" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> <span class="fu">with</span>(df_long, <span class="fu">table</span>(class_start, class_end))</span>
-<span id="cb24-18"><a href="#cb24-18" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb24-19"><a href="#cb24-19" tabindex="-1"></a>    <span class="at">df_long =</span> df_long,</span>
-<span id="cb24-20"><a href="#cb24-20" tabindex="-1"></a>    <span class="at">tab     =</span> tab</span>
-<span id="cb24-21"><a href="#cb24-21" tabindex="-1"></a>  )</span>
+<div id="long-interval-transition-diagnostics" class="section level3" number="1.0.6">
+<h3><span class="header-section-number">1.0.6</span> Long-Interval
+Transition Diagnostics</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># Bowker symmetry test</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>bowker_symmetry_safe <span class="ot">&lt;-</span> <span class="cf">function</span>(tab) {</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(tab)</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="fu">storage.mode</span>(tab) <span class="ot">&lt;-</span> <span class="st">&quot;numeric&quot;</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(tab) <span class="sc">!=</span> <span class="fu">ncol</span>(tab)) <span class="fu">stop</span>(<span class="st">&quot;tab must be square&quot;</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">nrow</span>(tab)</span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>  X2 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(k <span class="sc">-</span> <span class="dv">1</span>)) {</span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> (i <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>k) {</span>
+<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a>      nij <span class="ot">&lt;-</span> tab[i, j]; nji <span class="ot">&lt;-</span> tab[j, i]</span>
+<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a>      s <span class="ot">&lt;-</span> nij <span class="sc">+</span> nji</span>
+<span id="cb24-14"><a href="#cb24-14" tabindex="-1"></a>      <span class="cf">if</span> (s <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb24-15"><a href="#cb24-15" tabindex="-1"></a>        X2 <span class="ot">&lt;-</span> X2 <span class="sc">+</span> (nij <span class="sc">-</span> nji)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> s</span>
+<span id="cb24-16"><a href="#cb24-16" tabindex="-1"></a>        df <span class="ot">&lt;-</span> df <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb24-17"><a href="#cb24-17" tabindex="-1"></a>      }</span>
+<span id="cb24-18"><a href="#cb24-18" tabindex="-1"></a>    }</span>
+<span id="cb24-19"><a href="#cb24-19" tabindex="-1"></a>  }</span>
+<span id="cb24-20"><a href="#cb24-20" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="cf">if</span> (df <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(X2, df) <span class="cf">else</span> <span class="cn">NA_real_</span></span>
+<span id="cb24-21"><a href="#cb24-21" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">X2 =</span> X2, <span class="at">df =</span> df, <span class="at">p =</span> p)</span>
 <span id="cb24-22"><a href="#cb24-22" tabindex="-1"></a>}</span>
 <span id="cb24-23"><a href="#cb24-23" tabindex="-1"></a></span>
-<span id="cb24-24"><a href="#cb24-24" tabindex="-1"></a>test_long_interval_stationarity <span class="ot">&lt;-</span> <span class="cf">function</span>(tab) {</span>
-<span id="cb24-25"><a href="#cb24-25" tabindex="-1"></a>  df_counts <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tab)</span>
-<span id="cb24-26"><a href="#cb24-26" tabindex="-1"></a>  <span class="fu">colnames</span>(df_counts) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;origin&quot;</span>, <span class="st">&quot;dest&quot;</span>, <span class="st">&quot;n&quot;</span>)</span>
-<span id="cb24-27"><a href="#cb24-27" tabindex="-1"></a>  fit_stat <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(n <span class="sc">~</span> origin <span class="sc">+</span> dest, <span class="at">data =</span> df_counts)</span>
-<span id="cb24-28"><a href="#cb24-28" tabindex="-1"></a>  fit_full <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(n <span class="sc">~</span> origin <span class="sc">*</span> dest, <span class="at">data =</span> df_counts)</span>
-<span id="cb24-29"><a href="#cb24-29" tabindex="-1"></a>  G2      <span class="ot">&lt;-</span> fit_stat<span class="sc">$</span>deviance <span class="sc">-</span> fit_full<span class="sc">$</span>deviance</span>
-<span id="cb24-30"><a href="#cb24-30" tabindex="-1"></a>  df_diff <span class="ot">&lt;-</span> fit_stat<span class="sc">$</span>df <span class="sc">-</span> fit_full<span class="sc">$</span>df</span>
-<span id="cb24-31"><a href="#cb24-31" tabindex="-1"></a>  p_val   <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(G2, df_diff)</span>
-<span id="cb24-32"><a href="#cb24-32" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb24-33"><a href="#cb24-33" tabindex="-1"></a>    <span class="at">counts   =</span> df_counts,</span>
-<span id="cb24-34"><a href="#cb24-34" tabindex="-1"></a>    <span class="at">G2       =</span> G2,</span>
-<span id="cb24-35"><a href="#cb24-35" tabindex="-1"></a>    <span class="at">df       =</span> df_diff,</span>
-<span id="cb24-36"><a href="#cb24-36" tabindex="-1"></a>    <span class="at">p_value  =</span> p_val,</span>
-<span id="cb24-37"><a href="#cb24-37" tabindex="-1"></a>    <span class="at">fit_stat =</span> fit_stat,</span>
-<span id="cb24-38"><a href="#cb24-38" tabindex="-1"></a>    <span class="at">fit_full =</span> fit_full</span>
-<span id="cb24-39"><a href="#cb24-39" tabindex="-1"></a>  )</span>
-<span id="cb24-40"><a href="#cb24-40" tabindex="-1"></a>}</span>
-<span id="cb24-41"><a href="#cb24-41" tabindex="-1"></a></span>
-<span id="cb24-42"><a href="#cb24-42" tabindex="-1"></a>interpret_long_interval <span class="ot">&lt;-</span> <span class="cf">function</span>(p, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
-<span id="cb24-43"><a href="#cb24-43" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> alpha) {</span>
-<span id="cb24-44"><a href="#cb24-44" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Reject long-term homogeneity (p &lt; &quot;</span>, alpha,</span>
-<span id="cb24-45"><a href="#cb24-45" tabindex="-1"></a>           <span class="st">&quot;). Evidence inconsistent with long-run stationarity.&quot;</span>)</span>
-<span id="cb24-46"><a href="#cb24-46" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb24-47"><a href="#cb24-47" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Fail to reject long-term homogeneity (p ≥ &quot;</span>, alpha,</span>
-<span id="cb24-48"><a href="#cb24-48" tabindex="-1"></a>           <span class="st">&quot;). Transition structure consistent with long-run stationarity.&quot;</span>)</span>
-<span id="cb24-49"><a href="#cb24-49" tabindex="-1"></a>  }</span>
-<span id="cb24-50"><a href="#cb24-50" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb24-24"><a href="#cb24-24" tabindex="-1"></a><span class="co"># Bowker X^2, Pearson X^2 &amp; Likelihood Ratio G^2 long-interval tests</span></span>
+<span id="cb24-25"><a href="#cb24-25" tabindex="-1"></a>db_long_interval_tests <span class="ot">&lt;-</span> <span class="cf">function</span>(tab) {</span>
+<span id="cb24-26"><a href="#cb24-26" tabindex="-1"></a>  pear <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(stats<span class="sc">::</span><span class="fu">chisq.test</span>(tab, <span class="at">correct =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb24-27"><a href="#cb24-27" tabindex="-1"></a></span>
+<span id="cb24-28"><a href="#cb24-28" tabindex="-1"></a>  df_counts <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tab)</span>
+<span id="cb24-29"><a href="#cb24-29" tabindex="-1"></a>  <span class="fu">colnames</span>(df_counts) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;origin&quot;</span>, <span class="st">&quot;dest&quot;</span>, <span class="st">&quot;n&quot;</span>)</span>
+<span id="cb24-30"><a href="#cb24-30" tabindex="-1"></a>  fit_ind <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">loglm</span>(n <span class="sc">~</span> origin <span class="sc">+</span> dest, <span class="at">data =</span> df_counts)</span>
+<span id="cb24-31"><a href="#cb24-31" tabindex="-1"></a>  LR_G2   <span class="ot">&lt;-</span> fit_ind<span class="sc">$</span>deviance</span>
+<span id="cb24-32"><a href="#cb24-32" tabindex="-1"></a>  LR_df   <span class="ot">&lt;-</span> fit_ind<span class="sc">$</span>df</span>
+<span id="cb24-33"><a href="#cb24-33" tabindex="-1"></a>  LR_p    <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">pchisq</span>(LR_G2, LR_df)</span>
+<span id="cb24-34"><a href="#cb24-34" tabindex="-1"></a></span>
+<span id="cb24-35"><a href="#cb24-35" tabindex="-1"></a>  bow <span class="ot">&lt;-</span> <span class="fu">bowker_symmetry_safe</span>(tab)</span>
+<span id="cb24-36"><a href="#cb24-36" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb24-38"><a href="#cb24-38" tabindex="-1"></a>    <span class="at">Pearson =</span> <span class="fu">list</span>(<span class="at">X2 =</span> <span class="fu">unname</span>(pear<span class="sc">$</span>statistic), <span class="at">df =</span> <span class="fu">unname</span>(pear<span class="sc">$</span>parameter), <span class="at">p =</span> pear<span class="sc">$</span>p.value),</span>
+<span id="cb24-39"><a href="#cb24-39" tabindex="-1"></a>    <span class="at">LR      =</span> <span class="fu">list</span>(<span class="at">G2 =</span> LR_G2,                  <span class="at">df =</span> LR_df,                  <span class="at">p =</span> LR_p),</span>
+<span id="cb24-40"><a href="#cb24-40" tabindex="-1"></a>    <span class="at">Bowker  =</span> <span class="fu">list</span>(<span class="at">X2 =</span> bow<span class="sc">$</span>X2,                 <span class="at">df =</span> bow<span class="sc">$</span>df,                 <span class="at">p =</span> bow<span class="sc">$</span>p)</span>
+<span id="cb24-41"><a href="#cb24-41" tabindex="-1"></a>  )</span>
+<span id="cb24-42"><a href="#cb24-42" tabindex="-1"></a>}</span>
+<span id="cb24-43"><a href="#cb24-43" tabindex="-1"></a></span>
+<span id="cb24-44"><a href="#cb24-44" tabindex="-1"></a>interpret_long_association <span class="ot">&lt;-</span> <span class="cf">function</span>(p, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb24-45"><a href="#cb24-45" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(p)) <span class="fu">return</span>(<span class="st">&quot;Not estimable.&quot;</span>)</span>
+<span id="cb24-46"><a href="#cb24-46" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> alpha) <span class="st">&quot;Reject independence. Strong long-run persistence.&quot;</span> <span class="cf">else</span> <span class="st">&quot;Fail to reject independence.&quot;</span></span>
+<span id="cb24-47"><a href="#cb24-47" tabindex="-1"></a>}</span>
+<span id="cb24-48"><a href="#cb24-48" tabindex="-1"></a></span>
+<span id="cb24-49"><a href="#cb24-49" tabindex="-1"></a>interpret_bowker <span class="ot">&lt;-</span> <span class="cf">function</span>(p, df, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb24-50"><a href="#cb24-50" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(p)) <span class="fu">return</span>(<span class="st">&quot;Not estimable.&quot;</span>)</span>
+<span id="cb24-51"><a href="#cb24-51" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> alpha) {</span>
+<span id="cb24-52"><a href="#cb24-52" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Reject symmetry. Directional/asymmetric movement (df=&quot;</span>, df, <span class="st">&quot;).&quot;</span>)</span>
+<span id="cb24-53"><a href="#cb24-53" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb24-54"><a href="#cb24-54" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">&quot;Fail to reject symmetry (df=&quot;</span>, df, <span class="st">&quot;).&quot;</span>)</span>
+<span id="cb24-55"><a href="#cb24-55" tabindex="-1"></a>  }</span>
+<span id="cb24-56"><a href="#cb24-56" tabindex="-1"></a>}</span>
+<span id="cb24-57"><a href="#cb24-57" tabindex="-1"></a></span>
+<span id="cb24-58"><a href="#cb24-58" tabindex="-1"></a>p_fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb24-59"><a href="#cb24-59" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(p)) <span class="fu">return</span>(<span class="st">&quot;NA&quot;</span>)</span>
+<span id="cb24-60"><a href="#cb24-60" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;</span> <span class="fl">0.01</span>) <span class="fu">return</span>(<span class="st">&quot;&lt;0.01&quot;</span>)</span>
+<span id="cb24-61"><a href="#cb24-61" tabindex="-1"></a>  <span class="fu">formatC</span>(p, <span class="at">format =</span> <span class="st">&quot;f&quot;</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb24-62"><a href="#cb24-62" tabindex="-1"></a>}</span>
+<span id="cb24-63"><a href="#cb24-63" tabindex="-1"></a></span>
+<span id="cb24-64"><a href="#cb24-64" tabindex="-1"></a><span class="co"># Output function (P_long removed because unused)</span></span>
+<span id="cb24-65"><a href="#cb24-65" tabindex="-1"></a>print_long_interval_block <span class="ot">&lt;-</span> <span class="cf">function</span>(label, start_year, end_year, long_obj, <span class="at">alpha =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb24-66"><a href="#cb24-66" tabindex="-1"></a>  tests <span class="ot">&lt;-</span> <span class="fu">db_long_interval_tests</span>(long_obj<span class="sc">$</span>tab)</span>
+<span id="cb24-67"><a href="#cb24-67" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">----------------------------------------</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-68"><a href="#cb24-68" tabindex="-1"></a>  <span class="fu">cat</span>(label, <span class="st">&quot;Long-Interval Diagnostics (&quot;</span>, start_year, <span class="st">&quot; -&gt; &quot;</span>, end_year, <span class="st">&quot;)</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span>
+<span id="cb24-69"><a href="#cb24-69" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;----------------------------------------</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-70"><a href="#cb24-70" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Test statistics:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-71"><a href="#cb24-71" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Pearson Chi-square:          X^2 =&quot;</span>, <span class="fu">round</span>(tests<span class="sc">$</span>Pearson<span class="sc">$</span>X2, <span class="dv">2</span>),</span>
+<span id="cb24-72"><a href="#cb24-72" tabindex="-1"></a>      <span class="st">&quot; df =&quot;</span>, tests<span class="sc">$</span>Pearson<span class="sc">$</span>df,</span>
+<span id="cb24-73"><a href="#cb24-73" tabindex="-1"></a>      <span class="st">&quot; p =&quot;</span>, <span class="fu">p_fmt</span>(tests<span class="sc">$</span>Pearson<span class="sc">$</span>p), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-74"><a href="#cb24-74" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Likelihood Ratio Chi-square: G^2 =&quot;</span>, <span class="fu">round</span>(tests<span class="sc">$</span>LR<span class="sc">$</span>G2, <span class="dv">2</span>),</span>
+<span id="cb24-75"><a href="#cb24-75" tabindex="-1"></a>      <span class="st">&quot; df =&quot;</span>, tests<span class="sc">$</span>LR<span class="sc">$</span>df,</span>
+<span id="cb24-76"><a href="#cb24-76" tabindex="-1"></a>      <span class="st">&quot; p =&quot;</span>, <span class="fu">p_fmt</span>(tests<span class="sc">$</span>LR<span class="sc">$</span>p), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-77"><a href="#cb24-77" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Bowker Symmetry Chi-square:  X^2 =&quot;</span>, <span class="fu">round</span>(tests<span class="sc">$</span>Bowker<span class="sc">$</span>X2, <span class="dv">2</span>),</span>
+<span id="cb24-78"><a href="#cb24-78" tabindex="-1"></a>      <span class="st">&quot; df =&quot;</span>, tests<span class="sc">$</span>Bowker<span class="sc">$</span>df,</span>
+<span id="cb24-79"><a href="#cb24-79" tabindex="-1"></a>      <span class="st">&quot; p =&quot;</span>, <span class="fu">p_fmt</span>(tests<span class="sc">$</span>Bowker<span class="sc">$</span>p), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-80"><a href="#cb24-80" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Interpretation:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-81"><a href="#cb24-81" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Pearson:&quot;</span>, <span class="fu">interpret_long_association</span>(tests<span class="sc">$</span>Pearson<span class="sc">$</span>p, <span class="at">alpha =</span> alpha), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-82"><a href="#cb24-82" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Likelihood Ratio:&quot;</span>, <span class="fu">interpret_long_association</span>(tests<span class="sc">$</span>LR<span class="sc">$</span>p, <span class="at">alpha =</span> alpha), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-83"><a href="#cb24-83" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Bowker:&quot;</span>, <span class="fu">interpret_bowker</span>(tests<span class="sc">$</span>Bowker<span class="sc">$</span>p, <span class="at">df =</span> tests<span class="sc">$</span>Bowker<span class="sc">$</span>df, <span class="at">alpha =</span> alpha), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb24-84"><a href="#cb24-84" tabindex="-1"></a></span>
+<span id="cb24-85"><a href="#cb24-85" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">list</span>(<span class="at">tests =</span> tests))</span>
+<span id="cb24-86"><a href="#cb24-86" tabindex="-1"></a>}</span></code></pre></div>
 <div id="era-1-1860-1880-4" class="section level4" number="1.0.6.1">
 <h4><span class="header-section-number">1.0.6.1</span> ERA 1
 1860-1880</h4>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># ---- Long-interval test (1860 → 1880) ----</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>long1 <span class="ot">&lt;-</span> <span class="fu">build_long_interval</span>(<span class="at">data        =</span> df1,</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>                             <span class="at">start_year  =</span> <span class="dv">1860</span>,</span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>                             <span class="at">end_year    =</span> <span class="dv">1880</span>,</span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>                             <span class="at">full_levels =</span> levels_era1)</span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>test1_long <span class="ot">&lt;-</span> <span class="fu">test_long_interval_stationarity</span>(long1<span class="sc">$</span>tab)</span>
-<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 1 Long-interval test:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test1_long<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
-<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test1_long<span class="sc">$</span>df,</span>
-<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test1_long<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>,</span>
-<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a>    <span class="fu">interpret_long_interval</span>(test1_long<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">print_long_interval_block</span>(<span class="st">&quot;ERA 1&quot;</span>, <span class="dv">1860</span>, <span class="dv">1880</span>, long1, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
 <pre><code>
-ERA 1 Long-interval test:
-G^2 = 61  df = 4  p = 0.0000000000015 
-Interpretation: Reject long-term homogeneity (p &lt; 0.05). Evidence inconsistent with long-run stationarity. </code></pre>
+----------------------------------------
+ERA 1 Long-Interval Diagnostics ( 1860  -&gt;  1880 )
+----------------------------------------
+
+Test statistics:
+Pearson Chi-square:          X^2 = 61  df = 4  p = &lt;0.01 
+Likelihood Ratio Chi-square: G^2 = 61  df = 4  p = &lt;0.01 
+Bowker Symmetry Chi-square:  X^2 = 1  df = 1  p = 0.32 
+
+Interpretation:
+Pearson: Reject independence. Strong long-run persistence. 
+Likelihood Ratio: Reject independence. Strong long-run persistence. 
+Bowker: Fail to reject symmetry (df=1). </code></pre>
 </div>
 <div id="era-2-1881-1916-4" class="section level4" number="1.0.6.2">
 <h4><span class="header-section-number">1.0.6.2</span> ERA 2
 1881-1916</h4>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># ---- Long-interval test (1881 → 1916) ----</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>long2 <span class="ot">&lt;-</span> <span class="fu">build_long_interval</span>(</span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  <span class="at">data        =</span> df2,</span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="at">start_year  =</span> <span class="dv">1881</span>,</span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>  <span class="at">end_year    =</span> <span class="dv">1916</span>,</span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>  <span class="at">full_levels =</span> levels_era2)</span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>test2_long <span class="ot">&lt;-</span> <span class="fu">test_long_interval_stationarity</span>(long2<span class="sc">$</span>tab)</span>
-<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">ERA 2 Long-interval test:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;G^2 =&quot;</span>, <span class="fu">round</span>(test2_long<span class="sc">$</span>G2, <span class="dv">3</span>),</span>
-<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>    <span class="st">&quot; df =&quot;</span>, test2_long<span class="sc">$</span>df,</span>
-<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a>    <span class="st">&quot; p =&quot;</span>, <span class="fu">signif</span>(test2_long<span class="sc">$</span>p_value, <span class="dv">4</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Interpretation:&quot;</span>,</span>
-<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a>    <span class="fu">interpret_long_interval</span>(test2_long<span class="sc">$</span>p_value), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">print_long_interval_block</span>(<span class="st">&quot;ERA 2&quot;</span>, <span class="dv">1881</span>, <span class="dv">1916</span>, long2, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span></code></pre></div>
 <pre><code>
-ERA 2 Long-interval test:
-G^2 = 55  df = 9  p = 0.000000014 
-Interpretation: Reject long-term homogeneity (p &lt; 0.05). Evidence inconsistent with long-run stationarity. </code></pre>
+----------------------------------------
+ERA 2 Long-Interval Diagnostics ( 1881  -&gt;  1916 )
+----------------------------------------
+
+Test statistics:
+Pearson Chi-square:          X^2 = 53  df = 9  p = &lt;0.01 
+Likelihood Ratio Chi-square: G^2 = 55  df = 9  p = &lt;0.01 
+Bowker Symmetry Chi-square:  X^2 = 10  df = 2  p = &lt;0.01 
+
+Interpretation:
+Pearson: Reject independence. Strong long-run persistence. 
+Likelihood Ratio: Reject independence. Strong long-run persistence. 
+Bowker: Reject symmetry. Directional/asymmetric movement (df=2). </code></pre>
 </div>
 </div>
 <div id="higher-order-dependency-structure" class="section level3" number="1.0.7">
@@ -4412,260 +4471,250 @@ Methodological Notes</h3>
 <span id="cb42-158"><a href="#cb42-158" tabindex="-1"></a><span class="co">#     Markov chains for income distributions.</span></span>
 <span id="cb42-159"><a href="#cb42-159" tabindex="-1"></a></span>
 <span id="cb42-160"><a href="#cb42-160" tabindex="-1"></a></span>
-<span id="cb42-161"><a href="#cb42-161" tabindex="-1"></a><span class="co"># Long-interval homogeneity tests</span></span>
+<span id="cb42-161"><a href="#cb42-161" tabindex="-1"></a><span class="co"># Long-interval transition diagnostics (D&amp;B-style)</span></span>
 <span id="cb42-162"><a href="#cb42-162" tabindex="-1"></a></span>
 <span id="cb42-163"><a href="#cb42-163" tabindex="-1"></a></span>
 <span id="cb42-164"><a href="#cb42-164" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-165"><a href="#cb42-165" tabindex="-1"></a><span class="co">#   Build a *long-interval* transition matrix for each era and test</span></span>
-<span id="cb42-166"><a href="#cb42-166" tabindex="-1"></a><span class="co">#   whether it is consistent with a stationary/quasi-symmetric structure.</span></span>
-<span id="cb42-167"><a href="#cb42-167" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-168"><a href="#cb42-168" tabindex="-1"></a><span class="co">#   Here we treat the initial and final snapshots (start_year, end_year)</span></span>
-<span id="cb42-169"><a href="#cb42-169" tabindex="-1"></a><span class="co">#   as two “waves” in a square contingency table:</span></span>
-<span id="cb42-170"><a href="#cb42-170" tabindex="-1"></a><span class="co">#     rows = start-year classes,</span></span>
-<span id="cb42-171"><a href="#cb42-171" tabindex="-1"></a><span class="co">#     cols = end-year classes.</span></span>
-<span id="cb42-172"><a href="#cb42-172" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-173"><a href="#cb42-173" tabindex="-1"></a><span class="co"># Data construction:</span></span>
-<span id="cb42-174"><a href="#cb42-174" tabindex="-1"></a><span class="co">#   For each country u:</span></span>
-<span id="cb42-175"><a href="#cb42-175" tabindex="-1"></a><span class="co">#     class_start(u) = class in start_year,</span></span>
-<span id="cb42-176"><a href="#cb42-176" tabindex="-1"></a><span class="co">#     class_end(u)   = class in end_year.</span></span>
-<span id="cb42-177"><a href="#cb42-177" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-178"><a href="#cb42-178" tabindex="-1"></a><span class="co">#   We then build the 2-way table:</span></span>
-<span id="cb42-179"><a href="#cb42-179" tabindex="-1"></a><span class="co">#     L_{ij} = # of countries with class_start = i and class_end = j.</span></span>
-<span id="cb42-180"><a href="#cb42-180" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-181"><a href="#cb42-181" tabindex="-1"></a><span class="co"># Log-linear testing:</span></span>
-<span id="cb42-182"><a href="#cb42-182" tabindex="-1"></a><span class="co">#   We compare:</span></span>
-<span id="cb42-183"><a href="#cb42-183" tabindex="-1"></a><span class="co">#   - H0: structured (origin + dest) model:</span></span>
-<span id="cb42-184"><a href="#cb42-184" tabindex="-1"></a><span class="co">#       log ν_{ij} = α_i + β_j,</span></span>
-<span id="cb42-185"><a href="#cb42-185" tabindex="-1"></a><span class="co">#     which implies that rows and columns are independent up to</span></span>
-<span id="cb42-186"><a href="#cb42-186" tabindex="-1"></a><span class="co">#     row and column effects (a kind of “quasi-stationary” structure),</span></span>
-<span id="cb42-187"><a href="#cb42-187" tabindex="-1"></a><span class="co">#     closely related to mobility models and quasi-symmetry ideas.</span></span>
+<span id="cb42-165"><a href="#cb42-165" tabindex="-1"></a><span class="co">#   Assess long-run persistence and directionality by testing the</span></span>
+<span id="cb42-166"><a href="#cb42-166" tabindex="-1"></a><span class="co">#   association between countries’ origin class at the first snapshot</span></span>
+<span id="cb42-167"><a href="#cb42-167" tabindex="-1"></a><span class="co">#   year t0 and destination class at the last snapshot year tT.</span></span>
+<span id="cb42-168"><a href="#cb42-168" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-169"><a href="#cb42-169" tabindex="-1"></a><span class="co"># Data structure:</span></span>
+<span id="cb42-170"><a href="#cb42-170" tabindex="-1"></a><span class="co">#   - Construct a 2D contingency table N_ij:</span></span>
+<span id="cb42-171"><a href="#cb42-171" tabindex="-1"></a><span class="co">#       O = origin class at t0,</span></span>
+<span id="cb42-172"><a href="#cb42-172" tabindex="-1"></a><span class="co">#       D = destination class at tT,</span></span>
+<span id="cb42-173"><a href="#cb42-173" tabindex="-1"></a><span class="co">#     where N_ij counts countries observed at BOTH endpoints.</span></span>
+<span id="cb42-174"><a href="#cb42-174" tabindex="-1"></a><span class="co">#   - Note: this is an endpoint-matched sample (not a fully balanced</span></span>
+<span id="cb42-175"><a href="#cb42-175" tabindex="-1"></a><span class="co">#     panel across all intermediate snapshots).</span></span>
+<span id="cb42-176"><a href="#cb42-176" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-177"><a href="#cb42-177" tabindex="-1"></a><span class="co"># Models / null hypotheses:</span></span>
+<span id="cb42-178"><a href="#cb42-178" tabindex="-1"></a><span class="co">#   1) Independence (association / persistence):</span></span>
+<span id="cb42-179"><a href="#cb42-179" tabindex="-1"></a><span class="co">#        H0: O ⟂ D</span></span>
+<span id="cb42-180"><a href="#cb42-180" tabindex="-1"></a><span class="co">#      Tested with:</span></span>
+<span id="cb42-181"><a href="#cb42-181" tabindex="-1"></a><span class="co">#        - Pearson X^2 on N_ij, and</span></span>
+<span id="cb42-182"><a href="#cb42-182" tabindex="-1"></a><span class="co">#        - Likelihood-ratio G^2 from the log-linear independence model:</span></span>
+<span id="cb42-183"><a href="#cb42-183" tabindex="-1"></a><span class="co">#            log μ_ij = λ + λ_i^(O) + λ_j^(D)</span></span>
+<span id="cb42-184"><a href="#cb42-184" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-185"><a href="#cb42-185" tabindex="-1"></a><span class="co">#   2) Symmetry (directionality):</span></span>
+<span id="cb42-186"><a href="#cb42-186" tabindex="-1"></a><span class="co">#        H0: N_ij = N_ji for all i ≠ j</span></span>
+<span id="cb42-187"><a href="#cb42-187" tabindex="-1"></a><span class="co">#      Tested with Bowker’s symmetry chi-square (generalized McNemar).</span></span>
 <span id="cb42-188"><a href="#cb42-188" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-189"><a href="#cb42-189" tabindex="-1"></a><span class="co">#   - H1: saturated model:</span></span>
-<span id="cb42-190"><a href="#cb42-190" tabindex="-1"></a><span class="co">#       log ν_{ij} = γ_{ij},     (free mean for each cell).</span></span>
-<span id="cb42-191"><a href="#cb42-191" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-192"><a href="#cb42-192" tabindex="-1"></a><span class="co">#   LR test:</span></span>
-<span id="cb42-193"><a href="#cb42-193" tabindex="-1"></a><span class="co">#     G^2_long = dev(H0) - dev(H1),</span></span>
-<span id="cb42-194"><a href="#cb42-194" tabindex="-1"></a><span class="co">#     df_long  = df(H0) - df(H1),</span></span>
-<span id="cb42-195"><a href="#cb42-195" tabindex="-1"></a><span class="co">#     p-value from χ^2_{df_long}.</span></span>
-<span id="cb42-196"><a href="#cb42-196" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-197"><a href="#cb42-197" tabindex="-1"></a><span class="co"># Information-theoretic view:</span></span>
-<span id="cb42-198"><a href="#cb42-198" tabindex="-1"></a><span class="co">#   As in the homogeneity test, the deviance is 2×(sample size) times</span></span>
-<span id="cb42-199"><a href="#cb42-199" tabindex="-1"></a><span class="co">#   a Kullback-Leibler divergence between empirical L_{ij}/N and</span></span>
-<span id="cb42-200"><a href="#cb42-200" tabindex="-1"></a><span class="co">#   the fitted ν̂_{ij}/N (Kullback &amp; Leibler 1951; Kullback, Kupperman</span></span>
-<span id="cb42-201"><a href="#cb42-201" tabindex="-1"></a><span class="co">#   &amp; Ku 1962; Bishop et al. 1975).</span></span>
-<span id="cb42-202"><a href="#cb42-202" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-203"><a href="#cb42-203" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb42-204"><a href="#cb42-204" tabindex="-1"></a><span class="co">#   Kullback, Kupperman &amp; Ku (1962) &quot;Tests for Contingency Tables and</span></span>
-<span id="cb42-205"><a href="#cb42-205" tabindex="-1"></a><span class="co">#   Markov Chains&quot;, Technometrics.</span></span>
-<span id="cb42-206"><a href="#cb42-206" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) &quot;Discrete Multivariate Analysis&quot;.</span></span>
-<span id="cb42-207"><a href="#cb42-207" tabindex="-1"></a><span class="co">#   Goodman (1971, Technometrics) on log-linear models for multidimensional</span></span>
-<span id="cb42-208"><a href="#cb42-208" tabindex="-1"></a><span class="co">#   tables.</span></span>
-<span id="cb42-209"><a href="#cb42-209" tabindex="-1"></a></span>
-<span id="cb42-210"><a href="#cb42-210" tabindex="-1"></a></span>
-<span id="cb42-211"><a href="#cb42-211" tabindex="-1"></a><span class="co"># Markov pairs X_t, X_{t+1} (0 → 1 order)</span></span>
-<span id="cb42-212"><a href="#cb42-212" tabindex="-1"></a></span>
-<span id="cb42-213"><a href="#cb42-213" tabindex="-1"></a></span>
-<span id="cb42-214"><a href="#cb42-214" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-215"><a href="#cb42-215" tabindex="-1"></a><span class="co">#   Construct ordered pairs (X_t, X_{t+1}) for estimating and testing</span></span>
-<span id="cb42-216"><a href="#cb42-216" tabindex="-1"></a><span class="co">#   *zero-order vs first-order* dependence in a discrete-state process.</span></span>
+<span id="cb42-189"><a href="#cb42-189" tabindex="-1"></a><span class="co"># Interpretation:</span></span>
+<span id="cb42-190"><a href="#cb42-190" tabindex="-1"></a><span class="co">#   - Reject independence (Pearson or G^2): origin predicts destination</span></span>
+<span id="cb42-191"><a href="#cb42-191" tabindex="-1"></a><span class="co">#     over the long interval (long-run persistence / stratification).</span></span>
+<span id="cb42-192"><a href="#cb42-192" tabindex="-1"></a><span class="co">#   - Reject symmetry (Bowker): net directional movement between at least</span></span>
+<span id="cb42-193"><a href="#cb42-193" tabindex="-1"></a><span class="co">#     one class pair (asymmetric i→j vs j→i flows).</span></span>
+<span id="cb42-194"><a href="#cb42-194" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-195"><a href="#cb42-195" tabindex="-1"></a><span class="co"># Relation to other diagnostics:</span></span>
+<span id="cb42-196"><a href="#cb42-196" tabindex="-1"></a><span class="co">#   - Complements step-homogeneity tests: it does NOT test time-homogeneity</span></span>
+<span id="cb42-197"><a href="#cb42-197" tabindex="-1"></a><span class="co">#     across intermediate 5-year steps; it summarizes start–end dependence</span></span>
+<span id="cb42-198"><a href="#cb42-198" tabindex="-1"></a><span class="co">#     over the full era (Dezzani 2002; Babones &amp; Dezzani 2008).</span></span>
+<span id="cb42-199"><a href="#cb42-199" tabindex="-1"></a></span>
+<span id="cb42-200"><a href="#cb42-200" tabindex="-1"></a></span>
+<span id="cb42-201"><a href="#cb42-201" tabindex="-1"></a><span class="co"># Markov pairs X_t, X_{t+1} (0 → 1 order)</span></span>
+<span id="cb42-202"><a href="#cb42-202" tabindex="-1"></a></span>
+<span id="cb42-203"><a href="#cb42-203" tabindex="-1"></a></span>
+<span id="cb42-204"><a href="#cb42-204" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-205"><a href="#cb42-205" tabindex="-1"></a><span class="co">#   Construct ordered pairs (X_t, X_{t+1}) for estimating and testing</span></span>
+<span id="cb42-206"><a href="#cb42-206" tabindex="-1"></a><span class="co">#   *zero-order vs first-order* dependence in a discrete-state process.</span></span>
+<span id="cb42-207"><a href="#cb42-207" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-208"><a href="#cb42-208" tabindex="-1"></a><span class="co">#   Specifically, the pair table supports the hypothesis test:</span></span>
+<span id="cb42-209"><a href="#cb42-209" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-210"><a href="#cb42-210" tabindex="-1"></a><span class="co">#     H0 (0th order / independence):   X_{t+1} ⟂ X_t</span></span>
+<span id="cb42-211"><a href="#cb42-211" tabindex="-1"></a><span class="co">#     H1 (1st order / Markov):         X_{t+1} depends on X_t</span></span>
+<span id="cb42-212"><a href="#cb42-212" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-213"><a href="#cb42-213" tabindex="-1"></a><span class="co">#   In a Markov-chain setting, H1 corresponds to the standard</span></span>
+<span id="cb42-214"><a href="#cb42-214" tabindex="-1"></a><span class="co">#   first-order dependence assumption used to estimate a transition</span></span>
+<span id="cb42-215"><a href="#cb42-215" tabindex="-1"></a><span class="co">#   matrix P with entries P_ij = Pr(X_{t+1}=j | X_t=i), as developed in</span></span>
+<span id="cb42-216"><a href="#cb42-216" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957, Annals of Mathematical Statistics).</span></span>
 <span id="cb42-217"><a href="#cb42-217" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-218"><a href="#cb42-218" tabindex="-1"></a><span class="co">#   Specifically, the pair table supports the hypothesis test:</span></span>
-<span id="cb42-219"><a href="#cb42-219" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-220"><a href="#cb42-220" tabindex="-1"></a><span class="co">#     H0 (0th order / independence):   X_{t+1} ⟂ X_t</span></span>
-<span id="cb42-221"><a href="#cb42-221" tabindex="-1"></a><span class="co">#     H1 (1st order / Markov):         X_{t+1} depends on X_t</span></span>
-<span id="cb42-222"><a href="#cb42-222" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-223"><a href="#cb42-223" tabindex="-1"></a><span class="co">#   In a Markov-chain setting, H1 corresponds to the standard</span></span>
-<span id="cb42-224"><a href="#cb42-224" tabindex="-1"></a><span class="co">#   first-order dependence assumption used to estimate a transition</span></span>
-<span id="cb42-225"><a href="#cb42-225" tabindex="-1"></a><span class="co">#   matrix P with entries P_ij = Pr(X_{t+1}=j | X_t=i), as developed in</span></span>
-<span id="cb42-226"><a href="#cb42-226" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957, Annals of Mathematical Statistics).</span></span>
-<span id="cb42-227"><a href="#cb42-227" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-228"><a href="#cb42-228" tabindex="-1"></a><span class="co">#   In contingency-table terms, we represent transitions as a 2-way table</span></span>
-<span id="cb42-229"><a href="#cb42-229" tabindex="-1"></a><span class="co">#   N_{ij} of origin (i = X_t) by destination (j = X_{t+1}) counts and fit</span></span>
-<span id="cb42-230"><a href="#cb42-230" tabindex="-1"></a><span class="co">#   hierarchical log-linear models:</span></span>
-<span id="cb42-231"><a href="#cb42-231" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-232"><a href="#cb42-232" tabindex="-1"></a><span class="co">#     - Independence (0th order):</span></span>
-<span id="cb42-233"><a href="#cb42-233" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D)</span></span>
-<span id="cb42-234"><a href="#cb42-234" tabindex="-1"></a><span class="co">#         (no origin-destination association)</span></span>
-<span id="cb42-235"><a href="#cb42-235" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-236"><a href="#cb42-236" tabindex="-1"></a><span class="co">#     - Association (1st order):</span></span>
-<span id="cb42-237"><a href="#cb42-237" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
+<span id="cb42-218"><a href="#cb42-218" tabindex="-1"></a><span class="co">#   In contingency-table terms, we represent transitions as a 2-way table</span></span>
+<span id="cb42-219"><a href="#cb42-219" tabindex="-1"></a><span class="co">#   N_{ij} of origin (i = X_t) by destination (j = X_{t+1}) counts and fit</span></span>
+<span id="cb42-220"><a href="#cb42-220" tabindex="-1"></a><span class="co">#   hierarchical log-linear models:</span></span>
+<span id="cb42-221"><a href="#cb42-221" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-222"><a href="#cb42-222" tabindex="-1"></a><span class="co">#     - Independence (0th order):</span></span>
+<span id="cb42-223"><a href="#cb42-223" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D)</span></span>
+<span id="cb42-224"><a href="#cb42-224" tabindex="-1"></a><span class="co">#         (no origin-destination association)</span></span>
+<span id="cb42-225"><a href="#cb42-225" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-226"><a href="#cb42-226" tabindex="-1"></a><span class="co">#     - Association (1st order):</span></span>
+<span id="cb42-227"><a href="#cb42-227" tabindex="-1"></a><span class="co">#         log μ_{ij} = λ + λ_i^(O) + λ_j^(D) + λ_{ij}^{(OD)}</span></span>
+<span id="cb42-228"><a href="#cb42-228" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-229"><a href="#cb42-229" tabindex="-1"></a><span class="co">#   The likelihood-ratio deviance G^2 compares these models:</span></span>
+<span id="cb42-230"><a href="#cb42-230" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-231"><a href="#cb42-231" tabindex="-1"></a><span class="co">#     G^2 = 2 Σ_{ij} n_{ij} log(n_{ij} / μ̂_{ij})</span></span>
+<span id="cb42-232"><a href="#cb42-232" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-233"><a href="#cb42-233" tabindex="-1"></a><span class="co">#   which is 2N times a Kullback-Leibler divergence between empirical</span></span>
+<span id="cb42-234"><a href="#cb42-234" tabindex="-1"></a><span class="co">#   and fitted cell probabilities (Kullback &amp; Leibler 1951; Kullback,</span></span>
+<span id="cb42-235"><a href="#cb42-235" tabindex="-1"></a><span class="co">#   Kupperman &amp; Ku 1962). Under standard regularity conditions, G^2</span></span>
+<span id="cb42-236"><a href="#cb42-236" tabindex="-1"></a><span class="co">#   is asymptotically χ² (Anderson &amp; Goodman 1957; Bishop, Fienberg &amp;</span></span>
+<span id="cb42-237"><a href="#cb42-237" tabindex="-1"></a><span class="co">#   Holland 1975/2007; Goodman 1971).</span></span>
 <span id="cb42-238"><a href="#cb42-238" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-239"><a href="#cb42-239" tabindex="-1"></a><span class="co">#   The likelihood-ratio deviance G^2 compares these models:</span></span>
-<span id="cb42-240"><a href="#cb42-240" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-241"><a href="#cb42-241" tabindex="-1"></a><span class="co">#     G^2 = 2 Σ_{ij} n_{ij} log(n_{ij} / μ̂_{ij})</span></span>
-<span id="cb42-242"><a href="#cb42-242" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-243"><a href="#cb42-243" tabindex="-1"></a><span class="co">#   which is 2N times a Kullback-Leibler divergence between empirical</span></span>
-<span id="cb42-244"><a href="#cb42-244" tabindex="-1"></a><span class="co">#   and fitted cell probabilities (Kullback &amp; Leibler 1951; Kullback,</span></span>
-<span id="cb42-245"><a href="#cb42-245" tabindex="-1"></a><span class="co">#   Kupperman &amp; Ku 1962). Under standard regularity conditions, G^2</span></span>
-<span id="cb42-246"><a href="#cb42-246" tabindex="-1"></a><span class="co">#   is asymptotically χ² (Anderson &amp; Goodman 1957; Bishop, Fienberg &amp;</span></span>
-<span id="cb42-247"><a href="#cb42-247" tabindex="-1"></a><span class="co">#   Holland 1975/2007; Goodman 1971).</span></span>
-<span id="cb42-248"><a href="#cb42-248" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-249"><a href="#cb42-249" tabindex="-1"></a><span class="co"># Inputs:</span></span>
-<span id="cb42-250"><a href="#cb42-250" tabindex="-1"></a><span class="co">#   data          : data frame with columns stateabb, year, class.</span></span>
-<span id="cb42-251"><a href="#cb42-251" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years.</span></span>
-<span id="cb42-252"><a href="#cb42-252" tabindex="-1"></a><span class="co">#   step          : spacing constraint between consecutive snapshots</span></span>
-<span id="cb42-253"><a href="#cb42-253" tabindex="-1"></a><span class="co">#                   (e.g., 7; 8; or a vector like c(7,7,6)).</span></span>
-<span id="cb42-254"><a href="#cb42-254" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class (fixed state space S).</span></span>
-<span id="cb42-255"><a href="#cb42-255" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-256"><a href="#cb42-256" tabindex="-1"></a><span class="co"># Output:</span></span>
-<span id="cb42-257"><a href="#cb42-257" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
-<span id="cb42-258"><a href="#cb42-258" tabindex="-1"></a><span class="co">#     stateabb, year, class_prev, class_curr</span></span>
-<span id="cb42-259"><a href="#cb42-259" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
-<span id="cb42-260"><a href="#cb42-260" tabindex="-1"></a></span>
-<span id="cb42-261"><a href="#cb42-261" tabindex="-1"></a></span>
-<span id="cb42-262"><a href="#cb42-262" tabindex="-1"></a><span class="co"># Markov triples X_{t-1}, X_t, X_{t+1} (1 → 2 order)</span></span>
-<span id="cb42-263"><a href="#cb42-263" tabindex="-1"></a></span>
-<span id="cb42-264"><a href="#cb42-264" tabindex="-1"></a></span>
-<span id="cb42-265"><a href="#cb42-265" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-266"><a href="#cb42-266" tabindex="-1"></a><span class="co">#   Construct triples (X_{t-1}, X_t, X_{t+1}) for testing the</span></span>
-<span id="cb42-267"><a href="#cb42-267" tabindex="-1"></a><span class="co">#   first-order Markov property:</span></span>
-<span id="cb42-268"><a href="#cb42-268" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-269"><a href="#cb42-269" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
-<span id="cb42-270"><a href="#cb42-270" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-271"><a href="#cb42-271" tabindex="-1"></a><span class="co">#   Following Anderson &amp; Goodman (1957, Annals of Mathematical</span></span>
-<span id="cb42-272"><a href="#cb42-272" tabindex="-1"></a><span class="co">#   Statistics) and the log-linear representation of Markov chains</span></span>
-<span id="cb42-273"><a href="#cb42-273" tabindex="-1"></a><span class="co">#   in Bishop, Fienberg &amp; Holland (1975/2007, Discrete Multivariate</span></span>
-<span id="cb42-274"><a href="#cb42-274" tabindex="-1"></a><span class="co">#   Analysis) and Goodman (1971, Technometrics).</span></span>
-<span id="cb42-275"><a href="#cb42-275" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-276"><a href="#cb42-276" tabindex="-1"></a><span class="co"># Inputs:</span></span>
-<span id="cb42-277"><a href="#cb42-277" tabindex="-1"></a><span class="co">#   data          : df with stateabb, year, class</span></span>
-<span id="cb42-278"><a href="#cb42-278" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years</span></span>
-<span id="cb42-279"><a href="#cb42-279" tabindex="-1"></a><span class="co">#   step          : spacing between snapshots (e.g., 7, 8)</span></span>
-<span id="cb42-280"><a href="#cb42-280" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class</span></span>
-<span id="cb42-281"><a href="#cb42-281" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-282"><a href="#cb42-282" tabindex="-1"></a><span class="co"># Output:</span></span>
-<span id="cb42-283"><a href="#cb42-283" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
-<span id="cb42-284"><a href="#cb42-284" tabindex="-1"></a><span class="co">#     stateabb, year, class_lag2, class_lag1, class_curr</span></span>
-<span id="cb42-285"><a href="#cb42-285" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
-<span id="cb42-286"><a href="#cb42-286" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-287"><a href="#cb42-287" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb42-288"><a href="#cb42-288" tabindex="-1"></a><span class="co">#   Anderson, T.W. &amp; Goodman, L.A. (1957). &quot;Statistical Inference about</span></span>
-<span id="cb42-289"><a href="#cb42-289" tabindex="-1"></a><span class="co">#     Markov Chains.&quot; Annals of Mathematical Statistics.</span></span>
-<span id="cb42-290"><a href="#cb42-290" tabindex="-1"></a><span class="co">#   Bishop, Y.M.M., Fienberg, S.E., &amp; Holland, P.W. (1975/2007).</span></span>
-<span id="cb42-291"><a href="#cb42-291" tabindex="-1"></a><span class="co">#     Discrete Multivariate Analysis. MIT Press.</span></span>
-<span id="cb42-292"><a href="#cb42-292" tabindex="-1"></a><span class="co">#   Goodman, L.A. (1971). &quot;The Analysis of Multidimensional Contingency</span></span>
-<span id="cb42-293"><a href="#cb42-293" tabindex="-1"></a><span class="co">#     Tables.&quot; Technometrics.</span></span>
-<span id="cb42-294"><a href="#cb42-294" tabindex="-1"></a><span class="co">#   Kullback, S. &amp; Leibler, R.A. (1951). &quot;On Information and Sufficiency.&quot;</span></span>
-<span id="cb42-295"><a href="#cb42-295" tabindex="-1"></a><span class="co">#     Annals of Mathematical Statistics.</span></span>
-<span id="cb42-296"><a href="#cb42-296" tabindex="-1"></a><span class="co">#   Kullback, S., Kupperman, M., &amp; Ku, H. (1962). &quot;Tests for Contingency</span></span>
-<span id="cb42-297"><a href="#cb42-297" tabindex="-1"></a><span class="co">#     Tables and Markov Chains.&quot; Technometrics.</span></span>
-<span id="cb42-298"><a href="#cb42-298" tabindex="-1"></a></span>
-<span id="cb42-299"><a href="#cb42-299" tabindex="-1"></a></span>
-<span id="cb42-300"><a href="#cb42-300" tabindex="-1"></a><span class="co"># 0 vs 1 order tests (X_{t-1}, X_t)</span></span>
-<span id="cb42-301"><a href="#cb42-301" tabindex="-1"></a></span>
-<span id="cb42-302"><a href="#cb42-302" tabindex="-1"></a></span>
-<span id="cb42-303"><a href="#cb42-303" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-304"><a href="#cb42-304" tabindex="-1"></a><span class="co">#   Test the first-order Markov property:</span></span>
-<span id="cb42-305"><a href="#cb42-305" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-306"><a href="#cb42-306" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
-<span id="cb42-307"><a href="#cb42-307" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-308"><a href="#cb42-308" tabindex="-1"></a><span class="co">#   using a three-way contingency table:</span></span>
-<span id="cb42-309"><a href="#cb42-309" tabindex="-1"></a><span class="co">#     L = X_{t-1}, M = X_t, N = X_{t+1}.</span></span>
-<span id="cb42-310"><a href="#cb42-310" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-311"><a href="#cb42-311" tabindex="-1"></a><span class="co"># Log-linear models:</span></span>
+<span id="cb42-239"><a href="#cb42-239" tabindex="-1"></a><span class="co"># Inputs:</span></span>
+<span id="cb42-240"><a href="#cb42-240" tabindex="-1"></a><span class="co">#   data          : data frame with columns stateabb, year, class.</span></span>
+<span id="cb42-241"><a href="#cb42-241" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years.</span></span>
+<span id="cb42-242"><a href="#cb42-242" tabindex="-1"></a><span class="co">#   step          : spacing constraint between consecutive snapshots</span></span>
+<span id="cb42-243"><a href="#cb42-243" tabindex="-1"></a><span class="co">#                   (e.g., 7; 8; or a vector like c(7,7,6)).</span></span>
+<span id="cb42-244"><a href="#cb42-244" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class (fixed state space S).</span></span>
+<span id="cb42-245"><a href="#cb42-245" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-246"><a href="#cb42-246" tabindex="-1"></a><span class="co"># Output:</span></span>
+<span id="cb42-247"><a href="#cb42-247" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
+<span id="cb42-248"><a href="#cb42-248" tabindex="-1"></a><span class="co">#     stateabb, year, class_prev, class_curr</span></span>
+<span id="cb42-249"><a href="#cb42-249" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
+<span id="cb42-250"><a href="#cb42-250" tabindex="-1"></a></span>
+<span id="cb42-251"><a href="#cb42-251" tabindex="-1"></a></span>
+<span id="cb42-252"><a href="#cb42-252" tabindex="-1"></a><span class="co"># Markov triples X_{t-1}, X_t, X_{t+1} (1 → 2 order)</span></span>
+<span id="cb42-253"><a href="#cb42-253" tabindex="-1"></a></span>
+<span id="cb42-254"><a href="#cb42-254" tabindex="-1"></a></span>
+<span id="cb42-255"><a href="#cb42-255" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-256"><a href="#cb42-256" tabindex="-1"></a><span class="co">#   Construct triples (X_{t-1}, X_t, X_{t+1}) for testing the</span></span>
+<span id="cb42-257"><a href="#cb42-257" tabindex="-1"></a><span class="co">#   first-order Markov property:</span></span>
+<span id="cb42-258"><a href="#cb42-258" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-259"><a href="#cb42-259" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
+<span id="cb42-260"><a href="#cb42-260" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-261"><a href="#cb42-261" tabindex="-1"></a><span class="co">#   Following Anderson &amp; Goodman (1957, Annals of Mathematical</span></span>
+<span id="cb42-262"><a href="#cb42-262" tabindex="-1"></a><span class="co">#   Statistics) and the log-linear representation of Markov chains</span></span>
+<span id="cb42-263"><a href="#cb42-263" tabindex="-1"></a><span class="co">#   in Bishop, Fienberg &amp; Holland (1975/2007, Discrete Multivariate</span></span>
+<span id="cb42-264"><a href="#cb42-264" tabindex="-1"></a><span class="co">#   Analysis) and Goodman (1971, Technometrics).</span></span>
+<span id="cb42-265"><a href="#cb42-265" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-266"><a href="#cb42-266" tabindex="-1"></a><span class="co"># Inputs:</span></span>
+<span id="cb42-267"><a href="#cb42-267" tabindex="-1"></a><span class="co">#   data          : df with stateabb, year, class</span></span>
+<span id="cb42-268"><a href="#cb42-268" tabindex="-1"></a><span class="co">#   snapshot_years: ordered vector of observation years</span></span>
+<span id="cb42-269"><a href="#cb42-269" tabindex="-1"></a><span class="co">#   step          : spacing between snapshots (e.g., 7, 8)</span></span>
+<span id="cb42-270"><a href="#cb42-270" tabindex="-1"></a><span class="co">#   full_levels   : factor levels for class</span></span>
+<span id="cb42-271"><a href="#cb42-271" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-272"><a href="#cb42-272" tabindex="-1"></a><span class="co"># Output:</span></span>
+<span id="cb42-273"><a href="#cb42-273" tabindex="-1"></a><span class="co">#   data frame with columns:</span></span>
+<span id="cb42-274"><a href="#cb42-274" tabindex="-1"></a><span class="co">#     stateabb, year, class_lag2, class_lag1, class_curr</span></span>
+<span id="cb42-275"><a href="#cb42-275" tabindex="-1"></a><span class="co">#   restricted to balanced-panel countries and exact step spacing.</span></span>
+<span id="cb42-276"><a href="#cb42-276" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-277"><a href="#cb42-277" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb42-278"><a href="#cb42-278" tabindex="-1"></a><span class="co">#   Anderson, T.W. &amp; Goodman, L.A. (1957). &quot;Statistical Inference about</span></span>
+<span id="cb42-279"><a href="#cb42-279" tabindex="-1"></a><span class="co">#     Markov Chains.&quot; Annals of Mathematical Statistics.</span></span>
+<span id="cb42-280"><a href="#cb42-280" tabindex="-1"></a><span class="co">#   Bishop, Y.M.M., Fienberg, S.E., &amp; Holland, P.W. (1975/2007).</span></span>
+<span id="cb42-281"><a href="#cb42-281" tabindex="-1"></a><span class="co">#     Discrete Multivariate Analysis. MIT Press.</span></span>
+<span id="cb42-282"><a href="#cb42-282" tabindex="-1"></a><span class="co">#   Goodman, L.A. (1971). &quot;The Analysis of Multidimensional Contingency</span></span>
+<span id="cb42-283"><a href="#cb42-283" tabindex="-1"></a><span class="co">#     Tables.&quot; Technometrics.</span></span>
+<span id="cb42-284"><a href="#cb42-284" tabindex="-1"></a><span class="co">#   Kullback, S. &amp; Leibler, R.A. (1951). &quot;On Information and Sufficiency.&quot;</span></span>
+<span id="cb42-285"><a href="#cb42-285" tabindex="-1"></a><span class="co">#     Annals of Mathematical Statistics.</span></span>
+<span id="cb42-286"><a href="#cb42-286" tabindex="-1"></a><span class="co">#   Kullback, S., Kupperman, M., &amp; Ku, H. (1962). &quot;Tests for Contingency</span></span>
+<span id="cb42-287"><a href="#cb42-287" tabindex="-1"></a><span class="co">#     Tables and Markov Chains.&quot; Technometrics.</span></span>
+<span id="cb42-288"><a href="#cb42-288" tabindex="-1"></a></span>
+<span id="cb42-289"><a href="#cb42-289" tabindex="-1"></a></span>
+<span id="cb42-290"><a href="#cb42-290" tabindex="-1"></a><span class="co"># 0 vs 1 order tests (X_{t-1}, X_t)</span></span>
+<span id="cb42-291"><a href="#cb42-291" tabindex="-1"></a></span>
+<span id="cb42-292"><a href="#cb42-292" tabindex="-1"></a></span>
+<span id="cb42-293"><a href="#cb42-293" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-294"><a href="#cb42-294" tabindex="-1"></a><span class="co">#   Test the first-order Markov property:</span></span>
+<span id="cb42-295"><a href="#cb42-295" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-296"><a href="#cb42-296" tabindex="-1"></a><span class="co">#     H0: X_{t+1} ⟂ X_{t-1} | X_t</span></span>
+<span id="cb42-297"><a href="#cb42-297" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-298"><a href="#cb42-298" tabindex="-1"></a><span class="co">#   using a three-way contingency table:</span></span>
+<span id="cb42-299"><a href="#cb42-299" tabindex="-1"></a><span class="co">#     L = X_{t-1}, M = X_t, N = X_{t+1}.</span></span>
+<span id="cb42-300"><a href="#cb42-300" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-301"><a href="#cb42-301" tabindex="-1"></a><span class="co"># Log-linear models:</span></span>
+<span id="cb42-302"><a href="#cb42-302" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-303"><a href="#cb42-303" tabindex="-1"></a><span class="co">#   Let μ_{ijk} = E[N_{ijk}] = expected counts for L=i, M=j, N=k.</span></span>
+<span id="cb42-304"><a href="#cb42-304" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-305"><a href="#cb42-305" tabindex="-1"></a><span class="co">#   H0 (first-order Markov):</span></span>
+<span id="cb42-306"><a href="#cb42-306" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ</span></span>
+<span id="cb42-307"><a href="#cb42-307" tabindex="-1"></a><span class="co">#                 + λ_i^L + λ_j^M + λ_k^N</span></span>
+<span id="cb42-308"><a href="#cb42-308" tabindex="-1"></a><span class="co">#                 + λ_{ij}^{LM} + λ_{jk}^{MN}</span></span>
+<span id="cb42-309"><a href="#cb42-309" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-310"><a href="#cb42-310" tabindex="-1"></a><span class="co">#     → includes L-M and M-N interactions, but no L-N or L-M-N</span></span>
+<span id="cb42-311"><a href="#cb42-311" tabindex="-1"></a><span class="co">#       interactions, corresponding to X_{t+1} ⟂ X_{t-1} | X_t.</span></span>
 <span id="cb42-312"><a href="#cb42-312" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-313"><a href="#cb42-313" tabindex="-1"></a><span class="co">#   Let μ_{ijk} = E[N_{ijk}] = expected counts for L=i, M=j, N=k.</span></span>
-<span id="cb42-314"><a href="#cb42-314" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-315"><a href="#cb42-315" tabindex="-1"></a><span class="co">#   H0 (first-order Markov):</span></span>
-<span id="cb42-316"><a href="#cb42-316" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ</span></span>
-<span id="cb42-317"><a href="#cb42-317" tabindex="-1"></a><span class="co">#                 + λ_i^L + λ_j^M + λ_k^N</span></span>
-<span id="cb42-318"><a href="#cb42-318" tabindex="-1"></a><span class="co">#                 + λ_{ij}^{LM} + λ_{jk}^{MN}</span></span>
-<span id="cb42-319"><a href="#cb42-319" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-320"><a href="#cb42-320" tabindex="-1"></a><span class="co">#     → includes L-M and M-N interactions, but no L-N or L-M-N</span></span>
-<span id="cb42-321"><a href="#cb42-321" tabindex="-1"></a><span class="co">#       interactions, corresponding to X_{t+1} ⟂ X_{t-1} | X_t.</span></span>
-<span id="cb42-322"><a href="#cb42-322" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-323"><a href="#cb42-323" tabindex="-1"></a><span class="co">#   H1 (saturated three-way):</span></span>
-<span id="cb42-324"><a href="#cb42-324" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ + all main effects + all interactions</span></span>
-<span id="cb42-325"><a href="#cb42-325" tabindex="-1"></a><span class="co">#                 = L * M * N in loglm() formula notation.</span></span>
-<span id="cb42-326"><a href="#cb42-326" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-327"><a href="#cb42-327" tabindex="-1"></a><span class="co"># LR test:</span></span>
-<span id="cb42-328"><a href="#cb42-328" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
-<span id="cb42-329"><a href="#cb42-329" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
-<span id="cb42-330"><a href="#cb42-330" tabindex="-1"></a><span class="co">#   p   = 1 - F_χ²(G^2; df).</span></span>
-<span id="cb42-331"><a href="#cb42-331" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-332"><a href="#cb42-332" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb42-333"><a href="#cb42-333" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) &quot;Statistical Inference about Markov</span></span>
-<span id="cb42-334"><a href="#cb42-334" tabindex="-1"></a><span class="co">#   Chains&quot;, Annals of Mathematical Statistics.</span></span>
-<span id="cb42-335"><a href="#cb42-335" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) Discrete Multivariate</span></span>
-<span id="cb42-336"><a href="#cb42-336" tabindex="-1"></a><span class="co">#   Analysis, MIT Press.</span></span>
-<span id="cb42-337"><a href="#cb42-337" tabindex="-1"></a><span class="co">#   Goodman (1971) &quot;The Analysis of Multidimensional Contingency</span></span>
-<span id="cb42-338"><a href="#cb42-338" tabindex="-1"></a><span class="co">#   Tables&quot;, Technometrics.</span></span>
-<span id="cb42-339"><a href="#cb42-339" tabindex="-1"></a></span>
-<span id="cb42-340"><a href="#cb42-340" tabindex="-1"></a></span>
-<span id="cb42-341"><a href="#cb42-341" tabindex="-1"></a><span class="co"># 1 vs 2 order tests (X_{t-2}, X_{t-1}, X_t)</span></span>
-<span id="cb42-342"><a href="#cb42-342" tabindex="-1"></a></span>
-<span id="cb42-343"><a href="#cb42-343" tabindex="-1"></a></span>
-<span id="cb42-344"><a href="#cb42-344" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-345"><a href="#cb42-345" tabindex="-1"></a><span class="co">#   Test whether X_{t} depends on X_{t-2k} given X_{t-k}:</span></span>
-<span id="cb42-346"><a href="#cb42-346" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-347"><a href="#cb42-347" tabindex="-1"></a><span class="co">#       H0 (1st-order): N ⟂ L | M</span></span>
-<span id="cb42-348"><a href="#cb42-348" tabindex="-1"></a><span class="co">#       H1 (2nd-order): N depends on both M and L</span></span>
-<span id="cb42-349"><a href="#cb42-349" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-350"><a href="#cb42-350" tabindex="-1"></a><span class="co"># Models (log-linear):</span></span>
-<span id="cb42-351"><a href="#cb42-351" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-352"><a href="#cb42-352" tabindex="-1"></a><span class="co">#   H0: log μ_LMN = L + M + N + L:M + M:N</span></span>
-<span id="cb42-353"><a href="#cb42-353" tabindex="-1"></a><span class="co">#   H1: log μ_LMN = L * M * N</span></span>
-<span id="cb42-354"><a href="#cb42-354" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-355"><a href="#cb42-355" tabindex="-1"></a><span class="co"># LR statistic:</span></span>
-<span id="cb42-356"><a href="#cb42-356" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1)</span></span>
-<span id="cb42-357"><a href="#cb42-357" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1)</span></span>
-<span id="cb42-358"><a href="#cb42-358" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-359"><a href="#cb42-359" tabindex="-1"></a><span class="co"># Citations:</span></span>
-<span id="cb42-360"><a href="#cb42-360" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957)</span></span>
-<span id="cb42-361"><a href="#cb42-361" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007)</span></span>
-<span id="cb42-362"><a href="#cb42-362" tabindex="-1"></a><span class="co">#   Goodman (1971)</span></span>
-<span id="cb42-363"><a href="#cb42-363" tabindex="-1"></a></span>
-<span id="cb42-364"><a href="#cb42-364" tabindex="-1"></a></span>
-<span id="cb42-365"><a href="#cb42-365" tabindex="-1"></a><span class="co"># Ergodicity diagnostic (irreducibility &amp; aperiodicity)</span></span>
-<span id="cb42-366"><a href="#cb42-366" tabindex="-1"></a></span>
-<span id="cb42-367"><a href="#cb42-367" tabindex="-1"></a></span>
-<span id="cb42-368"><a href="#cb42-368" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-369"><a href="#cb42-369" tabindex="-1"></a><span class="co">#   Provide diagnostics for:</span></span>
-<span id="cb42-370"><a href="#cb42-370" tabindex="-1"></a><span class="co">#     - irreducibility (all states communicate),</span></span>
-<span id="cb42-371"><a href="#cb42-371" tabindex="-1"></a><span class="co">#     - aperiodicity (no deterministic cycles),</span></span>
-<span id="cb42-372"><a href="#cb42-372" tabindex="-1"></a><span class="co">#   using powers of the transition matrix P.</span></span>
+<span id="cb42-313"><a href="#cb42-313" tabindex="-1"></a><span class="co">#   H1 (saturated three-way):</span></span>
+<span id="cb42-314"><a href="#cb42-314" tabindex="-1"></a><span class="co">#     log μ_{ijk} = λ + all main effects + all interactions</span></span>
+<span id="cb42-315"><a href="#cb42-315" tabindex="-1"></a><span class="co">#                 = L * M * N in loglm() formula notation.</span></span>
+<span id="cb42-316"><a href="#cb42-316" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-317"><a href="#cb42-317" tabindex="-1"></a><span class="co"># LR test:</span></span>
+<span id="cb42-318"><a href="#cb42-318" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
+<span id="cb42-319"><a href="#cb42-319" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1),</span></span>
+<span id="cb42-320"><a href="#cb42-320" tabindex="-1"></a><span class="co">#   p   = 1 - F_χ²(G^2; df).</span></span>
+<span id="cb42-321"><a href="#cb42-321" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-322"><a href="#cb42-322" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb42-323"><a href="#cb42-323" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) &quot;Statistical Inference about Markov</span></span>
+<span id="cb42-324"><a href="#cb42-324" tabindex="-1"></a><span class="co">#   Chains&quot;, Annals of Mathematical Statistics.</span></span>
+<span id="cb42-325"><a href="#cb42-325" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007) Discrete Multivariate</span></span>
+<span id="cb42-326"><a href="#cb42-326" tabindex="-1"></a><span class="co">#   Analysis, MIT Press.</span></span>
+<span id="cb42-327"><a href="#cb42-327" tabindex="-1"></a><span class="co">#   Goodman (1971) &quot;The Analysis of Multidimensional Contingency</span></span>
+<span id="cb42-328"><a href="#cb42-328" tabindex="-1"></a><span class="co">#   Tables&quot;, Technometrics.</span></span>
+<span id="cb42-329"><a href="#cb42-329" tabindex="-1"></a></span>
+<span id="cb42-330"><a href="#cb42-330" tabindex="-1"></a></span>
+<span id="cb42-331"><a href="#cb42-331" tabindex="-1"></a><span class="co"># 1 vs 2 order tests (X_{t-2}, X_{t-1}, X_t)</span></span>
+<span id="cb42-332"><a href="#cb42-332" tabindex="-1"></a></span>
+<span id="cb42-333"><a href="#cb42-333" tabindex="-1"></a></span>
+<span id="cb42-334"><a href="#cb42-334" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-335"><a href="#cb42-335" tabindex="-1"></a><span class="co">#   Test whether X_{t} depends on X_{t-2k} given X_{t-k}:</span></span>
+<span id="cb42-336"><a href="#cb42-336" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-337"><a href="#cb42-337" tabindex="-1"></a><span class="co">#       H0 (1st-order): N ⟂ L | M</span></span>
+<span id="cb42-338"><a href="#cb42-338" tabindex="-1"></a><span class="co">#       H1 (2nd-order): N depends on both M and L</span></span>
+<span id="cb42-339"><a href="#cb42-339" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-340"><a href="#cb42-340" tabindex="-1"></a><span class="co"># Models (log-linear):</span></span>
+<span id="cb42-341"><a href="#cb42-341" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-342"><a href="#cb42-342" tabindex="-1"></a><span class="co">#   H0: log μ_LMN = L + M + N + L:M + M:N</span></span>
+<span id="cb42-343"><a href="#cb42-343" tabindex="-1"></a><span class="co">#   H1: log μ_LMN = L * M * N</span></span>
+<span id="cb42-344"><a href="#cb42-344" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-345"><a href="#cb42-345" tabindex="-1"></a><span class="co"># LR statistic:</span></span>
+<span id="cb42-346"><a href="#cb42-346" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1)</span></span>
+<span id="cb42-347"><a href="#cb42-347" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1)</span></span>
+<span id="cb42-348"><a href="#cb42-348" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-349"><a href="#cb42-349" tabindex="-1"></a><span class="co"># Citations:</span></span>
+<span id="cb42-350"><a href="#cb42-350" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957)</span></span>
+<span id="cb42-351"><a href="#cb42-351" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007)</span></span>
+<span id="cb42-352"><a href="#cb42-352" tabindex="-1"></a><span class="co">#   Goodman (1971)</span></span>
+<span id="cb42-353"><a href="#cb42-353" tabindex="-1"></a></span>
+<span id="cb42-354"><a href="#cb42-354" tabindex="-1"></a></span>
+<span id="cb42-355"><a href="#cb42-355" tabindex="-1"></a><span class="co"># Ergodicity diagnostic (irreducibility &amp; aperiodicity)</span></span>
+<span id="cb42-356"><a href="#cb42-356" tabindex="-1"></a></span>
+<span id="cb42-357"><a href="#cb42-357" tabindex="-1"></a></span>
+<span id="cb42-358"><a href="#cb42-358" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-359"><a href="#cb42-359" tabindex="-1"></a><span class="co">#   Provide diagnostics for:</span></span>
+<span id="cb42-360"><a href="#cb42-360" tabindex="-1"></a><span class="co">#     - irreducibility (all states communicate),</span></span>
+<span id="cb42-361"><a href="#cb42-361" tabindex="-1"></a><span class="co">#     - aperiodicity (no deterministic cycles),</span></span>
+<span id="cb42-362"><a href="#cb42-362" tabindex="-1"></a><span class="co">#   using powers of the transition matrix P.</span></span>
+<span id="cb42-363"><a href="#cb42-363" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-364"><a href="#cb42-364" tabindex="-1"></a><span class="co"># Approach:</span></span>
+<span id="cb42-365"><a href="#cb42-365" tabindex="-1"></a><span class="co">#   - Construct adjacency matrix A with A_ij = 1 if P_ij &gt; 0.</span></span>
+<span id="cb42-366"><a href="#cb42-366" tabindex="-1"></a><span class="co">#   - Compute reachability via powers of A.</span></span>
+<span id="cb42-367"><a href="#cb42-367" tabindex="-1"></a><span class="co">#   - For aperiodicity, check whether some power of P has strictly</span></span>
+<span id="cb42-368"><a href="#cb42-368" tabindex="-1"></a><span class="co">#     positive diagonal entries for all states.</span></span>
+<span id="cb42-369"><a href="#cb42-369" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-370"><a href="#cb42-370" tabindex="-1"></a><span class="co"># Interpretation:</span></span>
+<span id="cb42-371"><a href="#cb42-371" tabindex="-1"></a><span class="co">#   If some k ≤ max_power has all entries of A^k &gt; 0, the chain</span></span>
+<span id="cb42-372"><a href="#cb42-372" tabindex="-1"></a><span class="co">#   is regular (thus irreducible and aperiodic).</span></span>
 <span id="cb42-373"><a href="#cb42-373" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-374"><a href="#cb42-374" tabindex="-1"></a><span class="co"># Approach:</span></span>
-<span id="cb42-375"><a href="#cb42-375" tabindex="-1"></a><span class="co">#   - Construct adjacency matrix A with A_ij = 1 if P_ij &gt; 0.</span></span>
-<span id="cb42-376"><a href="#cb42-376" tabindex="-1"></a><span class="co">#   - Compute reachability via powers of A.</span></span>
-<span id="cb42-377"><a href="#cb42-377" tabindex="-1"></a><span class="co">#   - For aperiodicity, check whether some power of P has strictly</span></span>
-<span id="cb42-378"><a href="#cb42-378" tabindex="-1"></a><span class="co">#     positive diagonal entries for all states.</span></span>
-<span id="cb42-379"><a href="#cb42-379" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-380"><a href="#cb42-380" tabindex="-1"></a><span class="co"># Interpretation:</span></span>
-<span id="cb42-381"><a href="#cb42-381" tabindex="-1"></a><span class="co">#   If some k ≤ max_power has all entries of A^k &gt; 0, the chain</span></span>
-<span id="cb42-382"><a href="#cb42-382" tabindex="-1"></a><span class="co">#   is regular (thus irreducible and aperiodic).</span></span>
-<span id="cb42-383"><a href="#cb42-383" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-384"><a href="#cb42-384" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb42-385"><a href="#cb42-385" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on long-run properties of Markov chains.</span></span>
-<span id="cb42-386"><a href="#cb42-386" tabindex="-1"></a><span class="co">#   Standard Markov chain theory for ergodicity criteria.</span></span>
-<span id="cb42-387"><a href="#cb42-387" tabindex="-1"></a></span>
-<span id="cb42-388"><a href="#cb42-388" tabindex="-1"></a></span>
-<span id="cb42-389"><a href="#cb42-389" tabindex="-1"></a><span class="co"># Equality of transition matrices between eras</span></span>
-<span id="cb42-390"><a href="#cb42-390" tabindex="-1"></a></span>
-<span id="cb42-391"><a href="#cb42-391" tabindex="-1"></a></span>
-<span id="cb42-392"><a href="#cb42-392" tabindex="-1"></a><span class="co"># Purpose:</span></span>
-<span id="cb42-393"><a href="#cb42-393" tabindex="-1"></a><span class="co">#   Compare transition structures between Era 1 and Era 2 on the</span></span>
-<span id="cb42-394"><a href="#cb42-394" tabindex="-1"></a><span class="co">#   shared class set (upper_class, middle_class, lower_class_1), using a</span></span>
-<span id="cb42-395"><a href="#cb42-395" tabindex="-1"></a><span class="co">#   4-way contingency table with factors:</span></span>
+<span id="cb42-374"><a href="#cb42-374" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb42-375"><a href="#cb42-375" tabindex="-1"></a><span class="co">#   Anderson &amp; Goodman (1957) on long-run properties of Markov chains.</span></span>
+<span id="cb42-376"><a href="#cb42-376" tabindex="-1"></a><span class="co">#   Standard Markov chain theory for ergodicity criteria.</span></span>
+<span id="cb42-377"><a href="#cb42-377" tabindex="-1"></a></span>
+<span id="cb42-378"><a href="#cb42-378" tabindex="-1"></a></span>
+<span id="cb42-379"><a href="#cb42-379" tabindex="-1"></a><span class="co"># Equality of transition matrices between eras</span></span>
+<span id="cb42-380"><a href="#cb42-380" tabindex="-1"></a></span>
+<span id="cb42-381"><a href="#cb42-381" tabindex="-1"></a></span>
+<span id="cb42-382"><a href="#cb42-382" tabindex="-1"></a><span class="co"># Purpose:</span></span>
+<span id="cb42-383"><a href="#cb42-383" tabindex="-1"></a><span class="co">#   Compare transition structures between Era 1 and Era 2 on the</span></span>
+<span id="cb42-384"><a href="#cb42-384" tabindex="-1"></a><span class="co">#   shared class set (upper_class, middle_class, lower_class_1), using a</span></span>
+<span id="cb42-385"><a href="#cb42-385" tabindex="-1"></a><span class="co">#   4-way contingency table with factors:</span></span>
+<span id="cb42-386"><a href="#cb42-386" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-387"><a href="#cb42-387" tabindex="-1"></a><span class="co">#     Era (E), Origin (O), Destination (D)</span></span>
+<span id="cb42-388"><a href="#cb42-388" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-389"><a href="#cb42-389" tabindex="-1"></a><span class="co"># Log-linear setup:</span></span>
+<span id="cb42-390"><a href="#cb42-390" tabindex="-1"></a><span class="co">#   H0: common Markov structure across eras:</span></span>
+<span id="cb42-391"><a href="#cb42-391" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + λ_e^E + λ_i^O + λ_j^D + λ_{ij}^{OD}</span></span>
+<span id="cb42-392"><a href="#cb42-392" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-393"><a href="#cb42-393" tabindex="-1"></a><span class="co">#   H1: era-specific OD association:</span></span>
+<span id="cb42-394"><a href="#cb42-394" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + all main effects + all interactions</span></span>
+<span id="cb42-395"><a href="#cb42-395" tabindex="-1"></a><span class="co">#                   = E * O * D</span></span>
 <span id="cb42-396"><a href="#cb42-396" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-397"><a href="#cb42-397" tabindex="-1"></a><span class="co">#     Era (E), Origin (O), Destination (D)</span></span>
-<span id="cb42-398"><a href="#cb42-398" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-399"><a href="#cb42-399" tabindex="-1"></a><span class="co"># Log-linear setup:</span></span>
-<span id="cb42-400"><a href="#cb42-400" tabindex="-1"></a><span class="co">#   H0: common Markov structure across eras:</span></span>
-<span id="cb42-401"><a href="#cb42-401" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + λ_e^E + λ_i^O + λ_j^D + λ_{ij}^{OD}</span></span>
-<span id="cb42-402"><a href="#cb42-402" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-403"><a href="#cb42-403" tabindex="-1"></a><span class="co">#   H1: era-specific OD association:</span></span>
-<span id="cb42-404"><a href="#cb42-404" tabindex="-1"></a><span class="co">#       log μ_{eij} = λ + all main effects + all interactions</span></span>
-<span id="cb42-405"><a href="#cb42-405" tabindex="-1"></a><span class="co">#                   = E * O * D</span></span>
-<span id="cb42-406"><a href="#cb42-406" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-407"><a href="#cb42-407" tabindex="-1"></a><span class="co"># LR test:</span></span>
-<span id="cb42-408"><a href="#cb42-408" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
-<span id="cb42-409"><a href="#cb42-409" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1).</span></span>
-<span id="cb42-410"><a href="#cb42-410" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb42-411"><a href="#cb42-411" tabindex="-1"></a><span class="co"># References:</span></span>
-<span id="cb42-412"><a href="#cb42-412" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007), Goodman (1971),</span></span>
-<span id="cb42-413"><a href="#cb42-413" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) on comparing Markov structures</span></span>
-<span id="cb42-414"><a href="#cb42-414" tabindex="-1"></a><span class="co">#   across groups/periods.</span></span></code></pre></div>
+<span id="cb42-397"><a href="#cb42-397" tabindex="-1"></a><span class="co"># LR test:</span></span>
+<span id="cb42-398"><a href="#cb42-398" tabindex="-1"></a><span class="co">#   G^2 = dev(H0) - dev(H1),</span></span>
+<span id="cb42-399"><a href="#cb42-399" tabindex="-1"></a><span class="co">#   df  = df(H0) - df(H1).</span></span>
+<span id="cb42-400"><a href="#cb42-400" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb42-401"><a href="#cb42-401" tabindex="-1"></a><span class="co"># References:</span></span>
+<span id="cb42-402"><a href="#cb42-402" tabindex="-1"></a><span class="co">#   Bishop, Fienberg &amp; Holland (1975/2007), Goodman (1971),</span></span>
+<span id="cb42-403"><a href="#cb42-403" tabindex="-1"></a><span class="co">#   Bickenbach &amp; Bode (2001) on comparing Markov structures</span></span>
+<span id="cb42-404"><a href="#cb42-404" tabindex="-1"></a><span class="co">#   across groups/periods.</span></span></code></pre></div>
 </div>
 <div id="bibliography" class="section level3" number="1.0.12">
 <h3><span class="header-section-number">1.0.12</span> Bibliography</h3>
