@@ -1,8 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <title>SNP Claims Outlier Report</title>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>New-SNP-Claims-Report.knit</title>
+
+<script src="New-SNP-Claims-Report_files/header-attrs-2.30/header-attrs.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+
+
 
 <style>
 
@@ -11,9 +52,7 @@
   position: sticky;
   top: 24px;
   max-height: fit-content;
-
   overflow-y: auto;
-
   background: #f9fbfd;
   border: 1px solid #d0d7de;
   border-radius: 6px;
@@ -33,18 +72,14 @@
   margin: 0;
 }
 
-.toc-container li {
-  margin: 6px 0;
-}
+.toc-container li { margin: 6px 0; }
 
 .toc-container a {
   text-decoration: none;
   color: #2c3e50;
 }
 
-.toc-container a:hover {
-  text-decoration: underline;
-}
+.toc-container a:hover { text-decoration: underline; }
 
 .toc-container a.active {
   font-weight: 600;
@@ -60,9 +95,7 @@
 
 /* Mobile fallback */
 @media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
+  .layout { grid-template-columns: 1fr; }
   .toc-container {
     position: relative;
     max-height: none;
@@ -70,9 +103,9 @@
 }
 
 /* Ensure predictable sizing */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
 
 body {
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
@@ -80,6 +113,13 @@ body {
   padding: 24px;
   background-color: #f0f2f5;
   color: #222;
+}
+
+/* Override rmarkdown container defaults */
+.main-container {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Fixed document frame */
@@ -93,9 +133,7 @@ body {
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
-h1, h2, h3, h4 {
-  color: #2c3e50;
-}
+h1, h2, h3, h4 { color: #2c3e50; }
 
 h1 {
   border-bottom: 3px solid #2c3e50;
@@ -159,417 +197,568 @@ footer {
 }
 
 </style>
-</head>
 
-<body>
 
 <div class="page">
   <div class="layout">
 
-    <!-- TOC -->
     <nav class="toc-container">
       <h2>Contents</h2>
       <ul id="toc"></ul>
     </nav>
 
-    <!-- Main content -->
+
     <main>
-
+<div id="snp-claims-outlier-report" class="section level1">
 <h1>SNP Claims Outlier Report</h1>
-
 <div class="subtitle">
-  <strong>Author:</strong> Jared Walker & ChatGPT<br>
+  <strong>Author:</strong> Jared Walker<br>
   <strong>Department:</strong> Child Nutrition Programs
 </div>
-
-<p>
-This document describes the statistical method and R implementation
-used to identify sponsor- and site-level claim anomalies.
-</p>
-
+<p>This document describes the statistical method and R implementation
+used to identify sponsor- and site-level claim anomalies.</p>
 <div class="note">
-<strong>Purpose:</strong><br>
-To flag unusual claim patterns for review.
+<p><strong>Purpose:</strong><br> To flag unusual claim patterns for
+review.</p>
 </div>
-
-<hr>
-
+<div id="conceptual-definitions" class="section level2">
 <h2>1. Conceptual Definitions</h2>
-
-<p>
-The analysis evaluates monthly reimbursement claims using a rolling historical
-panel. Two complementary deviation metrics are computed:
-</p>
-
+<p>The analysis evaluates monthly reimbursement claims using a rolling
+historical panel. Two complementary deviation metrics are computed:</p>
 <ul>
-  <li><strong>Year-over-year deviation</strong> — deviation from the prior year value.</li>
-  <li><strong>Deviation from the mean</strong> — deviation from the 12-month mean.</li>
+<li>Year-over-year deviation — deviation from the prior year value.</li>
+<li>Deviation from the mean — deviation from the 12-month mean.</li>
 </ul>
-
-<hr>
-
-<h2>2. Dispersion Measure: Modified Z-score</h2>
-
-<p>
-Modified z-scores are calculated using mean absolute deviation (from a reference value), a robust alternative to standard deviation.
-</p>
-
-<div class="rationale">
-<strong>Statistical Justification:</strong><br>
-Reimbursement data are highly skewed. Standard deviation–based z-scores are sensitive to outliers. Mean absolute deviation (MAD) provides a more stable dispersion measure under these conditions.
 </div>
-
+<div id="dispersion-measure" class="section level2">
+<h2>2. Dispersion Measure</h2>
+<p>Modified z-scores are calculated using mean absolute deviation (from
+a reference value), a robust alternative to standard deviation.</p>
+<div class="rationale">
+<p><strong>Statistical Justification:</strong><br> Reimbursement data
+are highly skewed. Standard deviation–based z-scores are sensitive to
+outliers. Mean absolute deviation (MAD) provides a more stable
+dispersion measure under these conditions.</p>
+</div>
+<div id="year-over-year-score" class="section level3">
 <h3>Year-over-Year Score</h3>
-<pre><code><em>(Current Claim − Prior Year's Claim) / Mean Absolute Deviation [from the prior year value]</em></code></pre>
-
+<pre><code><em>(current claim − prior year claim) / mean absolute deviation [from prior year claim]</em></code></pre>
+</div>
+<div id="mean-deviation-score" class="section level3">
 <h3>Mean Deviation Score</h3>
-<pre><code><em>(Current Claim − 12-month Mean) / Mean Absolute Deviation [from the 12 month mean]</em></code></pre>
-
+<pre><code><em>(current claim − 12-month mean) / mean absolute deviation [from the 12 month mean]</em></code></pre>
+</div>
+<div id="time-window" class="section level3">
 <h3>Time Window</h3>
-<ul>
-  <li>Rolling window defined as <code>T-2</code> to <code>T-14</code> months</li>
-</ul>
-
-<hr>
-
+<p>Rolling window defined as T-2 to T-14 months.</p>
+</div>
+</div>
+<div id="expected-output" class="section level2">
 <h2>3. Expected Output</h2>
-
-
-
-<hr>
-
 <div class="rationale">
-<strong>Interpretation:</strong><br>
-Large absolute values indicate unusual behavior.
+<strong>Interpretation:</strong><br> Large absolute values indicate
+unusual behavior.
 <ul>
-  <li>Positive values → unusually high reimbursement</li>
-  <li>Negative values → unusually low reimbursement</li>
+<li>
+Positive values → unusually high reimbursement
+</li>
+<li>
+Negative values → unusually low reimbursement
+</li>
 </ul>
 </div>
-
 <hr>
-
+<div id="tables" class="section level3">
 <h3>Tables</h3>
-
 <ul>
-  <li>5 highest and 5 lowest scores per metric per entity are retained for review</li>
-  <li>Tableau table</li>
-  <li>Full site-level cross-table</li>
-  <li>Full sponsor-level cross-table</li>
-  <li>Raw data retained for traceability</li>
-
+<li>5 highest and 5 lowest scores per metric per entity are retained for
+review</li>
+<li>Tableau table</li>
+<li>Full site-level cross-table</li>
+<li>Full sponsor-level cross-table</li>
+<li>Raw data retained for traceability</li>
 </ul>
-
 <hr>
-
-<h2>4. R Implementation</h2>
-
-<h3>4.1 Environment Setup</h3>
-
-<pre><code>
-# Limit console output
-options(max.print = 20000)
-
-# Disable scientific notation
-options(scipen = 999)
-
-# Track runtime
-start.time <- Sys.time()
-
-# Free memory
-gc()
-
-# Load required libraries
-library(lubridate)   # Date arithmetic
-library(janitor)     # clean_names()
-library(tidyverse)   # dplyr, tidyr, etc.
-library(openxlsx)    # Excel output
-library(readr)       # CSV import
-library(stringr)     # String cleaning
-library(data.table)  # fifelse()
-</code></pre>
-
-<h3>4.2 – Date Handling</h3>
-
-<pre><code>
-# Anchor date: first day of current month
-curr_date <- as.Date(format(Sys.Date(), "%Y-%m-01"))
-
-# Label for output file
-mmm_yyyy <- paste(
-  month.abb[as.integer(format(curr_date %m+% months(-1), "%m"))],
-  format(curr_date %m+% months(-1), "%Y")
-)
-</code></pre>
-
-<h3>4.3 – Import Data and Scrub</h3>
-
-<pre><code>
-# Import raw site-level data
-data1197_s <- read_csv(
-  Data1197,
-  col_types = cols("Claim Date" = col_date(format = "%m/%d/%Y"))
-) %>%
-  clean_names() %>%
-  # A reimbursement of 0 implies no claim submitted
-  replace_with_na(replace = list(total_reimbursement = 0)) %>%
-  # Remove claims that were never accepted
-  filter(claim_status != "Error") %>%
-  # Each row represents one operating site
-  mutate(operating_sites = 1) %>%
-  as.data.frame()
-</code></pre>
-
-<h3>4.4 – Site-Level Crosstable</h3>
-
-<pre><code>
-# Build a rolling 14-month crosstable of reimbursements
-# Each row = site
-# Each column = monthly reimbursement
-ct_s <- data1197_s %>%
-  select(
-    sponsor_name,
-    sponsor_number,
-    site_number,
-    claim_date,
-    total_reimbursement
-  ) %>%
-  filter(claim_date >= curr_date %m+% months(-14)) %>%
-  arrange(claim_date) %>%
-  pivot_wider(
-    names_from = claim_date,
-    values_from = total_reimbursement,
-    values_fill = NA
-  )
-
-# Preserve original for reference
-site_level <- data1197_s
-ct_s_ref <- ct_s
-</code></pre>
-
-<h3>4.5 – Site-Level Calculations</h3>
-
-<pre><code>
-# Identify the rolling window of monthly columns
-value_cols <- which(
-  colnames(ct_s) >= as.character(curr_date %m+% months(-14)) &
-  colnames(ct_s) <= as.character(curr_date %m+% months(-2))
-)
-
-ct_s$prior_year <- ct_s[, value_cols[1]]
-ct_s$current    <- ct_s[, value_cols[length(value_cols)]]
-
-ct_s$mean_claim <- rowMeans(ct_s[, value_cols], na.rm = TRUE)
-ct_s$counts <- rowSums(!is.na(ct_s[, value_cols]))
-
-abs_dev_prior <- abs(ct_s[, value_cols] - prior_year)
-ct_s$mad_yoy <- rowSums(abs_dev_prior, na.rm = TRUE) / ct_s$counts
-ct_s$z_yoy <- (ct_s$current - ct_s$prior_year) / ct_s$mad_yoy
-
-abs_dev_mean <- abs(ct_s[, value_cols] - ct_s$mean_claim)
-ct_s$mad_mean <- rowSums(abs_dev_mean, na.rm = TRUE) / ct_s$counts
-ct_s$z_mean <- (ct_s$current - ct_s$mean_claim) / ct_s$mad_mean
-
-ct_s <- ct_s %>%
-  mutate(
-    z_yoy  = ifelse(
-      is.na(prior_year) | is.na(current) | prior_year == 0 | current == 0,
-      NA, z_yoy
-    ),
-    z_mean = ifelse(
-      is.na(mean_claim) | is.na(current) | mean_claim == 0 | current == 0,
-      NA, z_mean
-    )
-  )
-
-site_var <- ct_s
-site_var_ref <- site_var
-</code></pre>
-
-<h3>4.6 – Top Ten Sites</h3>
-
-<pre><code>
-top_yoy_s <- bind_rows(
-  slice_max(site_var, z_yoy, n = 5),
-  slice_min(site_var, z_yoy, n = 5)
-)
-
-top_dm_s <- bind_rows(
-  slice_max(site_var, z_mean, n = 5),
-  slice_min(site_var, z_mean, n = 5)
-)
-</code></pre>
-
-<h3>4.7 – Sponsor-Level Cross Table</h3>
-
-<pre><code>
-data1197 <- data1197_s %>%
-  select(
-    sponsor_number,
-    sponsor_name,
-    claim_date,
-    total_reimbursement,
-    operating_sites
-  ) %>%
-  group_by(sponsor_number, sponsor_name, claim_date) %>%
-  summarise(across(everything(), sum), .groups = "drop")
-
-ct <- data1197 %>%
-  filter(claim_date >= curr_date %m+% months(-14)) %>%
-  arrange(claim_date) %>%
-  pivot_wider(
-    names_from = claim_date,
-    values_from = total_reimbursement,
-    values_fill = NA
-  )
-</code></pre>
-
-<h3>4.8 – Sponsor-Level Calculations</h3>
-
-<pre><code>
-value_cols <- which(
-  colnames(ct) >= as.character(curr_date %m+% months(-14)) &
-  colnames(ct) <= as.character(curr_date %m+% months(-2))
-)
-
-ct$prior_year <- ct[, value_cols[1]]
-ct$current    <- ct[, value_cols[length(value_cols)]]
-
-ct$mean_claim <- rowMeans(ct[, value_cols], na.rm = TRUE)
-ct$counts <- rowSums(!is.na(ct[, value_cols]))
-
-abs_dev_prior <- abs(ct[, value_cols] - prior_year)
-ct$mad_yoy <- rowSums(abs_dev_prior, na.rm = TRUE) / ct$counts
-ct$z_yoy <- (current - prior_year) / ct$mad_yoy
-
-abs_dev_mean <- abs(ct[, value_cols] - ct$mean_claim)
-ct$mad_mean <- rowSums(abs_dev_mean, na.rm = TRUE) / ct$counts
-ct$z_mean <- (current - ct$mean_claim) / ct$mad_mean
-
-ct <- ct %>%
-  mutate(
-    z_yoy  = ifelse(
-      is.na(prior_year) | is.na(current) | prior_year == 0 | current == 0,
-      NA, z_yoy
-    ),
-    z_mean = ifelse(
-      is.na(mean_claim) | is.na(current) | mean_claim == 0 | current == 0,
-      NA, z_mean
-    )
-  )
-
-spon_var <- ct
-spon_var_ref <- spon_var
-</code></pre>
-
-<h3>4.9 – Top Ten Sponsors</h3>
-
-<pre><code>
-top_yoy <- bind_rows(
-  slice_max(spon_var, z_yoy, n = 5),
-  slice_min(spon_var, z_yoy, n = 5)
-)
-
-top_dm <- bind_rows(
-  slice_max(spon_var, z_mean, n = 5),
-  slice_min(spon_var, z_mean, n = 5)
-)
-</code></pre>
-
-<h3>4.10 – Save Workbook</h3>
-
-<pre><code>
-wb <- createWorkbook()
-
-addWorksheet(wb, "Top Ten Sponsors")
-writeData(wb, "Top Ten Sponsors", "DEVIATION FROM THE MEAN", startRow = 3)
-writeData(wb, "Top Ten Sponsors", top_dm, startRow = 4)
-writeData(wb, "Top Ten Sponsors", "DEVIATION FROM PRIOR YEAR",
-          startRow = nrow(top_dm) + 8)
-writeData(wb, "Top Ten Sponsors", top_yoy,
-          startRow = nrow(top_dm) + 9)
-
-addWorksheet(wb, "Top Ten Sites")
-writeData(wb, "Top Ten Sites", "DEVIATION FROM THE MEAN", startRow = 3)
-writeData(wb, "Top Ten Sites", top_dm_s, startRow = 4)
-writeData(wb, "Top Ten Sites", "DEVIATION FROM PRIOR YEAR",
-          startRow = nrow(top_dm_s) + 8)
-writeData(wb, "Top Ten Sites", top_yoy_s,
-          startRow = nrow(top_dm_s) + 9)
-
-addWorksheet(wb, "Sponsor Variances")
-writeData(wb, "Sponsor Variances", spon_var_ref)
-
-addWorksheet(wb, "Site Variances")
-writeData(wb, "Site Variances", site_var_ref)
-
-addWorksheet(wb, "Raw Data")
-writeData(wb, "Raw Data", data1197_s)
-
-file_name <- paste0(mmm_yyyy, " SNP Reimbursement Variance Report.xlsx")
-saveWorkbook(wb, file_name, overwrite = TRUE)
-</code></pre>
-
-<h3>4.11 – Log Runtime</h3>
-
-<pre><code>
-Sys.time() - start.time
-</code></pre>
-
-<footer>
-Prepared by Jared Walker, Child Nutrition Programs<br>
-For internal documentation and audit support.
-</footer>
-
-  </div>
-</body>
-</html>
-
-
-    </main>
-  </div>
 </div>
+</div>
+<div id="r-implementation" class="section level2">
+<h2>4. R Implementation</h2>
+<div id="environment-setup" class="section level3">
+<h3>Environment Setup</h3>
+<pre class="r"><code>rm(list = ls(all.names = T)) #clear all objects from environment.
+start.time &lt;- Sys.time()   # Log start time.
+gc() # Free up memory and report the memory usage.
+options(max.print=10) # Limit output.
+options(scipen=999) # Prohibit use of scientific notation
 
+library(lubridate)
+library(janitor)
+library(tidyverse)
+library(openxlsx)
+library(naniar)
+library(data.table)
+library(readr)</code></pre>
+</div>
+<div id="date-handling" class="section level3">
+<h3>Date Handling</h3>
+<pre class="r"><code># Format date as numeric
+today &lt;- as.numeric(format(Sys.Date(), &quot;%Y%m%d&quot;))
+
+# Assign current-month date
+curr_date  &lt;- as.Date(format(Sys.Date(), &quot;%Y-%m-01&quot;))
+
+# Set reporting month 
+report_offset &lt;- -2
+window_start &lt;- report_offset - 12 # Window start equals 14 months in the past
+report_date &lt;- curr_date %m+% months(report_offset)
+mmm_yyyy &lt;- paste(month.abb[as.numeric(format(report_date, &quot;%m&quot;))],
+                  format(report_date, &quot;%Y&quot;))</code></pre>
+</div>
+<div id="import-data-and-clean" class="section level3">
+<h3>Import Data and Clean</h3>
+<pre class="r"><code># Site level data 
+data1197_s &lt;- read_csv(
+  &quot;C:/Users/Jared Walker/Downloads/Data1197.csv&quot;,
+  col_types = cols(&quot;Claim Date&quot; = col_date(format = &quot;%m/%d/%Y&quot;))) %&gt;%
+  clean_names() %&gt;%
+  replace_with_na(replace = list(total_reimbursement = 0.0)) %&gt;%  # $0 reimbursement == NA
+  filter(claim_status != &quot;Error&quot;) %&gt;%
+  mutate(operating_sites = 1)
+
+# Sponsor level data
+data1197 &lt;- data1197_s %&gt;%
+  select(-c(site_name:site_id, claim_status:brk_type, 
+            afterschool_snack_participation,
+            asp_jul:sso_snk_participation, x80)) %&gt;% # Remove Categorical Data
+  aggregate(. ~ sponsor_number + sponsor_name + claim_date, FUN=sum) %&gt;%
+  as.data.frame()</code></pre>
+</div>
+<div id="site-level-crosstable" class="section level3">
+<h3>Site-Level Crosstable</h3>
+<pre class="r"><code># Pivot site claims into crosstable
+ct_s &lt;- data1197_s %&gt;%
+  select(sponsor_name:site_number, claim_date, total_reimbursement) %&gt;%
+  filter(claim_date &gt;= curr_date %m+% months(window_start)) %&gt;%
+  arrange(claim_date) %&gt;%
+  pivot_wider(
+    names_from  = claim_date,
+    values_from = total_reimbursement,
+    values_fill = NA)
+
+# Keep originals for later
+site_level  &lt;- data1197_s
+sponsor_level &lt;- data1197
+ct_s_ref &lt;- ct_s
+refresh_data1197_s &lt;- data1197_s
+refresh_data1197   &lt;- data1197</code></pre>
+</div>
+<div id="site-level-calculations" class="section level3">
+<h3>Site-Level Calculations</h3>
+<pre class="r"><code>ct_s &lt;- ct_s_ref
+
+col_idx_cts &lt;- function(offset) {
+  nm &lt;- as.character(curr_date %m+% months(offset))
+  i &lt;- match(nm, names(ct_s))
+  if (is.na(i)) stop(&quot;Missing month column in ct_s: &quot;, nm)
+  i
+  }
+
+idx_prior  &lt;- col_idx_cts(window_start)              # -14
+idx_months &lt;- vapply((window_start + 1):report_offset, col_idx_cts, integer(1))  # -13:-2
+idx_current &lt;- col_idx_cts(report_offset)            # -2
+
+ct_s$prior_year &lt;- ct_s[[idx_prior]]
+ct_s$current    &lt;- ct_s[[idx_current]]
+
+ct_s$mean_claim &lt;- rowMeans(ct_s[, idx_months, drop = FALSE], na.rm = TRUE)
+ct_s$counts     &lt;- rowSums(!is.na(ct_s[, idx_months, drop = FALSE]))
+
+# Deviation from the prior year z-score
+abs_dev_prior   &lt;- abs(ct_s[, idx_months, drop = FALSE] - ct_s$prior_year)
+ct_s$sums_prior &lt;- rowSums(abs_dev_prior, na.rm = TRUE)
+ct_s$mad_yoy    &lt;- ct_s$sums_prior / ct_s$counts
+
+ct_s$z_yoy &lt;- (ct_s$current - ct_s$prior_year) / ct_s$mad_yoy
+ct_s$z_yoy &lt;- fifelse(
+  ct_s$prior_year == 0 | is.na(ct_s$prior_year) | ct_s$current == 0 | is.na(ct_s$current), 
+  NA, 
+  ct_s$z_yoy)
+
+# Devian from the mean z-score
+abs_dev_mean   &lt;- abs(ct_s[, idx_months, drop = FALSE] - ct_s$mean_claim)
+ct_s$sums_mean &lt;- rowSums(abs_dev_mean, na.rm = TRUE)
+ct_s$mad_mean  &lt;- ct_s$sums_mean / ct_s$counts
+
+ct_s$z_mean &lt;- (ct_s$current - ct_s$mean_claim) / ct_s$mad_mean
+ct_s$z_mean &lt;- fifelse(
+  ct_s$prior_year == 0 | is.na(ct_s$prior_year) | ct_s$current == 0 | is.na(ct_s$current), 
+  NA, 
+  ct_s$z_mean)
+
+# Rank/keep
+ct_s &lt;- ct_s %&gt;%
+  mutate(abs_M = abs(z_mean),
+         abs_YOY = abs(z_yoy),
+         score = abs_M + abs_YOY) %&gt;%
+  arrange(desc(score)) %&gt;%
+  select(-c(abs_M, abs_YOY, score))
+
+site_var &lt;- ct_s
+site_var_ref &lt;- site_var</code></pre>
+</div>
+<div id="top-ten-sites" class="section level3">
+<h3>Top Ten Sites</h3>
+<pre class="r"><code>site_var &lt;- site_var_ref
+
+site_var$abs_z_yoy &lt;- abs(site_var$z_yoy)
+
+top_yoy_s  &lt;- site_var[with(site_var, order(-z_yoy)), ]
+top_yoy_s1 &lt;- top_yoy_s[1:5, ]
+top_yoy_s  &lt;- site_var[with(site_var, order(z_yoy)), ]
+top_yoy_s2 &lt;- top_yoy_s[1:5, ] %&gt;% 
+  arrange(desc(z_yoy))
+
+top_yoy_s  &lt;- rbind(top_yoy_s1, top_yoy_s2) %&gt;%
+  arrange(desc(abs_z_yoy)) %&gt;%
+  select(-abs_z_yoy)
+
+drop &lt;- c(&quot;mean_claim&quot;, &quot;z_mean&quot;, &quot;mad_mean&quot;)
+
+top_yoy_s &lt;- top_yoy_s[, !(names(top_yoy_s) %in% drop)]
+
+site_var$abs_z_mean &lt;- abs(site_var$z_mean)
+
+top_dm_s  &lt;- site_var[with(site_var, order(-z_mean)), ]
+top_dm_s1 &lt;- top_dm_s[1:5, ]
+top_dm_s  &lt;- site_var[with(site_var, order(z_mean)), ]
+top_dm_s2 &lt;- top_dm_s[1:5, ] %&gt;% 
+  arrange(desc(z_mean))
+
+top_dm_s  &lt;- rbind(top_dm_s1, top_dm_s2) %&gt;%
+  mutate(abs_M = abs(z_mean)) %&gt;%
+  arrange(desc(abs_M)) %&gt;%
+  select(-abs_M)
+
+top_yoy_s_ref &lt;- top_yoy_s
+top_dm_s_ref  &lt;- top_dm_s
+site_var_ref2 &lt;- site_var</code></pre>
+</div>
+<div id="sponsor-level-cross-table" class="section level3">
+<h3>Sponsor-Level Cross Table</h3>
+<pre class="r"><code># Aggregate site-level data to sponsor-level 
+data1197 &lt;- data1197_s %&gt;%
+  select(-c(site_name:site_id, claim_status:brk_type, afterschool_snack_participation,
+            asp_jul:sso_snk_participation, x80)) %&gt;%
+  group_by(sponsor_number, sponsor_name, claim_date) %&gt;%
+  summarise(across(where(is.numeric), ~sum(.x, na.rm = TRUE)), .groups = &quot;drop&quot;) %&gt;%
+  as.data.frame()
+
+p_reimb &lt;- data1197 %&gt;%
+  select(sponsor_number, sponsor_name, claim_date, total_reimbursement) %&gt;%
+  filter(claim_date &gt;= curr_date %m+% months(window_start)) %&gt;%
+  arrange(claim_date)
+
+
+# Pivot sponsor claims into crosstable
+ct &lt;- p_reimb %&gt;%
+  pivot_wider(names_from = claim_date,
+              values_from = total_reimbursement,
+              values_fill = NA)
+
+ct_ref &lt;- ct</code></pre>
+</div>
+<div id="sponsor-level-calculations" class="section level3">
+<h3>Sponsor-Level Calculations</h3>
+<pre class="r"><code>ct &lt;- ct_ref
+
+col_idx_ct &lt;- function(offset) {
+  nm &lt;- as.character(curr_date %m+% months(offset))
+  i &lt;- match(nm, names(ct))
+  if (is.na(i)) stop(&quot;Missing month column in ct: &quot;, nm)
+  i
+  }
+
+idx_prior   &lt;- col_idx_ct(window_start)  # -14
+idx_months  &lt;- vapply((window_start + 1):report_offset, col_idx_ct, integer(1))  # -13:-2
+idx_current &lt;- col_idx_ct(report_offset) # -2
+
+ct$prior_year &lt;- ct[[idx_prior]]
+ct$current    &lt;- ct[[idx_current]]
+
+ct$mean_claim &lt;- rowMeans(ct[, idx_months, drop = FALSE], na.rm = TRUE)
+ct$counts     &lt;- rowSums(!is.na(ct[, idx_months, drop = FALSE]))
+
+ct$year_over_year_change   &lt;- (ct$current - ct$prior_year) / ct$prior_year
+ct$variance_from_the_mean  &lt;- (ct$current - ct$mean_claim) / ct$mean_claim
+
+# Deviation from prior year z-score
+abs_dev_prior   &lt;- abs(ct[, idx_months, drop = FALSE] - ct$prior_year)
+ct$sums_prior   &lt;- rowSums(abs_dev_prior, na.rm = TRUE)
+ct$mad_yoy      &lt;- ct$sums_prior / ct$counts
+
+ct$z_yoy &lt;- (ct$current - ct$prior_year) / ct$mad_yoy
+ct$z_yoy &lt;- fifelse(
+  ct$prior_year == 0 | is.na(ct$prior_year) | ct$current == 0 | is.na(ct$current),
+  NA, 
+  ct$z_yoy)
+
+# Deviation from the mean z-score
+abs_dev_mean  &lt;- abs(ct[, idx_months, drop = FALSE] - ct$mean_claim)
+ct$sums_mean  &lt;- rowSums(abs_dev_mean, na.rm = TRUE)
+ct$mad_mean   &lt;- ct$sums_mean / ct$counts
+
+ct$z_mean &lt;- (ct$current - ct$mean_claim) / ct$mad_mean
+ct$z_mean &lt;- fifelse(
+ct$prior_year == 0 | is.na(
+  ct$prior_year) | ct$current == 0 | is.na(ct$current),
+  NA, 
+  ct$z_mean)
+
+ct &lt;- ct %&gt;%
+  mutate(abs_M = abs(z_mean),
+         abs_YOY = abs(z_yoy),
+         score = abs_M + abs_YOY) %&gt;%
+  arrange(desc(score)) %&gt;%
+  select(-c(abs_M, abs_YOY, score))
+
+spon_var &lt;- ct
+spon_var_ref &lt;- spon_var</code></pre>
+</div>
+<div id="top-ten-sponsors" class="section level3">
+<h3>Top Ten Sponsors</h3>
+<pre class="r"><code>spon_var &lt;- as.data.frame(spon_var_ref)
+spon_var &lt;- do.call(data.frame, spon_var)
+
+top_yoy  &lt;- spon_var[with(spon_var, order(-z_yoy)), ]
+top_yoy1 &lt;- top_yoy[1:5, ]
+top_yoy  &lt;- spon_var[with(spon_var, order(z_yoy)), ]
+
+top_yoy2 &lt;- top_yoy[1:5, ] %&gt;% 
+  arrange(desc(z_yoy))
+
+top_yoy  &lt;- rbind(top_yoy1, top_yoy2) %&gt;%
+  mutate(abs_YOY = abs(z_yoy)) %&gt;%
+  arrange(desc(abs_YOY)) %&gt;%
+  select(-abs_YOY)
+
+top_dm  &lt;- spon_var[with(spon_var, order(-z_mean)), ]
+top_dm1 &lt;- top_dm[1:5, ]
+top_dm  &lt;- spon_var[with(spon_var, order(z_mean)), ]
+
+top_dm2 &lt;- top_dm[1:5, ] %&gt;% 
+  arrange(desc(z_mean))
+
+top_dm  &lt;- rbind(top_dm1, top_dm2) %&gt;%
+  mutate(abs_M = abs(z_mean)) %&gt;%
+  arrange(desc(abs_M)) %&gt;%
+  select(-abs_M)
+
+spon_var_ref &lt;- spon_var
+top_yoy_ref  &lt;- top_yoy
+top_dm_ref   &lt;- top_dm</code></pre>
+</div>
+</div>
+<div id="generate-report" class="section level2">
+<h2>5. Generate Report</h2>
+<div id="build-tableau-data" class="section level3">
+<h3>Build Tableau Data</h3>
+<pre class="r"><code>data1197_s &lt;- refresh_data1197_s
+data1197   &lt;- refresh_data1197
+
+top_yoy   &lt;- as_tibble(top_yoy_ref)
+top_dm    &lt;- as_tibble(top_dm_ref)
+top_yoy_s &lt;- as_tibble(top_yoy_s_ref)
+top_dm_s  &lt;- as_tibble(top_dm_s_ref)
+
+spon_var  &lt;- as_tibble(spon_var_ref)
+site_var  &lt;- as_tibble(site_var_ref2)
+
+# Flags for Tableau sheet (match report_date)
+
+top_dm_y &lt;- top_dm %&gt;% 
+  select(sponsor_name)
+top_dm_y$date &lt;- format(report_date, &quot;%m/%d/%Y&quot;)
+top_dm_y$unique &lt;- paste(top_dm_y$date, top_dm_y$sponsor_name)
+top_dm_y$top_dm_y &lt;- &quot;Y&quot;
+top_dm_y &lt;- top_dm_y[, !(names(top_dm_y) %in% c(&quot;sponsor_name&quot;, &quot;date&quot;))]
+
+top_yoy_y &lt;- top_yoy %&gt;% 
+  select(sponsor_name)
+top_yoy_y$date &lt;- format(report_date, &quot;%m/%d/%Y&quot;)
+top_yoy_y$unique &lt;- paste(top_yoy_y$date, top_yoy_y$sponsor_name)
+top_yoy_y$top_yoy_y &lt;- &quot;Y&quot;
+top_yoy_y &lt;- top_yoy_y[, !(names(top_yoy_y) %in% c(&quot;sponsor_name&quot;, &quot;date&quot;))]
+
+# Tableau base
+
+tab1 &lt;- data1197 %&gt;%
+  select(sponsor_name, sponsor_number, claim_date, total_eligible_students,
+         adp_brk, adp_lunch, adp_sso_brk, adp_sso_lunch, breakfast_operating_days,
+         lunch_operating_days, sso_operating_days, free_lunches, rdc_lunches,
+         paid_lunches, free_breakfasts, rdc_breakfasts, paid_breakfasts, sso_lunches,
+         sso_breakfasts, total_reimbursement, operating_sites)
+
+tab1$adp  &lt;- tab1$adp_brk + tab1$adp_lunch + 
+  tab1$adp_sso_brk + tab1$adp_sso_lunch
+tab1$days &lt;- tab1$breakfast_operating_days + 
+  tab1$lunch_operating_days + tab1$sso_operating_days
+tab1$meals &lt;- tab1$free_lunches + tab1$rdc_lunches + tab1$paid_lunches + 
+  tab1$free_breakfasts + tab1$rdc_breakfasts + tab1$paid_breakfasts + 
+  tab1$sso_lunches + tab1$sso_breakfasts
+
+tab1$uniq &lt;- paste0(tab1$sponsor_number, tab1$claim_date)
+
+# Attach outlier metrics to report month (match report_date)
+
+spon_var$claim_date &lt;- format(report_date, &quot;%m/%d/%Y&quot;)
+spon_var$uniq &lt;- paste0(spon_var$sponsor_number, spon_var$claim_date)
+
+spon_var_mean &lt;- spon_var[!is.na(spon_var$z_mean), ] %&gt;%
+  rename(current_mean = current,
+         sponsor_name_mean = sponsor_name) %&gt;%
+  select(sponsor_number, sponsor_name_mean, current_mean, mean_claim, mad_mean, z_mean, uniq)
+
+spon_var_yoy &lt;- spon_var[!is.na(spon_var$z_yoy), ] %&gt;%
+  rename(current_YOY = current,
+         sponsor_name_YOY = sponsor_name) %&gt;%
+  select(sponsor_number, sponsor_name_YOY, prior_year, current_YOY, mad_yoy, z_yoy, uniq)
+
+tab2 &lt;- merge(tab1, spon_var_yoy, by = &quot;uniq&quot;, all.x = TRUE)
+tab3 &lt;- merge(tab2, spon_var_mean, by = &quot;uniq&quot;, all = TRUE)
+
+tab3$unique &lt;- paste(tab3$claim_date, tab3$sponsor_name)
+tab4 &lt;- merge(tab3, top_dm_y,  by = &quot;unique&quot;, all.x = TRUE)
+tab5 &lt;- merge(tab4, top_yoy_y, by = &quot;unique&quot;, all.x = TRUE)
+
+tab5$top_20 &lt;- as.character(NA)
+tab5$top_20 &lt;- fifelse(!is.na(tab5$top_dm_y), &quot;Y&quot;, tab5$top_20)
+tab5$top_20 &lt;- fifelse(!is.na(tab5$top_yoy_y), &quot;Y&quot;, tab5$top_20)
+
+tab5 &lt;- tab5[, !(names(tab5) %in% c(&quot;unique&quot;))]</code></pre>
+</div>
+<div id="column-names-to-upper-case" class="section level3">
+<h3>Column Names to Upper Case</h3>
+<pre class="r"><code># Column Names (Title Case)
+
+colnames(tab5)      &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(tab5)))
+colnames(data1197)  &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(data1197)))
+colnames(data1197_s)&lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(data1197_s)))
+colnames(top_dm_s)  &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(top_dm_s)))
+colnames(top_yoy_s) &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(top_yoy_s)))
+colnames(site_var)  &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(site_var)))
+colnames(top_dm)    &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(top_dm)))
+colnames(top_yoy)   &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(top_yoy)))
+colnames(spon_var)  &lt;- stringr::str_to_title(gsub(&quot;_&quot;, &quot; &quot;, colnames(spon_var)))</code></pre>
+</div>
+<div id="build-main-tables" class="section level3">
+<h3>Build Main Tables</h3>
+<pre class="r"><code>SNP_list.1 &lt;- list(
+  &quot;DEVIATION FROM THE MEAN&quot;      = top_dm,
+  &quot;DEVIATION FROM PRIOR YEAR&quot;    = top_yoy)
+
+variances &lt;- createWorkbook()
+addWorksheet(variances, &quot;Top Ten Sponsors&quot;)
+
+curr_row &lt;- 3
+
+for (i in seq_along(SNP_list.1)) {
+  writeData(variances, &quot;Top Ten Sponsors&quot;, names(SNP_list.1)[i], startCol = 1, startRow = curr_row)
+  writeData(variances, &quot;Top Ten Sponsors&quot;, SNP_list.1[[i]], startCol = 1, startRow = curr_row + 1)
+  curr_row &lt;- curr_row + nrow(SNP_list.1[[i]]) + 6
+  }
+
+SNP_list.2 &lt;- list(
+  &quot;DEVIATION FROM THE MEAN&quot;      = top_dm_s,
+  &quot;DEVIATION FROM PRIOR YEAR&quot;    = top_yoy_s)
+
+addWorksheet(variances, &quot;Top Ten Sites&quot;)
+
+curr_row &lt;- 3
+
+for (i in seq_along(SNP_list.2)) {
+  writeData(variances, &quot;Top Ten Sites&quot;, names(SNP_list.2)[i], startCol = 1, startRow = curr_row)
+  writeData(variances, &quot;Top Ten Sites&quot;, SNP_list.2[[i]], startCol = 1, startRow = curr_row + 1)
+  curr_row &lt;- curr_row + nrow(SNP_list.2[[i]]) + 5
+  }</code></pre>
+</div>
+<div id="add-sheets-to-workbook" class="section level3">
+<h3>Add Sheets to Workbook</h3>
+<pre class="r"><code>addWorksheet(variances, &quot;Sponsor Variances&quot;)
+writeData(variances, &quot;Sponsor Variances&quot;, spon_var)
+
+addWorksheet(variances, &quot;Site Variances&quot;)
+writeData(variances, &quot;Site Variances&quot;, site_var)
+
+addWorksheet(variances, &quot;Raw Data 1197 (Sponsor Level)&quot;)
+writeData(variances, &quot;Raw Data 1197 (Sponsor Level)&quot;, data1197)
+
+addWorksheet(variances, &quot;Raw Data 1197 (Site Level)&quot;)
+writeData(variances, &quot;Raw Data 1197 (Site Level)&quot;, data1197_s)
+
+addWorksheet(variances, &quot;Tableau Extract&quot;)
+writeData(variances, &quot;Tableau Extract&quot;, tab5)</code></pre>
+</div>
+<div id="save-workbook" class="section level3">
+<h3>Save Workbook</h3>
+<pre class="r"><code>title &lt;- paste0(mmm_yyyy, &quot; SNP Claims Outlier Report.xlsx&quot;)
+saveWorkbook(variances, file = title, overwrite = TRUE)</code></pre>
+</div>
+</div>
+<div id="log-runtime" class="section level2">
+<h2>6. Log Runtime</h2>
+<pre class="r"><code>end.time &lt;- Sys.time()
+time.taken &lt;- end.time - start.time
+time.taken</code></pre>
 <script>
-(function () {
+document.addEventListener("DOMContentLoaded", function () {
   const toc = document.getElementById("toc");
   const headings = document.querySelectorAll("main h2, main h3");
 
   headings.forEach((h, i) => {
-    if (!h.id) {
-      h.id = h.textContent
-        .toLowerCase()
+    // Always ensure a usable id exists
+    const id = h.id || (
+      h.textContent.trim().toLowerCase()
         .replace(/[^\w]+/g, "-")
-        .replace(/^-+|-+$/g, "") + "-" + i;
-    }
+        .replace(/^-+|-+$/g, "") + "-" + i
+    );
+    h.id = id;
 
     const li = document.createElement("li");
     if (h.tagName === "H3") li.style.marginLeft = "16px";
 
     const a = document.createElement("a");
-    a.href = "#" + h.id;
+    a.href = "#" + id;
     a.textContent = h.textContent;
+
+    // Force scrolling (works even when plain hash links don't)
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + id);
+    });
 
     li.appendChild(a);
     toc.appendChild(li);
   });
+});
+</script>
 
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        const link = document.querySelector(`a[href="#${entry.target.id}"]`);
-        if (entry.isIntersecting) {
-          document.querySelectorAll(".toc-container a")
-            .forEach(a => a.classList.remove("active"));
-          if (link) link.classList.add("active");
-        }
-      });
-    },
-    { rootMargin: "-40% 0px -55% 0px" }
-  );
+</div>
+</div>
 
-  headings.forEach(h => observer.observe(h));
-})();
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
 </script>
 
 </body>
