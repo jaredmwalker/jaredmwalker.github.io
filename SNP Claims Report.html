@@ -297,7 +297,7 @@ review</li>
 <pre class="r"><code>rm(list = ls(all.names = T)) #clear all objects from environment.
 start.time &lt;- Sys.time()   # Log start time.
 gc() # Free up memory and report the memory usage.
-options(max.print=10) # Limit output.
+options(max.print=100) # Limit output.
 options(scipen=999) # Prohibit use of scientific notation
 
 library(lubridate)
@@ -310,16 +310,16 @@ library(readr)</code></pre>
 </div>
 <div id="date-handling" class="section level3">
 <h3>Date Handling</h3>
-<pre class="r"><code># Format date as numeric
-today &lt;- as.numeric(format(Sys.Date(), &quot;%Y%m%d&quot;))
-
-# Assign current-month date
+<pre class="r"><code># Assign current-month date
 curr_date  &lt;- as.Date(format(Sys.Date(), &quot;%Y-%m-01&quot;))
 
-# Set reporting month 
-report_offset &lt;- -2
-window_start &lt;- report_offset - 12 # Window start equals 14 months in the past
+# Set time window
+report_offset &lt;- -2 # Reporting month or start month is 2 months in the past
+window_start &lt;- report_offset - 12 # End month is 14 months in the past
+
 report_date &lt;- curr_date %m+% months(report_offset)
+
+# Reformat curr_date for downstream automation
 mmm_yyyy &lt;- paste(month.abb[as.numeric(format(report_date, &quot;%m&quot;))],
                   format(report_date, &quot;%Y&quot;))</code></pre>
 </div>
@@ -327,20 +327,12 @@ mmm_yyyy &lt;- paste(month.abb[as.numeric(format(report_date, &quot;%m&quot;))],
 <h3>Import Data and Clean</h3>
 <pre class="r"><code># Site level data 
 data1197_s &lt;- read_csv(
-  &quot;C:/Users/Jared Walker/Downloads/Data1197.csv&quot;,
+  &quot;C:/Users/Al Hofmann/Downloads/Data1197.csv&quot;,
   col_types = cols(&quot;Claim Date&quot; = col_date(format = &quot;%m/%d/%Y&quot;))) %&gt;%
   clean_names() %&gt;%
   replace_with_na(replace = list(total_reimbursement = 0.0)) %&gt;%  # $0 reimbursement == NA
   filter(claim_status != &quot;Error&quot;) %&gt;%
-  mutate(operating_sites = 1)
-
-# Sponsor level data
-data1197 &lt;- data1197_s %&gt;%
-  select(-c(site_name:site_id, claim_status:brk_type, 
-            afterschool_snack_participation,
-            asp_jul:sso_snk_participation, x80)) %&gt;% # Remove Categorical Data
-  aggregate(. ~ sponsor_number + sponsor_name + claim_date, FUN=sum) %&gt;%
-  as.data.frame()</code></pre>
+  mutate(operating_sites = 1)</code></pre>
 </div>
 <div id="site-level-crosstable" class="section level3">
 <h3>Site-Level Crosstable</h3>
@@ -349,100 +341,83 @@ ct_s &lt;- data1197_s %&gt;%
   select(sponsor_name:site_number, claim_date, total_reimbursement) %&gt;%
   filter(claim_date &gt;= curr_date %m+% months(window_start)) %&gt;%
   arrange(claim_date) %&gt;%
-  pivot_wider(
-    names_from  = claim_date,
-    values_from = total_reimbursement,
-    values_fill = NA)
-
-# Keep originals for later
-site_level  &lt;- data1197_s
-sponsor_level &lt;- data1197
-ct_s_ref &lt;- ct_s
-refresh_data1197_s &lt;- data1197_s
-refresh_data1197   &lt;- data1197</code></pre>
+  pivot_wider(names_from  = claim_date,
+              values_from = total_reimbursement,
+              values_fill = NA)</code></pre>
 </div>
 <div id="site-level-calculations" class="section level3">
 <h3>Site-Level Calculations</h3>
-<pre class="r"><code>ct_s &lt;- ct_s_ref
-
+<pre class="r"><code># Month indexing function
 col_idx_cts &lt;- function(offset) {
   nm &lt;- as.character(curr_date %m+% months(offset))
   i &lt;- match(nm, names(ct_s))
   if (is.na(i)) stop(&quot;Missing month column in ct_s: &quot;, nm)
   i
-  }
+}
 
+# Column indexing
 idx_prior  &lt;- col_idx_cts(window_start)              # -14
-idx_months &lt;- vapply((window_start + 1):report_offset, col_idx_cts, integer(1))  # -13:-2
+idx_months &lt;- vapply((window_start + 1):report_offset, col_idx_cts, integer(1)) ##### -13:-2
 idx_current &lt;- col_idx_cts(report_offset)            # -2
 
+# Reference columns for current claim and prior year claim
 ct_s$prior_year &lt;- ct_s[[idx_prior]]
 ct_s$current    &lt;- ct_s[[idx_current]]
 
+# Mean claim value
 ct_s$mean_claim &lt;- rowMeans(ct_s[, idx_months, drop = FALSE], na.rm = TRUE)
 ct_s$counts     &lt;- rowSums(!is.na(ct_s[, idx_months, drop = FALSE]))
 
-# Deviation from the prior year z-score
+# Absolute deviation from the prior year
 abs_dev_prior   &lt;- abs(ct_s[, idx_months, drop = FALSE] - ct_s$prior_year)
 ct_s$sums_prior &lt;- rowSums(abs_dev_prior, na.rm = TRUE)
 ct_s$mad_yoy    &lt;- ct_s$sums_prior / ct_s$counts
 
+# Z-score calculation
 ct_s$z_yoy &lt;- (ct_s$current - ct_s$prior_year) / ct_s$mad_yoy
 ct_s$z_yoy &lt;- fifelse(
   ct_s$prior_year == 0 | is.na(ct_s$prior_year) | ct_s$current == 0 | is.na(ct_s$current), 
   NA, 
   ct_s$z_yoy)
 
-# Devian from the mean z-score
+# Absolute deviation from the mean
 abs_dev_mean   &lt;- abs(ct_s[, idx_months, drop = FALSE] - ct_s$mean_claim)
 ct_s$sums_mean &lt;- rowSums(abs_dev_mean, na.rm = TRUE)
 ct_s$mad_mean  &lt;- ct_s$sums_mean / ct_s$counts
 
+# Z-score calculation
 ct_s$z_mean &lt;- (ct_s$current - ct_s$mean_claim) / ct_s$mad_mean
 ct_s$z_mean &lt;- fifelse(
   ct_s$prior_year == 0 | is.na(ct_s$prior_year) | ct_s$current == 0 | is.na(ct_s$current), 
   NA, 
   ct_s$z_mean)
 
-# Rank/keep
-ct_s &lt;- ct_s %&gt;%
-  mutate(abs_M = abs(z_mean),
-         abs_YOY = abs(z_yoy),
-         score = abs_M + abs_YOY) %&gt;%
-  arrange(desc(score)) %&gt;%
-  select(-c(abs_M, abs_YOY, score))
-
 site_var &lt;- ct_s
 site_var_ref &lt;- site_var</code></pre>
 </div>
 <div id="top-ten-sites" class="section level3">
 <h3>Top Ten Sites</h3>
-<pre class="r"><code>site_var &lt;- site_var_ref
+<pre class="r"><code># Convert to absolute values for ranking
 
 site_var$abs_z_yoy &lt;- abs(site_var$z_yoy)
-
 top_yoy_s  &lt;- site_var[with(site_var, order(-z_yoy)), ]
 top_yoy_s1 &lt;- top_yoy_s[1:5, ]
 top_yoy_s  &lt;- site_var[with(site_var, order(z_yoy)), ]
 top_yoy_s2 &lt;- top_yoy_s[1:5, ] %&gt;% 
   arrange(desc(z_yoy))
-
 top_yoy_s  &lt;- rbind(top_yoy_s1, top_yoy_s2) %&gt;%
   arrange(desc(abs_z_yoy)) %&gt;%
   select(-abs_z_yoy)
 
 drop &lt;- c(&quot;mean_claim&quot;, &quot;z_mean&quot;, &quot;mad_mean&quot;)
-
 top_yoy_s &lt;- top_yoy_s[, !(names(top_yoy_s) %in% drop)]
 
 site_var$abs_z_mean &lt;- abs(site_var$z_mean)
-
 top_dm_s  &lt;- site_var[with(site_var, order(-z_mean)), ]
 top_dm_s1 &lt;- top_dm_s[1:5, ]
 top_dm_s  &lt;- site_var[with(site_var, order(z_mean)), ]
 top_dm_s2 &lt;- top_dm_s[1:5, ] %&gt;% 
   arrange(desc(z_mean))
-
 top_dm_s  &lt;- rbind(top_dm_s1, top_dm_s2) %&gt;%
   mutate(abs_M = abs(z_mean)) %&gt;%
   arrange(desc(abs_M)) %&gt;%
@@ -456,66 +431,62 @@ site_var_ref2 &lt;- site_var</code></pre>
 <h3>Sponsor-Level Cross Table</h3>
 <pre class="r"><code># Aggregate site-level data to sponsor-level 
 data1197 &lt;- data1197_s %&gt;%
-  select(-c(site_name:site_id, claim_status:brk_type, afterschool_snack_participation,
-            asp_jul:sso_snk_participation, x80)) %&gt;%
-  group_by(sponsor_number, sponsor_name, claim_date) %&gt;%
-  summarise(across(where(is.numeric), ~sum(.x, na.rm = TRUE)), .groups = &quot;drop&quot;) %&gt;%
+  select(-c(site_name:site_id, claim_status:brk_type, 
+            afterschool_snack_participation,
+            asp_jul:sso_snk_participation, x80)) %&gt;% # Remove Categorical Data
+  aggregate(. ~ sponsor_number + sponsor_name + claim_date, FUN=sum) %&gt;%
   as.data.frame()
 
-p_reimb &lt;- data1197 %&gt;%
+# Pivot sponsor claims into crosstable
+ct &lt;- data1197 %&gt;%
   select(sponsor_number, sponsor_name, claim_date, total_reimbursement) %&gt;%
   filter(claim_date &gt;= curr_date %m+% months(window_start)) %&gt;%
-  arrange(claim_date)
-
-
-# Pivot sponsor claims into crosstable
-ct &lt;- p_reimb %&gt;%
+  arrange(claim_date) %&gt;%
   pivot_wider(names_from = claim_date,
               values_from = total_reimbursement,
-              values_fill = NA)
-
-ct_ref &lt;- ct</code></pre>
+              values_fill = NA)</code></pre>
 </div>
 <div id="sponsor-level-calculations" class="section level3">
 <h3>Sponsor-Level Calculations</h3>
-<pre class="r"><code>ct &lt;- ct_ref
-
+<pre class="r"><code># Month indexing function
 col_idx_ct &lt;- function(offset) {
   nm &lt;- as.character(curr_date %m+% months(offset))
   i &lt;- match(nm, names(ct))
   if (is.na(i)) stop(&quot;Missing month column in ct: &quot;, nm)
   i
-  }
+}
 
+# Column indexing
 idx_prior   &lt;- col_idx_ct(window_start)  # -14
 idx_months  &lt;- vapply((window_start + 1):report_offset, col_idx_ct, integer(1))  # -13:-2
 idx_current &lt;- col_idx_ct(report_offset) # -2
 
+# Reference values
 ct$prior_year &lt;- ct[[idx_prior]]
 ct$current    &lt;- ct[[idx_current]]
 
+# Mean claim value
 ct$mean_claim &lt;- rowMeans(ct[, idx_months, drop = FALSE], na.rm = TRUE)
 ct$counts     &lt;- rowSums(!is.na(ct[, idx_months, drop = FALSE]))
 
-ct$year_over_year_change   &lt;- (ct$current - ct$prior_year) / ct$prior_year
-ct$variance_from_the_mean  &lt;- (ct$current - ct$mean_claim) / ct$mean_claim
-
-# Deviation from prior year z-score
+# Absolute deviation from prior year
 abs_dev_prior   &lt;- abs(ct[, idx_months, drop = FALSE] - ct$prior_year)
 ct$sums_prior   &lt;- rowSums(abs_dev_prior, na.rm = TRUE)
 ct$mad_yoy      &lt;- ct$sums_prior / ct$counts
 
+# Z-score calculation
 ct$z_yoy &lt;- (ct$current - ct$prior_year) / ct$mad_yoy
 ct$z_yoy &lt;- fifelse(
   ct$prior_year == 0 | is.na(ct$prior_year) | ct$current == 0 | is.na(ct$current),
   NA, 
   ct$z_yoy)
 
-# Deviation from the mean z-score
+# Absolute deviation from the mean
 abs_dev_mean  &lt;- abs(ct[, idx_months, drop = FALSE] - ct$mean_claim)
 ct$sums_mean  &lt;- rowSums(abs_dev_mean, na.rm = TRUE)
 ct$mad_mean   &lt;- ct$sums_mean / ct$counts
 
+# Z-score calculation
 ct$z_mean &lt;- (ct$current - ct$mean_claim) / ct$mad_mean
 ct$z_mean &lt;- fifelse(
 ct$prior_year == 0 | is.na(
@@ -523,28 +494,21 @@ ct$prior_year == 0 | is.na(
   NA, 
   ct$z_mean)
 
-ct &lt;- ct %&gt;%
-  mutate(abs_M = abs(z_mean),
-         abs_YOY = abs(z_yoy),
-         score = abs_M + abs_YOY) %&gt;%
-  arrange(desc(score)) %&gt;%
-  select(-c(abs_M, abs_YOY, score))
-
 spon_var &lt;- ct
 spon_var_ref &lt;- spon_var</code></pre>
 </div>
 <div id="top-ten-sponsors" class="section level3">
 <h3>Top Ten Sponsors</h3>
-<pre class="r"><code>spon_var &lt;- as.data.frame(spon_var_ref)
+<pre class="r"><code># Convert to absolute values for ranking
+
+spon_var &lt;- as.data.frame(spon_var_ref)
 spon_var &lt;- do.call(data.frame, spon_var)
 
 top_yoy  &lt;- spon_var[with(spon_var, order(-z_yoy)), ]
 top_yoy1 &lt;- top_yoy[1:5, ]
 top_yoy  &lt;- spon_var[with(spon_var, order(z_yoy)), ]
-
 top_yoy2 &lt;- top_yoy[1:5, ] %&gt;% 
   arrange(desc(z_yoy))
-
 top_yoy  &lt;- rbind(top_yoy1, top_yoy2) %&gt;%
   mutate(abs_YOY = abs(z_yoy)) %&gt;%
   arrange(desc(abs_YOY)) %&gt;%
@@ -553,10 +517,8 @@ top_yoy  &lt;- rbind(top_yoy1, top_yoy2) %&gt;%
 top_dm  &lt;- spon_var[with(spon_var, order(-z_mean)), ]
 top_dm1 &lt;- top_dm[1:5, ]
 top_dm  &lt;- spon_var[with(spon_var, order(z_mean)), ]
-
 top_dm2 &lt;- top_dm[1:5, ] %&gt;% 
   arrange(desc(z_mean))
-
 top_dm  &lt;- rbind(top_dm1, top_dm2) %&gt;%
   mutate(abs_M = abs(z_mean)) %&gt;%
   arrange(desc(abs_M)) %&gt;%
@@ -571,9 +533,7 @@ top_dm_ref   &lt;- top_dm</code></pre>
 <h2>5. Generate Report</h2>
 <div id="build-tableau-data" class="section level3">
 <h3>Build Tableau Data</h3>
-<pre class="r"><code>data1197_s &lt;- refresh_data1197_s
-data1197   &lt;- refresh_data1197
-
+<pre class="r"><code># Reformat as tibble
 top_yoy   &lt;- as_tibble(top_yoy_ref)
 top_dm    &lt;- as_tibble(top_dm_ref)
 top_yoy_s &lt;- as_tibble(top_yoy_s_ref)
@@ -582,8 +542,7 @@ top_dm_s  &lt;- as_tibble(top_dm_s_ref)
 spon_var  &lt;- as_tibble(spon_var_ref)
 site_var  &lt;- as_tibble(site_var_ref2)
 
-# Flags for Tableau sheet (match report_date)
-
+# Flags for Tableau sheet
 top_dm_y &lt;- top_dm %&gt;% 
   select(sponsor_name)
 top_dm_y$date &lt;- format(report_date, &quot;%m/%d/%Y&quot;)
@@ -599,7 +558,6 @@ top_yoy_y$top_yoy_y &lt;- &quot;Y&quot;
 top_yoy_y &lt;- top_yoy_y[, !(names(top_yoy_y) %in% c(&quot;sponsor_name&quot;, &quot;date&quot;))]
 
 # Tableau base
-
 tab1 &lt;- data1197 %&gt;%
   select(sponsor_name, sponsor_number, claim_date, total_eligible_students,
          adp_brk, adp_lunch, adp_sso_brk, adp_sso_lunch, breakfast_operating_days,
@@ -617,8 +575,7 @@ tab1$meals &lt;- tab1$free_lunches + tab1$rdc_lunches + tab1$paid_lunches +
 
 tab1$uniq &lt;- paste0(tab1$sponsor_number, tab1$claim_date)
 
-# Attach outlier metrics to report month (match report_date)
-
+# Attach outlier metrics
 spon_var$claim_date &lt;- format(report_date, &quot;%m/%d/%Y&quot;)
 spon_var$uniq &lt;- paste0(spon_var$sponsor_number, spon_var$claim_date)
 
@@ -648,7 +605,6 @@ tab5 &lt;- tab5[, !(names(tab5) %in% c(&quot;unique&quot;))]</code></pre>
 <div id="column-names-to-upper-case" class="section level3">
 <h3>Column Names to Upper Case</h3>
 <pre class="r"><code># Column Names (Title Case)
-
 colnames(tab5)      &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(tab5)))
 colnames(data1197)  &lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(data1197)))
 colnames(data1197_s)&lt;- stringr::str_to_title(gsub(&quot;*&quot;, &quot; &quot;, colnames(data1197_s)))
