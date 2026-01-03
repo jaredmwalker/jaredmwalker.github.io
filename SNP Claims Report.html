@@ -12,9 +12,9 @@
 
 
 
-<title>New-SNP-Claims-Report.knit</title>
+<title>SNP-Claims-Report.knit</title>
 
-<script src="New-SNP-Claims-Report_files/header-attrs-2.30/header-attrs.js"></script>
+<script src="SNP-Claims-Report_files/header-attrs-2.30/header-attrs.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -51,8 +51,12 @@
 .toc-container {
   position: sticky;
   top: 24px;
-  max-height: fit-content;
-  overflow-y: auto;
+
+  /* Always show scrollbar + allow TOC to scroll */
+  max-height: calc(100vh - 48px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+
   background: #f9fbfd;
   border: 1px solid #d0d7de;
   border-radius: 6px;
@@ -99,6 +103,7 @@
   .toc-container {
     position: relative;
     max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -156,6 +161,9 @@ h2 {
 h3 { margin-top: 25px; }
 h4 { margin-top: 22px; }
 
+/* Helps smooth TOC jumps / sticky header spacing */
+main h2, main h3 { scroll-margin-top: 24px; }
+
 p { margin: 12px 0; }
 
 ul { margin-left: 25px; }
@@ -197,6 +205,7 @@ footer {
 }
 
 </style>
+
 
 
 <div class="page">
