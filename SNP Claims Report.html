@@ -204,6 +204,30 @@ footer {
   color: #666;
 }
 
+/* Layout: TOC + content */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  align-items: start;   /* ✅ prevents TOC from stretching to main's full height */
+}
+
+/* ===== TOC ===== */
+.toc-container {
+  position: sticky;
+  top: 24px;
+
+  align-self: start;    /* ✅ extra safety: don't stretch in grid */
+  min-height: 0;        /* ✅ makes overflow scrolling behave inside grid */
+
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;     /* (use scroll if you *must* always show the bar) */
+  overflow-x: hidden;
+
+  scrollbar-gutter: stable; /* optional: prevents layout shift when scrollbar appears */
+}
+
+
 </style>
 
 
