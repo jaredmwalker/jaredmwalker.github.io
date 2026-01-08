@@ -30,10 +30,26 @@
           margin-top: 0 !important;
         }
 
-        .gallery article img {
-          width: 100% !important;
-          height: auto !important;
-        }
+        /* ---------- GALLERY: UNIFORM HEIGHTS ON MOBILE/TABLET ---------- */
+@media screen and (max-width: 980px) {
+
+  /* The clickable tile becomes the fixed-ratio box */
+  .gallery article a.image{
+    display: block;
+    width: 100%;
+    aspect-ratio: 5 / 3;   /* matches your 500x300 thumbnails */
+    overflow: hidden;
+  }
+
+  /* The image fills the box and crops as needed */
+  .gallery article a.image img{
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;     /* use 'contain' if you don't want cropping */
+  }
+}
+
 
         section.banner.style1\.5 {
           padding-top: 30px !important;
@@ -178,7 +194,7 @@
 
             <article>
               <a href="Community Programs.html" class="image">
-                <img src="images/Community.jpg" alt="Community" height="300" width="500" />
+                <img src="images/Community (2).jpg" alt="Community" height="300" width="500" />
               </a>
             </article>
 
