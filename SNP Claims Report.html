@@ -46,157 +46,152 @@
 
 
 <style>
-
-/* ===== TOC ===== */
-.toc-container {
-  position: sticky;
-  top: 24px;
-
-  /* Always show scrollbar + allow TOC to scroll */
-  max-height: calc(100vh - 48px);
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-  background: #f9fbfd;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  padding: 16px;
-  font-size: 0.92em;
-}
-
-.toc-container h2 {
-  margin-top: 0;
-  font-size: 1.05em;
-  border-bottom: none;
-}
-
-.toc-container ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.toc-container li { margin: 6px 0; }
-
-.toc-container a {
-  text-decoration: none;
-  color: #2c3e50;
-}
-
-.toc-container a:hover { text-decoration: underline; }
-
-.toc-container a.active {
-  font-weight: 600;
-  color: #1f4bd8;
-}
-
-/* Layout: TOC + content */
-.layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 32px;
-}
-
-/* Mobile fallback */
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .toc-container {
-    position: relative;
-    max-height: none;
-    overflow-y: visible;
-  }
-}
-
 /* Ensure predictable sizing */
 *, *::before, *::after { box-sizing: border-box; }
-
 html, body { height: 100%; }
 
-body {
+body{
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   margin: 0;
-  padding: 24px;
+  padding: clamp(12px, 3vw, 24px);
   background-color: #f0f2f5;
   color: #222;
 }
 
 /* Override rmarkdown container defaults */
-.main-container {
+.main-container{
   max-width: none !important;
   padding: 0 !important;
   margin: 0 !important;
 }
 
-/* Fixed document frame */
-.page {
+/* Fixed document frame (responsive padding + width) */
+.page{
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 40px;
+  padding: clamp(16px, 4vw, 40px);
   background-color: #ffffff;
   line-height: 1.6;
   border: 1px solid #ddd;
   box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
-h1, h2, h3, h4 { color: #2c3e50; }
+/* Layout: TOC + content */
+.layout{
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr); /* minmax prevents overflow on narrow screens */
+  gap: clamp(16px, 3vw, 32px);
+  align-items: start;
+}
 
-h1 {
+main{ min-width: 0; } /* prevents code blocks from forcing horizontal overflow */
+
+/* ===== TOC ===== */
+.toc-container{
+  position: sticky;
+  top: 16px;
+
+  align-self: start;
+  min-height: 0;
+
+  background: #f9fbfd;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.80em;
+
+  max-height: calc(100vh - 32px);
+  overflow: hidden; /* inner list scrolls */
+}
+
+.toc-container summary{
+  cursor: pointer;
+  font-weight: 700;
+  color: #2c3e50;
+  list-style: none;
+}
+.toc-container summary::-webkit-details-marker{ display: none; }
+
+/* Hide the "accordion" affordance on desktop */
+@media (min-width: 901px){
+  .toc-container summary{ display: none; }
+}
+
+.toc-container ul{
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 110px);
+  scrollbar-gutter: stable;
+}
+
+.toc-container li{ margin: 8px 0; }
+
+.toc-container a{
+  text-decoration: none;
+  color: #2c3e50;
+}
+.toc-container a:hover{ text-decoration: underline; }
+.toc-container a.active{
+  font-weight: 600;
+  color: #1f4bd8;
+}
+
+/* Typography */
+h1, h2, h3, h4{ color: #2c3e50; }
+h1{
   border-bottom: 3px solid #2c3e50;
   padding-bottom: 10px;
   margin-bottom: 5px;
 }
-
-.subtitle {
+.subtitle{
   font-size: 1.05em;
   color: #555;
   margin-bottom: 25px;
 }
-
-h2 {
+h2{
   margin-top: 40px;
   border-bottom: 1px solid #ccc;
   padding-bottom: 6px;
 }
+h3{ margin-top: 25px; }
+h4{ margin-top: 22px; }
 
-h3 { margin-top: 25px; }
-h4 { margin-top: 22px; }
+main h2, main h3{ scroll-margin-top: 16px; }
 
-/* Helps smooth TOC jumps / sticky header spacing */
-main h2, main h3 { scroll-margin-top: 24px; }
+p{ margin: 12px 0; }
+ul{ margin-left: 25px; }
 
-p { margin: 12px 0; }
-
-ul { margin-left: 25px; }
-
-.note {
+.note{
   background: #f4f6f8;
   border-left: 6px solid #2c3e50;
   padding: 12px 18px;
   margin: 20px 0;
 }
-
-.rationale {
+.rationale{
   background: #f9fbfd;
   border-left: 6px solid #4b77be;
   padding: 12px 18px;
   margin: 20px 0;
 }
 
-pre {
+/* Code blocks: better mobile scrolling */
+pre{
   background: #f6f8fa;
-  padding: 16px;
+  padding: 14px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 6px;
   border: 1px solid #ddd;
-  font-size: 14px;
+  font-size: 13.5px;
   margin-top: 10px;
 }
+code{ font-family: Consolas, "Courier New", monospace; }
 
-code {
-  font-family: Consolas, "Courier New", monospace;
-}
-
-footer {
+footer{
   margin-top: 60px;
   padding-top: 20px;
   border-top: 1px solid #ccc;
@@ -204,44 +199,51 @@ footer {
   color: #666;
 }
 
-/* Layout: TOC + content */
-.layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 32px;
-  align-items: start;   /* ✅ prevents TOC from stretching to main's full height */
+/* Tablet: shrink TOC column a bit */
+@media (max-width: 1024px){
+  .layout{ grid-template-columns: 220px minmax(0, 1fr); }
 }
 
-/* ===== TOC ===== */
-.toc-container {
-  position: sticky;
-  top: 24px;
-
-  align-self: start;    /* ✅ extra safety: don't stretch in grid */
-  min-height: 0;        /* ✅ makes overflow scrolling behave inside grid */
-
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;     /* (use scroll if you *must* always show the bar) */
-  overflow-x: hidden;
-
-  scrollbar-gutter: stable; /* optional: prevents layout shift when scrollbar appears */
+/* Mobile: stack + make TOC collapsible and non-sticky + remove “desktop frame” feel */
+@media (max-width: 900px){
+  body{
+    padding: 0;
+    background: #ffffff;
+  }
+  .page{
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 16px;
+  }
+  .layout{
+    grid-template-columns: 1fr;
+  }
+  .toc-container{
+    position: relative;
+    top: auto;
+    max-height: none;
+    padding: 12px 14px;
+  }
+  .toc-container ul{
+    max-height: 45vh; /* so TOC doesn't take the whole screen */
+  }
 }
-
-
 </style>
-
-
 
 <div class="page">
   <div class="layout">
 
-    <nav class="toc-container">
-      <h2>Contents</h2>
+    <!-- TOC: details makes it collapsible on mobile -->
+    <details class="toc-container" open>
+      <summary>Contents</summary>
       <ul id="toc"></ul>
-    </nav>
-
+    </details>
 
     <main>
+
 <div id="snp-claims-outlier-report" class="section level1">
 <h1>SNP Claims Outlier Report</h1>
 <div class="subtitle">
@@ -701,10 +703,15 @@ time.taken</code></pre>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const toc = document.getElementById("toc");
+  const tocBox = document.querySelector(".toc-container"); // <details>
   const headings = document.querySelectorAll("main h2, main h3");
 
+  // Close TOC by default on mobile
+  if (window.matchMedia("(max-width: 900px)").matches) {
+    tocBox.removeAttribute("open");
+  }
+
   headings.forEach((h, i) => {
-    // Always ensure a usable id exists
     const id = h.id || (
       h.textContent.trim().toLowerCase()
         .replace(/[^\w]+/g, "-")
@@ -719,11 +726,15 @@ document.addEventListener("DOMContentLoaded", function () {
     a.href = "#" + id;
     a.textContent = h.textContent;
 
-    // Force scrolling (works even when plain hash links don't)
     a.addEventListener("click", function (e) {
       e.preventDefault();
       document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
       history.replaceState(null, "", "#" + id);
+
+      // Auto-collapse TOC after navigating on mobile
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        tocBox.removeAttribute("open");
+      }
     });
 
     li.appendChild(a);
@@ -731,6 +742,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+
+
 
 </div>
 </div>
